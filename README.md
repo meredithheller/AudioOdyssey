@@ -1,4 +1,4 @@
-# This is the course project for CSE 30416 by Meredith Heller, Jack Galassi, Hugh Smith, and Jack Flaherty
+# This is the course project for CSE 30246 by Meredith Heller, Jack Galassi, Hugh Smith, and Jack Flaherty
 
 # Organization:
     - algorithms:
