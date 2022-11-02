@@ -1,17 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
-import { Button, ImageBackground, StyleSheet, Text, View, Modal, TextInput, TouchableOpacity } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LandingPage from './LandingPage';
+import HomeScreen from './HomeScreen';
 
-export default function App() {
-  const [loginModalVisible, setLoginModalVisible] = useState(false);
-  const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [data, setData] = useState([{}])
+const Stack = createNativeStackNavigator();
+
+function App() {
+
+  /*const [data, setData] = useState([{}])
 
   // Get Json object from flask server
   useEffect(() => {
@@ -22,204 +19,19 @@ export default function App() {
         setData(data)
         console.log(data)
       }
+    ).catch(
+
     )
-  }, [])
+  }, [])*/
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={require('./assets/background-img.jpg')} resizeMode="cover" style={styles.image}>
-        {
-          !loginModalVisible && !createModalVisible &&
-          <View>
-            <Text style={styles.title}>Audio Odyssey</Text>
-            <View style={styles.buttons}>
-              <Button color="white" title="Log In" onPress={() => {setLoginModalVisible(true)}}/>
-              <Button color="white" title="Create Account" onPress={() => {setCreateModalVisible(true)}}/>
-            </View>
-          </View>
-        }
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={loginModalVisible}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-            <TouchableOpacity onPress={() => setLoginModalVisible(false)}>
-                <Text style={styles.modalTitle}>Audio Odyssey</Text>
-              </TouchableOpacity>
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="Username"
-                  placeholderTextColor="#003f5c"
-                  onChangeText={(username) => setUsername(username)}
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="Password"
-                  placeholderTextColor="#003f5c"
-                  secureTextEntry={true}
-                  onChangeText={(password) => setPassword(password)}
-                />
-              </View>
-              <TouchableOpacity style={styles.loginBtn} onPress={() => setLoginModalVisible(false)}> 
-                <Text style={styles.loginText}>Log In</Text>
-              </TouchableOpacity>
-
-              <View style={{alignItems: 'center'}}>
-                <Text>Don't have an account? </Text>
-                <TouchableOpacity onPress={() => {setLoginModalVisible(false); setCreateModalVisible(true)}}>
-                  <Text style={{color: "#003f5c"}}>Create account</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={createModalVisible}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <TouchableOpacity onPress={() => setCreateModalVisible(false)}>
-                <Text style={styles.modalTitle}>Audio Odyssey</Text>
-              </TouchableOpacity>
-                
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="First name"
-                  placeholderTextColor="#003f5c"
-                  onChangeText={(firstname) => setFirstname(firstname)}
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="Last name"
-                  placeholderTextColor="#003f5c"
-                  onChangeText={(lastname) => setLastname(lastname)}
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="Phone number"
-                  placeholderTextColor="#003f5c"
-                  onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="Username"
-                  placeholderTextColor="#003f5c"
-                  onChangeText={(username) => setUsername(username)}
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="Password"
-                  placeholderTextColor="#003f5c"
-                  secureTextEntry={true}
-                  onChangeText={(password) => setPassword(password)}
-                />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.TextInput}
-                  placeholder="Confirm password"
-                  placeholderTextColor="#003f5c"
-                  secureTextEntry={true}
-                  onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
-                />
-              </View>
-
-              <TouchableOpacity style={styles.loginBtn} onPress={() => setCreateModalVisible(false)}> 
-                <Text style={styles.loginText}>Create Account</Text>
-              </TouchableOpacity>
-              <View style={{alignItems: 'center'}}>
-                <Text>Already have an account? </Text>
-                <TouchableOpacity onPress={() => {setCreateModalVisible(false); setLoginModalVisible(true);}}>
-                  <Text style={{color: "#003f5c"}}>Log in</Text>
-                </TouchableOpacity>
-              </View>
-            </View>            
-          </View>
-        </Modal>
-
-      </ImageBackground>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator  initialRouteName="Landing">
+        <Stack.Screen options={{ headerShown: false }} name="Landing" component={LandingPage} />
+        <Stack.Screen options={{ gestureEnabled: false, headerBackVisible: false }} name="Home" component={HomeScreen}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%'
-  },
-  title: {
-    color: "white",
-    fontSize: 42,
-    fontFamily: 'Zapfino'
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalTitle: {
-    color: "black",
-    fontSize: 28,
-    fontFamily: "Zapfino"
-  },
-  TextInput: {
-    fontSize: 20,
-    margin: 16
-  },
-  loginBtn: {
-    width:"80%",
-    borderRadius: 25,
-    alignItems:"center",
-    justifyContent:"center",
-    backgroundColor:"#003f5c",
-    margin: 16,
-    width: 200
-  },
-  loginText: {
-    color: "white",
-    padding: 25,
-    fontSize: 20,
-  }
-});
+export default App;
