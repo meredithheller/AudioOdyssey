@@ -2,23 +2,7 @@ import { Button, ImageBackground, StyleSheet, Text, View, Modal, TextInput, Touc
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 
-const createAccount = () => {
-  const response = fetch('http://127.0.0.1:5001/createAccount', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      username: username,
-      password: password,
-      firstname: firstname,
-      lastname: lastname,
-      phoneNumber: phoneNumber
-    })   
-  }).then(
-    navigation.navigate('Home', { name: username });
-  );
-}
+
 
 export default function LandingPage({ navigation }) {
 
@@ -30,6 +14,24 @@ export default function LandingPage({ navigation }) {
   const [lastname, setLastname] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const createAccount = () => {
+    const response = fetch('http://127.0.0.1:5001/createAccount', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        firstname: firstname,
+        lastname: lastname,
+        phoneNumber: phoneNumber
+      })   
+    }).then(
+      navigation.navigate('Home', { name: username })
+    );
+  }
 
   const styles = StyleSheet.create({
     container: {
