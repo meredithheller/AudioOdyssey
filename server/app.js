@@ -1,10 +1,30 @@
-import express from 'express';
+"use strict";
+const express = require('express');
 
-import sequelize from './utils/database.js';
+//const sequelize = require(".utils/database.js");
 
-import router from './routes/routes.js';
+//const router = require(".routes/router");
 
 const app = express();
+
+const mysql = require('mysql')
+const connection = mysql.createConnection({
+  host: 'db8.cse.nd.edu',
+  user: 'mheller5',
+  password: 'audioodyssey',
+  database: 'mmheller5'
+})
+connection.connect()
+
+connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
+    if(err) throw err
+    console.log(rows)
+})
+connection.end
+/*
+app.get("/", (req, res) => {
+    // handle root
+})
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -21,4 +41,4 @@ app.use(router);
 
 sequelize.sync(); 
 
-app.listen(5000);
+app.listen(5000); */
