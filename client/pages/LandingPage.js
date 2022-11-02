@@ -2,8 +2,6 @@ import { Button, ImageBackground, StyleSheet, Text, View, Modal, TextInput, Touc
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 
-
-
 export default function LandingPage({ navigation }) {
 
   const [loginModalVisible, setLoginModalVisible] = useState(false);
