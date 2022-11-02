@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, ImageBackground, StyleSheet, Text, View, Modal, TextInput, TouchableOpacity } from 'react-native';
 
 export default function App() {
@@ -11,6 +11,19 @@ export default function App() {
   const [lastname, setLastname] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [data, setData] = useState([{}])
+
+  // Get Json object from flask server
+  useEffect(() => {
+    fetch("http://127.0.0.1:5001/podcasts").then(
+      res => res.json()
+    ).then(
+      data => {
+        setData(data)
+        console.log(data)
+      }
+    )
+  }, [])
 
   return (
     <View style={styles.container}>

@@ -1,24 +1,20 @@
-import express from 'express';
 
-import sequelize from './utils/database.js';
 
-import router from './routes/routes.js';
+// import sequelize from './utils/database.js';
 
-const app = express();
+// import router from './routes/routes.js';
 
-app.use(express.urlencoded({ extended: true }));
+const express = require('express')
+const app = express()
+const port = 5001
+const host = '127.0.0.1'
 
-app.use(express.json());
+app.get('/members', (req,res) => {
+    console.log(req)
+    res.send('Hello World')
+})
 
-// app.use((_, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//     next();
-// });
+app.listen(port, () => {
+    console.log('Example app listening on port')
+})
 
-app.use(router);
-
-sequelize.sync(); 
-
-app.listen(5000);
