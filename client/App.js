@@ -12,7 +12,7 @@ export default function App() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [data, setData] = useState([{}])
-
+  /*
   // Get Json object from flask server
   useEffect(() => {
     fetch("http://127.0.0.1:5001/podcasts").then(
@@ -23,7 +23,24 @@ export default function App() {
         console.log(data)
       }
     )
-  }, [])
+  }, []
+  */
+  const createAccount = () => {
+    const response = fetch('http://127.0.0.1:5001/createAccount', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        firstname: firstname,
+        lastname: lastname,
+        phoneNumber: phoneNumber
+      })   
+    })
+  }
+
 
   return (
     <View style={styles.container}>
@@ -34,7 +51,8 @@ export default function App() {
             <Text style={styles.title}>Audio Odyssey</Text>
             <View style={styles.buttons}>
               <Button color="white" title="Log In" onPress={() => {setLoginModalVisible(true)}}/>
-              <Button color="white" title="Create Account" onPress={() => {setCreateModalVisible(true)}}/>
+              <Button color="white" title="Create Account" onPress={() => {setCreateModalVisible(true);
+              }}/>
             </View>
           </View>
         }
@@ -68,10 +86,9 @@ export default function App() {
               <TouchableOpacity style={styles.loginBtn} onPress={() => setLoginModalVisible(false)}> 
                 <Text style={styles.loginText}>Log In</Text>
               </TouchableOpacity>
-
               <View style={{alignItems: 'center'}}>
                 <Text>Don't have an account? </Text>
-                <TouchableOpacity onPress={() => {setLoginModalVisible(false); setCreateModalVisible(true)}}>
+                <TouchableOpacity onPress={() => {setLoginModalVisible(false); setCreateModalVisible(true);}}>
                   <Text style={{color: "#003f5c"}}>Create account</Text>
                 </TouchableOpacity>
               </View>
@@ -141,7 +158,7 @@ export default function App() {
                 />
               </View>
 
-              <TouchableOpacity style={styles.loginBtn} onPress={() => setCreateModalVisible(false)}> 
+              <TouchableOpacity style={styles.loginBtn} onPress={() => {setCreateModalVisible(false); createAccount()}}> 
                 <Text style={styles.loginText}>Create Account</Text>
               </TouchableOpacity>
               <View style={{alignItems: 'center'}}>
