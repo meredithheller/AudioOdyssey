@@ -13,8 +13,31 @@ export default function LandingPage({ navigation }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const login = () => {
+    return fetch('http://db8.cse.nd.edu:5008/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      })   
+    }).then((response) => {
+      return response.json();
+    }).then((data) => {
+      console.log(data);
+      if (data.error) {
+        errorMessage = data.error
+      } else {
+        setLoginModalVisible(false);
+        navigation.navigate('Home', data);
+      }
+    }).catch((error) => console.log(error));
+  }
+
   const createAccount = () => {
-    const response = fetch('http://127.0.0.1:5001/createAccount', {
+    return fetch('http://db8.cse.nd.edu:5008/createAccount', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -22,13 +45,21 @@ export default function LandingPage({ navigation }) {
       body: JSON.stringify({
         username: username,
         password: password,
+        confirmPassword: confirmPassword,
         firstname: firstname,
         lastname: lastname,
         phoneNumber: phoneNumber
       })   
-    }).then(
-      navigation.navigate('Home', { name: username })
-    );
+    }).then((repsonse) => {
+      return repsonse.json();
+    }).then((data) => {
+      if (data.error) {
+        errorMessage = data.error;
+      } else {
+        setCreateModalVisible(false);
+        navigation.navigate('Home', data);
+      }
+    }).catch((error) => console.log(error));
   }
 
   const styles = StyleSheet.create({
@@ -135,7 +166,7 @@ export default function LandingPage({ navigation }) {
                   onChangeText={(password) => setPassword(password)}
                 />
               </View>
-              <TouchableOpacity style={styles.loginBtn} onPress={() => { setLoginModalVisible(false); navigation.navigate('Home', { name: username }); }}> 
+              <TouchableOpacity style={styles.loginBtn} onPress={() => login()}> 
                 <Text style={styles.loginText}>Log In</Text>
               </TouchableOpacity>
 
@@ -211,7 +242,7 @@ export default function LandingPage({ navigation }) {
                 />
               </View>
 
-              <TouchableOpacity style={styles.loginBtn} onPress={() => { setCreateModalVisible(false); createAccount(); }}> 
+              <TouchableOpacity style={styles.loginBtn} onPress={() => createAccount()}> 
                 <Text style={styles.loginText}>Create Account</Text>
               </TouchableOpacity>
               <View style={{alignItems: 'center'}}>
