@@ -17,7 +17,8 @@ import {
 import axios from 'axios';
 import categs from '../constants/categories'
 
-const GOOGLE_PLACES_API_KEY = 'AIzaSyBMjWK0DK6yaebYMZK5h98IPEgWPjwnB0I';
+// insert api key here
+const GOOGLE_PLACES_API_KEY = '';
 
 export default function PlanTripPage({ navigation, route }) {
   const [searchStartKeyword, setSearchStartKeyword] = useState('')
@@ -74,7 +75,7 @@ export default function PlanTripPage({ navigation, route }) {
         // console.log(JSON.parse(JSON.stringify(response.data)))
         // console.log(typeof(response.data))
         // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
-        setDuration(160)
+        setDuration(45)
       })
       .catch((e) => {
         console.log(e.response);
@@ -88,6 +89,8 @@ export default function PlanTripPage({ navigation, route }) {
     const res = fetch('http://127.0.0.1:5010/tripPodcasts', {
       method: 'GET',
       headers: {
+        // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
+        // also need to send the trip duration which I have hardcoded in minutes (duration variable at the top)
         'Content-Type': 'application/json'
       } 
     }).then(async (response) => {
