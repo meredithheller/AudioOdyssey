@@ -24,8 +24,16 @@ export default function LandingPage({ navigation }) {
         password: password
       })   
     }).then((response) => {
-      navigation.navigate('Home', { name: username });
-    });
+      return response.json();
+    }).then((data) => {
+      console.log(data);
+      if (data.error) {
+        errorMessage = data.error
+      } else {
+        setLoginModalVisible(false);
+        navigation.navigate('Home', data);
+      }
+    }).catch((error) => console.log(error));
   }
 
   const createAccount = () => {
@@ -37,13 +45,21 @@ export default function LandingPage({ navigation }) {
       body: JSON.stringify({
         username: username,
         password: password,
+        confirmPassword: confirmPassword,
         firstname: firstname,
         lastname: lastname,
         phoneNumber: phoneNumber
       })   
-    }).then((response) => {
-      navigation.navigate('Home', { name: username });
-    });
+    }).then((repsonse) => {
+      return repsonse.json();
+    }).then((data) => {
+      if (data.error) {
+        errorMessage = data.error;
+      } else {
+        setCreateModalVisible(false);
+        navigation.navigate('Home', data);
+      }
+    }).catch((error) => console.log(error));
   }
 
   const styles = StyleSheet.create({
@@ -150,7 +166,7 @@ export default function LandingPage({ navigation }) {
                   onChangeText={(password) => setPassword(password)}
                 />
               </View>
-              <TouchableOpacity style={styles.loginBtn} onPress={() => { setLoginModalVisible(false); login(); }}> 
+              <TouchableOpacity style={styles.loginBtn} onPress={() => login()}> 
                 <Text style={styles.loginText}>Log In</Text>
               </TouchableOpacity>
 
@@ -226,7 +242,7 @@ export default function LandingPage({ navigation }) {
                 />
               </View>
 
-              <TouchableOpacity style={styles.loginBtn} onPress={() => { setCreateModalVisible(false); createAccount(); }}> 
+              <TouchableOpacity style={styles.loginBtn} onPress={() => createAccount()}> 
                 <Text style={styles.loginText}>Create Account</Text>
               </TouchableOpacity>
               <View style={{alignItems: 'center'}}>
