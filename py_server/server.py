@@ -27,8 +27,7 @@ def podcasts():
 def parse_request():
     data = request.json
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO users (UserID, username, password, firstname, lastname, phonenumber) VALUES ('{UserID}','{uname}','{pword}','{fname}','{lname}','{pnum}');".format(
-        UserID = 1,
+    cur.execute("INSERT INTO users (username, password, firstname, lastname, phonenumber) VALUES ('{uname}','{pword}','{fname}','{lname}','{pnum}');".format(
         uname = data['username'],
         pword = data['password'],
         fname = data['firstname'],
@@ -36,8 +35,6 @@ def parse_request():
         pnum = data['phoneNumber']
     ))
     mysql.connection.commit()
-
-
 
     return request.data
 

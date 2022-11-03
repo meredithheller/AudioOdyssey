@@ -14,7 +14,7 @@ export default function LandingPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const createAccount = () => {
-    const response = fetch('http://127.0.0.1:5001/createAccount', {
+    return fetch('http://127.0.0.1:5001/createAccount', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -26,9 +26,10 @@ export default function LandingPage({ navigation }) {
         lastname: lastname,
         phoneNumber: phoneNumber
       })   
-    }).then(
-      navigation.navigate('Home', { name: username })
-    );
+    }).then((response) => {
+      console.log(response);
+      navigation.navigate('Home', { name: username });
+    });
   }
 
   const styles = StyleSheet.create({
