@@ -5,7 +5,7 @@ from flask import request
 import json
 
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_HOST'] = 'db8.cse.nd.edu'
 app.config['MYSQL_USER'] = 'mheller5'
 app.config['MYSQL_PASSWORD'] = 'audioodyssey'
 app.config['MYSQL_DB'] = 'mheller5'
@@ -22,6 +22,19 @@ def podcasts():
     for result in rv:
         json_data.append(dict(zip(row_headers,result)))
     return json.dumps(json_data)
+
+@app.route('/login',methods=['POST'])
+def parse_login():
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute(f"SELECT * FROM users WHERE users.username = '{data['username']}' and users.password = '{data['password']}';")
+    rv = cur.fetchall()
+    row_headers=[x[0] for x in cur.description]
+    json_data=[]
+    for result in rv:
+        json_data.append(dict(zip(row_headers,result)))
+        
+    return json.dumps(json_data)[0]
 
 @app.route('/createAccount', methods=['POST'])
 def parse_request():

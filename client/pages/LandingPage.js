@@ -13,8 +13,23 @@ export default function LandingPage({ navigation }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const login = () => {
+    return fetch('http://db8.cse.nd.edu:5008/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      })   
+    }).then((response) => {
+      navigation.navigate('Home', { name: username });
+    });
+  }
+
   const createAccount = () => {
-    return fetch('http://127.0.0.1:5001/createAccount', {
+    return fetch('http://db8.cse.nd.edu:5008/createAccount', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -27,7 +42,6 @@ export default function LandingPage({ navigation }) {
         phoneNumber: phoneNumber
       })   
     }).then((response) => {
-      console.log(response);
       navigation.navigate('Home', { name: username });
     });
   }
@@ -136,7 +150,7 @@ export default function LandingPage({ navigation }) {
                   onChangeText={(password) => setPassword(password)}
                 />
               </View>
-              <TouchableOpacity style={styles.loginBtn} onPress={() => { setLoginModalVisible(false); navigation.navigate('Home', { name: username }); }}> 
+              <TouchableOpacity style={styles.loginBtn} onPress={() => { setLoginModalVisible(false); login(); }}> 
                 <Text style={styles.loginText}>Log In</Text>
               </TouchableOpacity>
 
