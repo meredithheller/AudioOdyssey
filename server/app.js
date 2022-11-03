@@ -1,12 +1,3 @@
-"use strict";
-const express = require('express');
-
-//const sequelize = require(".utils/database.js");
-
-//const router = require(".routes/router");
-
-const app = express();
-
 const mysql = require('mysql')
 const connection = mysql.createConnection({
   host: 'db8.cse.nd.edu',
@@ -28,17 +19,18 @@ app.get("/", (req, res) => {
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json());
+app.get('/members', (req,res) => {
+    console.log(req)
+    res.send('Hello World')
+})
 
-// app.use((_, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//     next();
-// });
+app.listen(port, () => {
+    console.log('Example app listening on port')
+})
 
 app.use(router);
 
 sequelize.sync(); 
 
 app.listen(5000); */
+
