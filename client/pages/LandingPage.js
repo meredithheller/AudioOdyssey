@@ -37,7 +37,7 @@ export default function LandingPage({ navigation }) {
   }
 
   const createAccount = () => {
-    return fetch('http://db8.cse.nd.edu:5008/createAccount', {
+    return fetch('http://db8.cse.nd.edu:5001/createAccount', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

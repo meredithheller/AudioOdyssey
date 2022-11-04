@@ -7,22 +7,27 @@ export default function SelectPodcastsPage({ navigation, route }) {
   const [selectedId, setSelectedId ] = useState()
 
   useEffect(() => {
+    console.log(route.params.startLocation)
+    console.log(route.params.endLocation)
   }, [])
 
 
   const handleSaveTrip = () => {
-    if(!route.params.podcasts.includes(Number(selectedId))){
+    console.log("here")
+    console.log(route.params.podcasts)
+    if(!route.params.podcasts.includes(selectedId)){
       alert("Enter a valid podcast id")
     }else{
       navigation.navigate('Plan Trip')
-      const response = fetch('http://localhost:5007/saveTrip', {
+      const response = fetch('http://db8.cse.nd.edu:5001/saveTrip', {
       method: 'POST',
       headers: {
       'Content-Type': 'application/json'
     },
       body: JSON.stringify({
-      start: "start_location",
-      stop: "stop_location"
+      start: route.params.startLocation,
+      stop: route.params.endLocation,
+      episode_uri: selectedId
     })
     }).then((response) => {
     if(response.ok){
@@ -40,9 +45,9 @@ export default function SelectPodcastsPage({ navigation, route }) {
     <SafeAreaView>
       <ScrollView style={styles.container} contentContainerStyle={{display: "flex", flexDirection: "column", justifyContent: "center", alignContent: 'center'}}>
         <Text style={styles.header}>Select Podcasts</Text>
-        { route.params.podcasts.map((id) => {
+        { route.params.podcasts.map((uri) => {
                 return (
-                  <PodcastChoice key={id} id={id}/>
+                  <PodcastChoice key={id} uri={uri}/>
                 )
             })}
             <TextInput
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     },
     button: {
         position: 'absolute',
-        bottom: 0,
+        bottom: -30,
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'center',

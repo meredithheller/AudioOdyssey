@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function PodcastChoice({ id }) {
+export default function PodcastChoice({ uri }) {
     const [ loading, setLoading ] = useState(true)
     const [ episodeName, setEpisodeName ] = useState('')
     const [ showName, setShowName ] = useState('')
@@ -16,42 +16,43 @@ export default function PodcastChoice({ id }) {
             setLoading(false)
         }
     }, [rss, showName, episodeName])
-    
+
+
     const getPodcastInfo = async () => {
-        // here make request to python server for the podcast's info from podcasts table given the podcast id
-        // set episodeName, showName, and rssLink
-        // then set loading to false
-        // if error, alert and leave loading true
-        const podcasts_response = await fetch(
-            'http://db8.cse.nd.edu:5001/podcasts',
-            //'http://127.0.0.1:5001/podcastInfo',
-            {
-              method: 'GET',
-              headers: {}
-            }
-          );
-          if(!podcasts_response.ok){
-            console.error("Error getting podcast info from our server")
-          }else{
-            const data = await podcasts_response.json()
-            // setEpisodeName(data.episodeName)
-            // setShowName(data.showName)
-            // setRss(data.rss)
-            setEpisodeName('A Podcast Episode')
-            setShowName('A Show')
-            setRss('A link')
-          }
+    // here make request to python server for the podcast's info from podcasts table given the podcast id
+    // set episodeName, showName, and rssLink
+    // then set loading to false
+    // if error, alert and leave loading true
+    const podcasts_response = await fetch(
+      'http://db8.cse.nd.edu:5001/podcasts',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+        episode_uri: uri
+        })
+      }).then(async (response) => response.json())
+      .then((data) => {
+        console.log(data)
+        setEpisodeName(data[0][0])
+        setShowName(data[0][1])
+        setRss('A link')
+      }).catch(function(error) {
+        alert('An error occurred. Please try again.')
+      })
     }
 
     return (
-        <TouchableOpacity style={styles.podcastContainer}>
-            <Text style={styles.tripText}>{`Podcast ID: ${id}`}</Text>
+        <View style={styles.podcastContainer}>
+            <Text style={styles.tripText}>{`Podcast ID: ${uri}`}</Text>
             { loading ? <ActivityIndicator/> : 
             <View>
                 <Text style={styles.labelText}>{`Show: ${showName}`}</Text>
                 <Text style={styles.labelText}>{`Episode: ${episodeName}`}</Text>
             </View>}
-        </TouchableOpacity>
+        </View>
     )
 }
 
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
         margin: 10
       },
       labelText: {
-        padding: 5,
+        padding: 2,
         paddingTop: 10,
         fontWeight: 'bold',
         fontSize: 14,
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         letterSpacing: 0.25,
         textTransform: 'uppercase',
-        fontSize: 16
+        fontSize: 14
       },
       podcastContainer: {
         height: 100,
