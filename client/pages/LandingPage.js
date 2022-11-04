@@ -14,7 +14,7 @@ export default function LandingPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const login = () => {
-    return fetch('http://db8.cse.nd.edu:5008/login', {
+    return fetch('http://db8.cse.nd.edu:5001/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
