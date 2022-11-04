@@ -47,7 +47,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
         <Text style={styles.header}>Select Podcasts</Text>
         { route.params.podcasts.map((uri) => {
                 return (
-                  <PodcastChoice uri={uri}/>
+                  <PodcastChoice key={uri} uri={uri}/>
                 )
             })}
             <TextInput
@@ -55,7 +55,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
         onChangeText={(val) => setSelectedId(val)}
         value={selectedId}
         placeholder="enter podcast id"
-        keyboardType="numeric"
       />
       </ScrollView>
       <Pressable 

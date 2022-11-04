@@ -36,7 +36,7 @@ export default function PlanTripPage({ navigation, route }) {
 
   useEffect(() => {
     if(podcasts){
-      navigation.navigate("Select Podcasts", { podcasts: podcasts, startLocation: startLocation, endLocation: endLocation })
+      navigation.navigate("Select Podcasts", { podcasts: podcasts, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
     }
   }, [podcasts])
 
@@ -145,6 +145,7 @@ export default function PlanTripPage({ navigation, route }) {
               renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
+                    key={index}
                     style={styles.resultItem}
                     onPress={() =>  {
                       setSearchStartKeyword(item.description)
@@ -177,6 +178,7 @@ export default function PlanTripPage({ navigation, route }) {
               renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
+                    key={index}
                     style={styles.resultItem}
                     onPress={() =>  {
                       setSearchEndKeyword(item.description)
