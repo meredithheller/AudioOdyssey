@@ -72,8 +72,6 @@ export default function PlanTripPage({ navigation, route }) {
         headers: {}
       })
       .then((response) => {
-        // console.log(JSON.parse(JSON.stringify(response.data)))
-        // console.log(typeof(response.data))
         // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
         setDuration(45)
       })
@@ -82,38 +80,123 @@ export default function PlanTripPage({ navigation, route }) {
       });
   }
 
+  let getTripPodcastInfo = async () => {
+    axios
+      .request({
+        method: 'get',
+        url: `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${GOOGLE_PLACES_API_KEY}`,
+        headers: {}
+      })
+      .then((response) => {
+        // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
+        setPodcasts([1, 2, 6])
+      })
+      .catch((e) => {
+        console.log(e.response);
+      });
+  }
+
+
+  // const getTripPodcastInfo = async () => {
+  //   axios
+  //     .request({
+  //       method: 'get',
+  //       url: `http://127.0.0.1:5001/podcasts`,
+  //       headers: {}
+  //     })
+  //     .then((response) => {
+  //       // console.log(JSON.parse(JSON.stringify(response.data)))
+  //       // console.log(typeof(response.data))
+  //       // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
+  //       setPodcasts([1, 3, 5])
+  //     })
+  //     .catch((e) => {
+  //       console.log(e.response);
+  //     });
+  //   };
+
   // this function calls our python server to retrieve a new trip id and list of potential podcast ids
   // we need to create this endpoint (tripPodcasts) in our backend server to query sql database for potential podcasts and trip id
   // needs to setTripID and setPodcasts from server response
-  const getTripPodcastInfo = async () => {
-    const res = fetch('http://127.0.0.1:5010/tripPodcasts', {
-      method: 'GET',
-      headers: {
-        // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
-        // also need to send the trip duration which I have hardcoded in minutes (duration variable at the top)
-        'Content-Type': 'application/json'
-      } 
-    }).then(async (response) => {
-      // setPodcasts(response.data.podcasts)
-      // navigation.navigate("Select Podcasts", { })
-    }).catch(function(error) {
-      alert('An error occurred. Please try again.')
-      console.log(error);
-    })
-  }
+  // const getTripPodcastInfo = async () => {
+  //   setPodcasts([1, 2, 5])
+  //   // const res = fetch('http://127.0.0.1:5010/tripPodcasts', {
+  //   //   method: 'GET',
+  //   //   headers: {
+  //   //     // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
+  //   //     // also need to send the trip duration which I have hardcoded in minutes (duration variable at the top)
+  //   //     'Content-Type': 'application/json'
+  //   //   } 
+  //   // }).then(async (response) => {
+  //   //   // setPodcasts(response.data.podcasts)
+  //   //   // navigation.navigate("Select Podcasts", { })
+  //   // }).catch(function(error) {
+  //   //   alert('An error occurred. Please try again.')
+  //   //   console.log(error);
+  //   // })
+  // }
 
 
   // this function should be triggered on the button press
   // it uses the route function then calls getTripPodcastInfo to get the trip Id and potential podcast ids
   const getTrip = async () => {
-    getRoute().then(async () => {
-      if(duration){
-        await getTripPodcastInfo()
-        navigation.navigate("Select Podcasts", { podcasts: podcasts, tripID: tripID})
-      }
-    }).catch(() => {
+    // try {
+    //   const response = await getRoute()
+    //   if(duration){
+    //     console.log("in duration if")
+    //     console.log(duration)
+    //     const pods = await getTripPodcastInfo()
+    //     if(podcasts){
+    //       console.log("waited? ")
+    //       console.log(podcasts)
+    //     }
+    //     // navigation.navigate("Select Podcasts", { podcasts: podcasts, tripID: tripID, username: ''})
+    //   }
+    // } catch {
 
-    })
+    // }
+    // getRoute().then(async () => {
+    //   if(duration){
+    //     getTripPodcastInfo().then(() => {
+    //       navigation.navigate("Select Podcasts", { podcasts: podcasts, tripID: tripID, username: ''})
+    //     }).catch(() => {
+    //       console.error("error getting trip podcast info")
+    //     })
+    //   }
+    // }).catch(() => {
+
+    // })
+    const podcasts_response = await fetch(
+      'http://127.0.0.1:5001/podcasts',
+      {
+        method: 'GET',
+        headers: {}
+      }
+    );
+    if(!podcasts_response.ok){
+      console.error("Error getting podcasts from our server")
+    }
+    let podcast_data = await podcasts_response.json()
+    setPodcasts([1, 4, 5])
+    const duration_response = await fetch(
+      `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${GOOGLE_PLACES_API_KEY}`,
+      {
+        method: 'GET',
+        headers: {}
+      }
+    );
+    if(!duration_response.ok){
+      console.error("duration response error")
+    }
+    let duration_data = await duration_response.json()
+    setDuration(45)
+    // console.log(podcasts)
+    // console.log(duration)
+    navigation.navigate("Select Podcasts", { podcasts: [1, 3, 6], tripID: 12344, username: ''})
+
+
+
+
   }
 
   const handleChipPress = (cat) =>{
@@ -229,12 +312,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     position: 'absolute',
     top: 50,
-  },
-  dummmy: {
-    width: 600,
-    height: 200,
-    backgroundColor: 'hotpink',
-    marginTop: 20,
   },
   resultItem: {
     width: '100%',
