@@ -15,13 +15,24 @@ export default function SelectPodcastsPage({ navigation, route }) {
       alert("Enter a valid podcast id")
     }else{
       navigation.navigate('Plan Trip')
-    }
-    // here make requests to our python server to save the trip information
-    // if successful, return to new trip page
-    // otherwise, show error and remain here
-      // EXECUTE A FEW ENDPOINTS: 
-        // 1st endpoint: access the value in total_trips and increment it, and insert the trip id, start and stop locations, and date it was created to the trip_info table
-        // 2nd endpoint: add the trip id, episode uri, and a rating of 0 to the trip_rating table
+      const response = fetch('http://localhost:5007/saveTrip', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json'
+    },
+      body: JSON.stringify({
+      start: "start_location",
+      stop: "stop_location"
+    })
+    }).then((response) => {
+    if(response.ok){
+    console.log(`this worked`)
+    }}
+    ).catch((e) => {
+      console.log(e.response);
+    });
+  }
+    // 2nd endpoint: add the trip id, episode uri, and a rating of 0 to the trip_rating table
   }
 
   return (
