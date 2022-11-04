@@ -96,7 +96,26 @@ def parse_request():
     ))
     mysql.connection.commit()
 
-    return { "username" : data['username'], "password" : data['password'], "firstname" : data['firstname'], "lastname" : data['lastname'], "phoneNumber" : data['phoneNumber'] } 
+    return { "username" : data['username'], "password" : data['password'], "firstname" : data['firstname'], "lastname" : data['lastname'], "phoneNumber" : data['phoneNumber'] }
+
+@app.route('/saveTrip', methods=['POST'])
+def save_trip():
+    data = request.json
+
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE total_trips SET num_trips = num_trips + 1;")
+    cur.execute("select * from total_trips limit 1;")
+    trip_id = cur.fetchall()[0][0]
+    cur.execute("select now()")
+    date = cur.fetchall()[0][0]
+    cur.execute("INSERT INTO trip_info (trip_id, start_location, end_location, date_created) VALUES ('{tripid}','{start}','{stop}', '{date}');".format(
+        tripid = trip_id,
+        start = data['start'],
+        stop = data['stop'],
+        date = date
+    ))
+    mysql.connection.commit()
+    return request.data 
 
 if __name__ == "__main__":
     app.run(host='db8.cse.nd.edu',debug=True, port=5008)
