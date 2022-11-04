@@ -16,18 +16,14 @@ mysql = MySQL(app)
 def podcasts():
     data = request.json
     sql_query = '''SELECT show_name, episode_name FROM podcasts WHERE episode_uri='{uri}';'''.format(
-        uri = data['episode_uri'][0]
+        uri = data['episode_uri']
     )
-    print(sql_query)
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
     rv = cur.fetchall()
     json_data=[]
     for result in rv:
         json_data.append(result)
-    print("TEST")
-    print(rv)
-    print(json_data)
 
     return json_data
 
@@ -70,7 +66,7 @@ def trip_podcasts():
     rv = cur.fetchall()
     json_data = []
     for result in rv:
-        json_data.append(result)
+        json_data.append(result[0])
     return json_data
 
 
@@ -114,10 +110,17 @@ def save_trip():
         stop = data['stop'],
         date = date
     ))
+
+    cur.execute("INSERT INTO trip_episode_ratings (trip_id, episode_uri, rating) VALUES ('{tripid}','{episode_uri}', '{rating}');".format(
+        tripid = trip_id,
+        episode_uri = data['episode_uri'],
+        rating = 0
+    ))
+    
     mysql.connection.commit()
     return request.data 
 
 if __name__ == "__main__":
-    app.run(host='db8.cse.nd.edu',debug=True, port=5008)
+    app.run(host='db8.cse.nd.edu',debug=True, port=5001)
 
 
