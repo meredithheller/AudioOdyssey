@@ -8,11 +8,11 @@ import PastTripsPage from './PastTripsPage';
 
 const Stack = createNativeStackNavigator();
 
-export default function ProfileContainer() {
+export default function ProfileContainer({ route }) {
   return (
     <Stack.Navigator  initialRouteName="Profile Home">
-      <Stack.Screen options={{ title: 'Profile' }} name="Profile Home" component={ProfilePage}></Stack.Screen>
-      <Stack.Screen name="Account Settings" component={AccountSettings}></Stack.Screen>
+      <Stack.Screen initialParams={ route.params } options={{ title: 'Profile' }} name="Profile Home" component={ProfilePage}></Stack.Screen>
+      <Stack.Screen initialParams={ route.params } name="Account Settings" component={AccountSettings}></Stack.Screen>
       <Stack.Screen name="Upcoming Trips" component={UpcomingTripsPage}></Stack.Screen>
       <Stack.Screen name="Past Trips" component={PastTripsPage}></Stack.Screen>
     </Stack.Navigator>

@@ -2,7 +2,6 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import PlanTripPage from './PlanTripPage';
 import ProfileContainer from './ProfileContainer';
 import TripStackNavigator from './TripStack';
 
@@ -15,7 +14,7 @@ export default function HomeContainer({ navigation, route }) {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Plan Trip') {
+          if (route.name === 'Trip Stack') {
             iconName = focused
               ? 'ios-car'
               : 'ios-car-outline';
@@ -30,8 +29,8 @@ export default function HomeContainer({ navigation, route }) {
         tabBarInactiveTintColor: 'gray'
       })}
     >
-      <Tab.Screen options={{headerShown: false}} name="Trip Stack" component={TripStackNavigator} />
-      <Tab.Screen options={{headerShown: false}} name="Profile" component={ProfileContainer} />
+      <Tab.Screen options={{headerShown: false, title: "Plan Trip"}} name="Trip Stack" component={TripStackNavigator} />
+      <Tab.Screen initialParams={ route.params } options={{headerShown: false}} name="Profile" component={ProfileContainer} />
     </Tab.Navigator>
   );
 }
