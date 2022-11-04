@@ -27,7 +27,7 @@ export default function HomeContainer({ navigation, route }) {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#003f5c',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: 'gray'
       })}
     >
       <Tab.Screen options={{headerShown: false}} name="Trip Stack" component={TripStackNavigator} />
