@@ -4,6 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import PlanTripPage from './PlanTripPage';
 import ProfileContainer from './ProfileContainer';
+import TripStackNavigator from './TripStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,7 +30,7 @@ export default function HomeContainer({ navigation, route }) {
         tabBarInactiveTintColor: 'gray'
       })}
     >
-      <Tab.Screen options={{headerShown: false}} name="Plan Trip" component={PlanTripPage} />
+      <Tab.Screen options={{headerShown: false}} name="Trip Stack" component={TripStackNavigator} />
       <Tab.Screen options={{headerShown: false}} name="Profile" component={ProfileContainer} />
     </Tab.Navigator>
   );
