@@ -5,7 +5,7 @@ from flask import request
 import json
 
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = 'db8.cse.nd.edu'
+app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'mheller5'
 app.config['MYSQL_PASSWORD'] = 'audioodyssey'
 app.config['MYSQL_DB'] = 'mheller5'
@@ -91,6 +91,6 @@ def parse_request():
     return { "username" : data['username'], "password" : data['password'], "firstname" : data['firstname'], "lastname" : data['lastname'], "phoneNumber" : data['phoneNumber'] } 
 
 if __name__ == "__main__":
-    app.run(host='db8.cse.nd.edu',debug=True, port=5008)
+    app.run(host='db8.cse.nd.edu',debug=True, port=5001)
 
 
