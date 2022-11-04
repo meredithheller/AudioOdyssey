@@ -12,16 +12,20 @@ app.config['MYSQL_DB'] = 'mheller5'
 mysql = MySQL(app)
 
 # Members API Route
-@app.route("/podcasts")
+@app.route('/podcasts',methods=['POST'])
 def podcasts():
+    data = request.json
+    sql_query = '''SELECT show_name, episode_name FROM podcasts WHERE episode_uri='{uri}';'''.format(
+        uri = data['episode_uri']
+    )
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT * FROM podcasts''')
-    row_headers=[x[0] for x in cur.description]
+    cur.execute(sql_query)
     rv = cur.fetchall()
     json_data=[]
     for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
-    return json.dumps(json_data)
+        json_data.append(result)
+
+    return json_data
 
 @app.route('/login',methods=['POST'])
 def parse_login():
@@ -45,7 +49,7 @@ def trip_podcasts():
     data = request.json
 
     cur = mysql.connection.cursor()
-    sql_query = '''SELECT show_name, episode_name
+    sql_query = '''SELECT p.episode_uri
                 FROM categories c, podcasts p
                 WHERE c.episode_uri = p.episode_uri and (p.duration > 35 and p.duration < 55) and 
                 (c.category = '{category}' '''.format(
@@ -62,7 +66,7 @@ def trip_podcasts():
     rv = cur.fetchall()
     json_data = []
     for result in rv:
-        json_data.append(result)
+        json_data.append(result[0])
     return json_data
 
 
@@ -88,7 +92,33 @@ def parse_request():
     ))
     mysql.connection.commit()
 
-    return { "username" : data['username'], "password" : data['password'], "firstname" : data['firstname'], "lastname" : data['lastname'], "phoneNumber" : data['phoneNumber'] } 
+    return { "username" : data['username'], "password" : data['password'], "firstname" : data['firstname'], "lastname" : data['lastname'], "phoneNumber" : data['phoneNumber'] }
+
+@app.route('/saveTrip', methods=['POST'])
+def save_trip():
+    data = request.json
+
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE total_trips SET num_trips = num_trips + 1;")
+    cur.execute("select * from total_trips limit 1;")
+    trip_id = cur.fetchall()[0][0]
+    cur.execute("select now()")
+    date = cur.fetchall()[0][0]
+    cur.execute("INSERT INTO trip_info (trip_id, start_location, end_location, date_created) VALUES ('{tripid}','{start}','{stop}', '{date}');".format(
+        tripid = trip_id,
+        start = data['start'],
+        stop = data['stop'],
+        date = date
+    ))
+
+    cur.execute("INSERT INTO trip_episode_ratings (trip_id, episode_uri, rating) VALUES ('{tripid}','{episode_uri}', '{rating}');".format(
+        tripid = trip_id,
+        episode_uri = data['episode_uri'],
+        rating = 0
+    ))
+    
+    mysql.connection.commit()
+    return request.data 
 
 if __name__ == "__main__":
     app.run(host='db8.cse.nd.edu',debug=True, port=5001)

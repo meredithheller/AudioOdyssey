@@ -2,7 +2,7 @@
 // import { StyleSheet, Text, TextInput, TouchableOpacity, View, SafeAreaView } from 'react-native';
 // import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 
-import React, {Component, useState} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -18,21 +18,27 @@ import axios from 'axios';
 import categs from '../constants/categories'
 
 // insert api key here
-const GOOGLE_PLACES_API_KEY = '';
+const GOOGLE_PLACES_API_KEY = 'AIzaSyBMjWK0DK6yaebYMZK5h98IPEgWPjwnB0I';
 
 export default function PlanTripPage({ navigation, route }) {
   const [searchStartKeyword, setSearchStartKeyword] = useState('')
   const [startSearchResults, setStartSearchResults] = useState([])
   const [isShowingStartResults, setIsShowingStartResults] = useState(false)
-  const [ startLocation, setStartLocation ] = useState(null)
+  const [ startLocation, setStartLocation ] = useState('Illinois')
   const [searchEndKeyword, setSearchEndKeyword] = useState('')
   const [endSearchResults, setEndSearchResults] = useState([])
   const [isShowingEndResults, setIsShowingEndResults] = useState(false)
-  const [ endLocation, setEndLocation ] = useState(null)
+  const [ endLocation, setEndLocation ] = useState('Texas')
   const [ categories, setCategories ] = useState(new Set())
-  const [duration, setDuration ] = useState()
+  const [duration, setDuration ] = useState(45)
   const [ podcasts, setPodcasts ] = useState()
   const [ tripID, setTripID ] = useState(null)
+
+  useEffect(() => {
+    if(podcasts){
+      navigation.navigate("Select Podcasts", { podcasts: podcasts, startLocation: startLocation, endLocation: endLocation })
+    }
+  }, [podcasts])
 
   let searchLocation = async (text, destination) => {
     let keyword = ''
@@ -50,7 +56,6 @@ export default function PlanTripPage({ navigation, route }) {
         url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${GOOGLE_PLACES_API_KEY}&input=${keyword}`,
       })
       .then((response) => {
-        console.log(response.data);
         if(destination){
           setEndSearchResults(response.data.predictions);
           setIsShowingEndResults(true)
@@ -81,14 +86,14 @@ export default function PlanTripPage({ navigation, route }) {
   }
 
   const getTripPodcastInfo = async () => {
-    catList = []
-    iter = categories.values()
+    let catList = []
+    let iter = categories.values()
     i = 0
     for(const entry of iter) {
         catList[i] = entry
         i++
     }
-    const res = fetch('http://127.0.0.1:5004/tripPodcasts', {
+    const res = fetch('http://db8.cse.nd.edu:5001/tripPodcasts', {
       method: 'POST',
       headers: {
         // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
@@ -101,117 +106,12 @@ export default function PlanTripPage({ navigation, route }) {
       })   
     }).then(async (response) => response.json())
     .then((data) => {
-      setPodcasts(data)
+      console.log("the response")
       console.log(data)
-      navigation.navigate("Select Podcasts", { })
+      setPodcasts(data)
     }).catch(function(error) {
       alert('An error occurred. Please try again.')
-      console.log(catList);
     })
-  }
-
-
-  // const getTripPodcastInfo = async () => {
-  //   axios
-  //     .request({
-  //       method: 'get',
-  //       url: `http://127.0.0.1:5001/podcasts`,
-  //       headers: {}
-  //     })
-  //     .then((response) => {
-  //       // console.log(JSON.parse(JSON.stringify(response.data)))
-  //       // console.log(typeof(response.data))
-  //       // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
-  //       setPodcasts([1, 3, 5])
-  //     })
-  //     .catch((e) => {
-  //       console.log(e.response);
-  //     });
-  //   };
-
-  // this function calls our python server to retrieve a new trip id and list of potential podcast ids
-  // we need to create this endpoint (tripPodcasts) in our backend server to query sql database for potential podcasts and trip id
-  // needs to setTripID and setPodcasts from server response
-  // const getTripPodcastInfo = async () => {
-  //   setPodcasts([1, 2, 5])
-  //   // const res = fetch('http://127.0.0.1:5010/tripPodcasts', {
-  //   //   method: 'GET',
-  //   //   headers: {
-  //   //     // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
-  //   //     // also need to send the trip duration which I have hardcoded in minutes (duration variable at the top)
-  //   //     'Content-Type': 'application/json'
-  //   //   } 
-  //   // }).then(async (response) => {
-  //   //   // setPodcasts(response.data.podcasts)
-  //   //   // navigation.navigate("Select Podcasts", { })
-  //   // }).catch(function(error) {
-  //   //   alert('An error occurred. Please try again.')
-  //   //   console.log(error);
-  //   // })
-  // }
-
-
-  // this function should be triggered on the button press
-  // it uses the route function then calls getTripPodcastInfo to get the trip Id and potential podcast ids
-  const getTrip = async () => {
-    // try {
-    //   const response = await getRoute()
-    //   if(duration){
-    //     console.log("in duration if")
-    //     console.log(duration)
-    //     const pods = await getTripPodcastInfo()
-    //     if(podcasts){
-    //       console.log("waited? ")
-    //       console.log(podcasts)
-    //     }
-    //     // navigation.navigate("Select Podcasts", { podcasts: podcasts, tripID: tripID, username: ''})
-    //   }
-    // } catch {
-
-    // }
-    // getRoute().then(async () => {
-    //   if(duration){
-    //     getTripPodcastInfo().then(() => {
-    //       navigation.navigate("Select Podcasts", { podcasts: podcasts, tripID: tripID, username: ''})
-    //     }).catch(() => {
-    //       console.error("error getting trip podcast info")
-    //     })
-    //   }
-    // }).catch(() => {
-
-    // })
-    const podcasts_response = await fetch(
-      'http://db8.cse.nd.edu:5001/podcasts',
-      {
-        method: 'GET',
-        headers: {}
-      }
-    );
-    if(!podcasts_response.ok){
-      console.error("Error getting podcasts from our server")
-    }
-    let podcast_data = await podcasts_response.json()
-    // console.log(podcast_data)
-    setPodcasts([1, 4, 5])
-    const duration_response = await fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${GOOGLE_PLACES_API_KEY}`,
-      {
-        method: 'GET',
-        headers: {}
-      }
-    );
-    if(!duration_response.ok){
-      console.error("duration response error")
-    }
-    let duration_data = await duration_response.json()
-    setDuration(45)
-    // console.log(podcasts)
-    // console.log(duration)
-    navigation.navigate("Select Podcasts", { podcasts: [1, 3, 6], tripID: 12344, username: ''})
-
-
-
-
   }
 
   const handleChipPress = (cat) =>{
@@ -302,7 +202,7 @@ export default function PlanTripPage({ navigation, route }) {
                 )
             })}
         </ScrollView>
-        <Pressable style={styles.button} onPress={getTrip}>
+        <Pressable style={styles.button} onPress={getTripPodcastInfo}>
           <Text style={styles.buttonText}>Plan my trip</Text>
         </Pressable>
 

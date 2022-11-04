@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function ProfilePage({ navigation }) {
+export default function ProfilePage({ navigation, route }) {
 
   const styles = StyleSheet.create({
     profileContainer: {
@@ -33,9 +33,9 @@ export default function ProfilePage({ navigation }) {
       <View style={styles.profileContainer}>
         <Ionicons name='ios-person' size={100} color={'#003f5c'}></Ionicons>
         <View>
-          <Text style={styles.info}>John Smith</Text>
-          <Text>jsmith123</Text>
-          <Text>123-456-7890</Text>
+          <Text style={styles.info}>{route.params.firstname} {route.params.lastname}</Text>
+          <Text>{route.params.username}</Text>
+          <Text>{route.params.phonenumber.slice(0,3)}-{route.params.phonenumber.slice(3,6)}-{route.params.phonenumber.slice(6,11)}</Text>
         </View>
       </View>
       <View>
