@@ -167,7 +167,7 @@ export default function PlanTripPage({ navigation, route }) {
 
     // })
     const podcasts_response = await fetch(
-      'http://127.0.0.1:5001/podcasts',
+      'http://db8.cse.nd.edu:5001/podcasts',
       {
         method: 'GET',
         headers: {}
@@ -177,6 +177,7 @@ export default function PlanTripPage({ navigation, route }) {
       console.error("Error getting podcasts from our server")
     }
     let podcast_data = await podcasts_response.json()
+    // console.log(podcast_data)
     setPodcasts([1, 4, 5])
     const duration_response = await fetch(
       `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${GOOGLE_PLACES_API_KEY}`,
