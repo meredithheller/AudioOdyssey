@@ -80,20 +80,34 @@ export default function PlanTripPage({ navigation, route }) {
       });
   }
 
-  let getTripPodcastInfo = async () => {
-    axios
-      .request({
-        method: 'get',
-        url: `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${GOOGLE_PLACES_API_KEY}`,
-        headers: {}
-      })
-      .then((response) => {
-        // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
-        setPodcasts([1, 2, 6])
-      })
-      .catch((e) => {
-        console.log(e.response);
-      });
+  const getTripPodcastInfo = async () => {
+    catList = []
+    iter = categories.values()
+    i = 0
+    for(const entry of iter) {
+        catList[i] = entry
+        i++
+    }
+    const res = fetch('http://127.0.0.1:5004/tripPodcasts', {
+      method: 'POST',
+      headers: {
+        // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
+        // also need to send the trip duration which I have hardcoded in minutes (duration variable at the top)
+        'Content-Type': 'application/json'
+      },
+      body:  JSON.stringify({
+        categories: catList,
+        duration: duration
+      })   
+    }).then(async (response) => response.json())
+    .then((data) => {
+      setPodcasts(data)
+      console.log(data)
+      navigation.navigate("Select Podcasts", { })
+    }).catch(function(error) {
+      alert('An error occurred. Please try again.')
+      console.log(catList);
+    })
   }
 
 
