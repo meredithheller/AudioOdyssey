@@ -7,7 +7,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
   const [selectedId, setSelectedId ] = useState()
 
   useEffect(() => {
-    console.log(`next page: ${route.params.podcasts}`)
   }, [])
 
 
@@ -32,7 +31,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
         <Text style={styles.header}>Select Podcasts</Text>
         { route.params.podcasts.map((id) => {
                 return (
-                  <PodcastChoice id={id}/>
+                  <PodcastChoice key={id} id={id}/>
                 )
             })}
             <TextInput

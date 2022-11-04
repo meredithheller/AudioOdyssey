@@ -18,7 +18,6 @@ export default function PodcastChoice({ id }) {
     }, [rss, showName, episodeName])
     
     const getPodcastInfo = async () => {
-        console.log("running this")
         // here make request to python server for the podcast's info from podcasts table given the podcast id
         // set episodeName, showName, and rssLink
         // then set loading to false
