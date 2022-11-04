@@ -5,23 +5,31 @@ from flask import request
 import json
 
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = 'db8.cse.nd.edu'
+app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'mheller5'
 app.config['MYSQL_PASSWORD'] = 'audioodyssey'
 app.config['MYSQL_DB'] = 'mheller5'
 mysql = MySQL(app)
 
 # Members API Route
-@app.route("/podcasts")
+@app.route('/podcasts',methods=['POST'])
 def podcasts():
+    data = request.json
+    sql_query = '''SELECT show_name, episode_name FROM podcasts WHERE episode_uri='{uri}';'''.format(
+        uri = data['episode_uri'][0]
+    )
+    print(sql_query)
     cur = mysql.connection.cursor()
-    cur.execute('''SELECT * FROM podcasts''')
-    row_headers=[x[0] for x in cur.description]
+    cur.execute(sql_query)
     rv = cur.fetchall()
     json_data=[]
     for result in rv:
-        json_data.append(dict(zip(row_headers,result)))
-    return json.dumps(json_data)
+        json_data.append(result)
+    print("TEST")
+    print(rv)
+    print(json_data)
+
+    return json_data
 
 @app.route('/login',methods=['POST'])
 def parse_login():
@@ -45,7 +53,7 @@ def trip_podcasts():
     data = request.json
 
     cur = mysql.connection.cursor()
-    sql_query = '''SELECT show_name, episode_name
+    sql_query = '''SELECT p.episode_uri
                 FROM categories c, podcasts p
                 WHERE c.episode_uri = p.episode_uri and (p.duration > 35 and p.duration < 55) and 
                 (c.category = '{category}' '''.format(
