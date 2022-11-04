@@ -47,7 +47,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
         <Text style={styles.header}>Select Podcasts</Text>
         { route.params.podcasts.map((uri) => {
                 return (
-                  <PodcastChoice key={id} uri={uri}/>
+                  <PodcastChoice uri={uri}/>
                 )
             })}
             <TextInput

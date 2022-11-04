@@ -41,32 +41,32 @@ export default function PlanTripPage({ navigation, route }) {
   }, [podcasts])
 
   let searchLocation = async (text, destination) => {
-    // let keyword = ''
-    // if(destination){
-    //   setSearchEndKeyword(text)
-    //   keyword = text
-    // }else{
-    //   setSearchStartKeyword(text)
-    //   keyword = text
-    // }
+    let keyword = ''
+    if(destination){
+      setSearchEndKeyword(text)
+      keyword = text
+    }else{
+      setSearchStartKeyword(text)
+      keyword = text
+    }
     
-    // axios
-    //   .request({
-    //     method: 'post',
-    //     url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${GOOGLE_PLACES_API_KEY}&input=${keyword}`,
-    //   })
-    //   .then((response) => {
-    //     if(destination){
-    //       setEndSearchResults(response.data.predictions);
-    //       setIsShowingEndResults(true)
-    //     }else{
-    //       setStartSearchResults(response.data.predictions);
-    //       setIsShowingStartResults(true);
-    //     }
-    //   })
-    //   .catch((e) => {
-    //     console.log(e.response);
-    //   });
+    axios
+      .request({
+        method: 'post',
+        url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${GOOGLE_PLACES_API_KEY}&input=${keyword}`,
+      })
+      .then((response) => {
+        if(destination){
+          setEndSearchResults(response.data.predictions);
+          setIsShowingEndResults(true)
+        }else{
+          setStartSearchResults(response.data.predictions);
+          setIsShowingStartResults(true);
+        }
+      })
+      .catch((e) => {
+        console.log(e.response);
+      });
   };
 
   let getRoute = async () => {
