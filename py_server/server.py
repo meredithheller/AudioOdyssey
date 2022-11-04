@@ -40,6 +40,32 @@ def parse_login():
 
     return json_data[0]
 
+@app.route('/tripPodcasts', methods=['POST'])
+def trip_podcasts():
+    data = request.json
+
+    cur = mysql.connection.cursor()
+    sql_query = '''SELECT show_name, episode_name
+                FROM categories c, podcasts p
+                WHERE c.episode_uri = p.episode_uri and (p.duration > 35 and p.duration < 55) and 
+                (c.category = '{category}' '''.format(
+                    category = data['categories'][0]
+                )
+    for i in data['categories']:
+        if i == data['categories'][0]:
+            continue
+        sql_query += ''' or c.category = '{category}' '''.format(
+            category = i
+        )
+    sql_query += ''') LIMIT 5;'''
+    cur.execute(sql_query)
+    rv = cur.fetchall()
+    json_data = []
+    for result in rv:
+        json_data.append(result)
+    return json_data
+
+
 @app.route('/createAccount', methods=['POST'])
 def parse_request():
     data = request.json
