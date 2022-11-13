@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import PodcastChoice from '../components/podcastChoice';
+import TripCard from '../components/tripCard'
 
 export default function SelectPodcastsPage({ navigation, route }) {
 
   const [selectedId, setSelectedId ] = useState()
+  const [ loading, setLoading ] = useState(true)
+  const [ tripPossibilities, setTripPossibilities ] = useState([1, 2, 3])
+  const [ selectedTrip, setSelectedTrip ] = useState()
 
   useEffect(() => {
     console.log(route.params.startLocation)
     console.log(route.params.endLocation)
+    // load all podcast info then set loading to false
+    // something like route.params.podcasts get each podcast's info within each array
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 2000);
   }, [])
 
 
@@ -19,7 +28,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
       alert("Enter a valid podcast id")
     }else{
       navigation.navigate('Plan Trip')
-      const response = fetch('http://db8.cse.nd.edu:5001/saveTrip', {
+      const response = fetch('http://db8.cse.nd.edu:5006/saveTrip', {
       method: 'POST',
       headers: {
       'Content-Type': 'application/json'
@@ -40,22 +49,23 @@ export default function SelectPodcastsPage({ navigation, route }) {
     // 2nd endpoint: add the trip id, episode uri, and a rating of 0 to the trip_rating table
   }
 
+  const onSelectTrip  = (tripNum) => {
+    setSelectedTrip(tripNum)
+  }
+
   return (
+    loading? <SafeAreaView>
+      <ActivityIndicator size="large" style={styles.loading}/> 
+      </SafeAreaView>: 
     <View style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
     <SafeAreaView>
       <ScrollView style={styles.container} contentContainerStyle={{display: "flex", flexDirection: "column", justifyContent: "center", alignContent: 'center'}}>
         <Text style={styles.header}>Select Podcasts</Text>
-        { route.params.podcasts.map((uri) => {
+        { tripPossibilities.map((trip, index) => {
                 return (
-                  <PodcastChoice key={uri} uri={uri}/>
+                  <TripCard canEdit={true} key={index} tripNum={index} onSelectTrip={onSelectTrip} tripInfo={[1, 2, 3, 5]} selected={selectedTrip == index}/>
                 )
             })}
-            <TextInput
-        style={styles.input}
-        onChangeText={(val) => setSelectedId(val)}
-        value={selectedId}
-        placeholder="enter podcast id"
-      />
       </ScrollView>
       <Pressable 
         style={styles.button} 
@@ -70,6 +80,9 @@ export default function SelectPodcastsPage({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+    loading : {
+      alignSelf: 'center',
+    },
     input : {
       height: 40,
       margin: 12,
@@ -104,7 +117,8 @@ const styles = StyleSheet.create({
         letterSpacing: 0.25,
         textTransform: 'uppercase',
         fontSize: 24,
-        paddingTop: 10
+        paddingTop: 10,
+        alignSelf: 'center'
       },
       container: {
         height: '95%'
