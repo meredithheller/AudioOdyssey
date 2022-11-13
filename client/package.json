@@ -2,7 +2,7 @@
   "name": "audioodyssey",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
-  "proxy": "http://127.0.0.1:5001",
+  "proxy": "http://127.0.0.1:5006",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
