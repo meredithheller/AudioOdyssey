@@ -2,7 +2,13 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function ProfilePage({ navigation, route }) {
+export default function ProfilePage({ navigation }) {
+
+  const logout = () => {
+    global.user = {};
+    global.loggedIn = false;
+    navigation.navigate("Landing");
+  }
 
   const styles = StyleSheet.create({
     profileContainer: {
@@ -29,6 +35,20 @@ export default function ProfilePage({ navigation, route }) {
     container: {
       backgroundColor: 'lightblue',
       height: '100%'
+    },
+    logoutBtn: {
+      width:"80%",
+      borderRadius: 10,
+      alignItems:"center",
+      justifyContent:"center",
+      backgroundColor:"#003f5c",
+      margin: 16,
+      width: 100
+    },
+    logoutText: {
+      color: "white",
+      padding: 10,
+      fontSize: 15,
     }
   });
 
@@ -37,9 +57,9 @@ export default function ProfilePage({ navigation, route }) {
       <View style={styles.profileContainer}>
         <Ionicons name='ios-person' size={100} color={'#003f5c'}></Ionicons>
         <View>
-          <Text style={styles.info}>{route.params.firstname} {route.params.lastname}</Text>
-          <Text>{route.params.username}</Text>
-          <Text>{route.params.phonenumber.slice(0,3)}-{route.params.phonenumber.slice(3,6)}-{route.params.phonenumber.slice(6,11)}</Text>
+          <Text style={styles.info}>{global.user.firstname} {global.user.lastname}</Text>
+          <Text>{global.user.username}</Text>
+          <Text>{global.user.phonenumber.slice(0,3)}-{global.user.phonenumber.slice(3,6)}-{global.user.phonenumber.slice(6,11)}</Text>
         </View>
       </View>
       <View>
@@ -66,6 +86,10 @@ export default function ProfilePage({ navigation, route }) {
             <Text style={styles.link}>My AudioOdyssey Wrapped</Text>
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
           </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.logoutBtn} onPress={() => logout()}> 
+          <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -1,8 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LandingPage from './pages/LandingPage';
 import HomeContainer from './pages/HomeContainer';
+import './global.js';
 
 const Stack = createNativeStackNavigator();
 
