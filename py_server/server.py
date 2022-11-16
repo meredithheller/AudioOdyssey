@@ -1,9 +1,10 @@
 from urllib.parse import _NetlocResultMixinBase
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
 from flask import request
 import json
 import random
+from ex_response import backend_response
 
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
@@ -145,6 +146,7 @@ def trip_options():
             possible_pods[pod_key]['subcategories'].add((subcat[0], score, subcat[1]))
     # for pod in possible_pods:
     #     print(possible_pods[pod])
+    # print(possible_pods)
         
     
     # tell jack I'm also sending the actual categories they chose so he can optimize extra on those bc im sending all categories from all returned podcasts
@@ -154,6 +156,7 @@ def trip_options():
         # TODO: handle no possibilities
     for trip_op in trip_options:
         for pod in trip_op:
+            pod['rating'] = 0
             # these should be the dictionaries I created before
             # TODO: attempt sql query for image
             image_uri_query = '''SELECT image_uri
@@ -181,9 +184,18 @@ def trip_options():
                 pod['image_uri'] = rv[0][0] # TODO: ensure I need to double [0] this
 
     # TODO: properly format the response
-
     cur.close()
-    return []
+    res_json = jsonify_podcasts(backend_response)
+    return res_json
+
+def jsonify_podcasts(podcast_options):
+    # need to convert sets to lists
+    for trip in podcast_options:
+        for pod in trip:
+            pod['subcategories'] = list(pod['subcategories'])
+            pod['categories'] = list(pod['categories'])
+    return jsonify(podcast_options)
+
 
 # return set of podcasts user has listened to or replaced
 def get_user_history():
