@@ -7,7 +7,7 @@ import TripStackNavigator from './TripStack';
 
 const Tab = createBottomTabNavigator();
 
-export default function HomeContainer({ navigation, route }) {
+export default function HomeContainer({ navigation }) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -30,7 +30,7 @@ export default function HomeContainer({ navigation, route }) {
       })}
     >
       <Tab.Screen options={{headerShown: false, title: "Plan Trip"}} name="Trip Stack" component={TripStackNavigator} />
-      <Tab.Screen initialParams={ route.params } options={{headerShown: false}} name="Profile" component={ProfileContainer} />
+      <Tab.Screen options={{headerShown: false}} name="Profile" component={ProfileContainer} />
     </Tab.Navigator>
   );
 }
