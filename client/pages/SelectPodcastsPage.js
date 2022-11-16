@@ -7,30 +7,46 @@ export default function SelectPodcastsPage({ navigation, route }) {
 
   const [selectedId, setSelectedId ] = useState()
   const [ loading, setLoading ] = useState(true)
-  const [ tripPossibilities, setTripPossibilities ] = useState([1, 2, 3])
+  const [ tripPossibilities, setTripPossibilities ] = useState([])
   const [ selectedTrip, setSelectedTrip ] = useState()
 
   useEffect(() => {
-    console.log(route.params.startLocation)
-    console.log(route.params.endLocation)
-    // load all podcast info then set loading to false
-    // something like route.params.podcasts get each podcast's info within each array
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 2000);
+    setLoading(true)
+    if(!tripPossibilities){
+      alert("there was an error")
+      navigation.navigate('Plan Trip')
+    }
+    // console.log("IN SLECT PODCASTS PAGE WE HAVE: ")
+    // console.log(route.params.trips)
+    setTripPossibilities(route.params.trips)
+    setLoading(false)
   }, [])
 
   const onSelectTrip = (id) => {
-    console.log("here")
+    console.log(id)
     setSelectedTrip(id)
   }
 
 
   const handleSaveTrip = () => {
-    console.log(selectedTrip)
+    // console.log(selectedTrip)
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
+    }else{
+      console.log(tripPossibilities[selectedTrip])
+      // TODO: THIS IS WHERE WE NEED TO MAKE POST REQUEST TO SAVE THE TRIP
+      // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
+        // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
+        // 
     }
+  }
+
+  const onReplace = (tripIndex, podcastIndex) => {
+    // TODO: make API call to replace the podcast
+      // IN THIS CALL: get a new podcast of similar length from the categories that hasn't been listened to or replaced already
+      // ALSO IN THIS CALL: add to the history that user replaced this podcast so we don't show in the future (probably do this first)
+    // update the trip options array with new podcast in correct trip option
+
   //   console.log("here")
   //   console.log(route.params.podcasts)
   //   if(!route.params.podcasts.includes(selectedId)){
@@ -59,7 +75,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }
 
   return (
-    loading? <SafeAreaView style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
+    ( loading || !tripPossibilities ) ? <SafeAreaView style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
       <Text style={styles.header}>Select Podcasts</Text>
       <ActivityIndicator size="large" style={styles.loading}/> 
       </SafeAreaView>: 
@@ -73,7 +89,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
         <Text style={styles.header}>Select Podcasts</Text>
         { tripPossibilities.map((trip, index) => {
                 return (
-                  <TripCard canEdit={true} key={index} tripNum={index} onSelectTrip={onSelectTrip} tripInfo={[1, 2, 3, 5]} selected={selectedTrip == index}/>
+                  <TripCard onReplace={onReplace} canEdit={true} key={index} tripNum={index} onSelectTrip={onSelectTrip} tripInfo={trip} selected={selectedTrip == index}/>
                 )
             })}
       </ScrollView>

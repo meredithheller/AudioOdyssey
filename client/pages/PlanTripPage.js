@@ -13,7 +13,8 @@ import {
   SafeAreaView,
   Pressable,
   ScrollView,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
 import categs from '../constants/categories'
@@ -35,15 +36,20 @@ export default function PlanTripPage({ navigation, route }) {
   const [duration, setDuration ] = useState(45)
   const [ podcasts, setPodcasts ] = useState()
   const [ tripID, setTripID ] = useState(null)
+  const [ loading, setLoading ] = useState(false)
+  const [ trips, setTrips ] = useState(null)
 
   useEffect(() => {
-    if(podcasts){
-      const customJSON = require('./tripList.json')
-      console.log(customJSON)
-
-      navigation.navigate("Select Podcasts", { podcasts: customJSON, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
+    console.log(trips)
+    if(trips){
+      navigation.navigate("Select Podcasts", { trips: trips, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
     }
-  }, [podcasts])
+    // if(podcasts){
+    //   const customJSON = require('./tripList.json')
+
+    //   navigation.navigate("Select Podcasts", { podcasts: customJSON, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
+    // }
+  }, [trips])
 
   let searchLocation = async (text, destination) => {
     let keyword = ''
@@ -91,23 +97,28 @@ export default function PlanTripPage({ navigation, route }) {
   }
 
   const getTripPodcastInfo = async () => {
+    setLoading(true)
+    // TODO: make sure a destination has been sent and duration is a valid number
     let catList = [...categories]
+    let formattedCategoryParam = 'none'
+    if(categories.size > 0){
+      formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
+    }
+    console.log(formattedCategoryParam)
     // TODO: This should be a GET request
-    const res = fetch('http://db8.cse.nd.edu:5006/tripPodcasts', {
-      method: 'POST',
-      headers: {
-        // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
-        // also need to send the trip duration which I have hardcoded in minutes (duration variable at the top)
-        'Content-Type': 'application/json'
-      },
-      body:  JSON.stringify({
-        categories: catList,
-        duration: duration
-      })   
-    }).then(async (response) => response.json())
+    const res = fetch('http://db8.cse.nd.edu:5006/tripOptions?' + new URLSearchParams({
+      duration: duration,
+      categories: formattedCategoryParam,
+    })).then((response) => {
+      return response.json()
+    })
     .then((data) => {
-      setPodcasts(data)
+      // console.log("-->HERE<--")
+      // console.log(data)
+      setTrips(data)
+      setLoading(false)
     }).catch(function(error) {
+      setLoading(false)
       alert('An error occurred. Please try again.')
     })
   }
@@ -125,7 +136,11 @@ export default function PlanTripPage({ navigation, route }) {
   }
 
     return (
-      <SafeAreaView style={styles.container}>
+       loading ? <SafeAreaView style={styles.container}>
+        <Text style={styles.labelText}>Loading Trip Options</Text>
+      <ActivityIndicator size="large"/> 
+      </SafeAreaView> 
+      : <SafeAreaView style={styles.container}>
         <Text style={styles.header}>Plan your trip</Text>
         <Text style={styles.labelText}>Pick a starting location: </Text>
         <View style={styles.autocompleteContainer}>
@@ -207,7 +222,7 @@ export default function PlanTripPage({ navigation, route }) {
         </Pressable>
 
       </SafeAreaView>
-    )
+      )
   }
 
 const styles = StyleSheet.create({

@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView } from 'react-native';
 import PodcastInfo from './podcastInfo';
 
-export default function TripCard({ isSavedTrip, canEdit, tripNum, tripInfo, onSelectTrip, selected }) {
+export default function TripCard({ onReplace, isSavedTrip, canEdit, tripNum, tripInfo, onSelectTrip, selected }) {
+    useEffect(() => {
+    })
 
     return (
         <TouchableOpacity style={selected ? styles.selectedTripContainer : styles.unselectedTripContainer} onPress={() => onSelectTrip(tripNum)}>
             <Text style={styles.tripText}>Trip Option {tripNum}</Text>
-            { tripInfo.map((podcast, index) => { return (
-                <PodcastInfo canEdit={true} canRate={true} podcastInfo={podcast}/>
+            { tripInfo.map((podcast, index) => { 
+                return (
+                <PodcastInfo tripIndex={tripNum} onReplace={onReplace} key={index} canEdit={true} canRate={true} podIndex={index} podInfo={podcast}/>
             )})}
         </TouchableOpacity>
     )

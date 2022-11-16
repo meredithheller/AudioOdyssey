@@ -1,50 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView } from 'react-native';
-// import StarRating from 'react-native-star-rating';
+import { Rating, AirbnbRating } from 'react-native-ratings';
 
-export default function PodcastInfo({ canRate, canEdit, podInfo }) {
+
+export default function PodcastInfo({ onReplace, tripIndex, canRate, canEdit, podInfo, podIndex }) {
     const [ rating, setRating ] = useState(0)
+
+    useEffect(() => {
+    })
 
     let image_url = "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2493250/2493250-1571260851467-0eaf5106f2d8a.jpg"
     let show_name = "How I Built This"
     let episode_name = "Happy Family Organics"
     let episode_desc = "This episode gets very emotional very quickly, so don't be surprised if we suddenly burst out in tears. We talk about not feeling good enough, insecurities, and confrontation. It's an emotional rollercoaster.  ---   Support this podcast: https://anchor.fm/teenagertherapy/support"
 
-    const onStarRatingPress = (rating) => {
+    const ratingCompleted = (rating) => {
         // edit the podcast/trip object
+        console.log(rating)
         setRating(rating)
     }
 
-    useEffect(() => {
-        console.log("hello")
-    })
-
     return (
+        podInfo &&
         <View style={styles.podcastContainer}>
-            {console.log("here")}
-            <View style={styles.leftSide}>
-                <Image style={styles.podImage}
-                        source={{
-                            uri: "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2493250/2493250-1571260851467-0eaf5106f2d8a.jpg"
-                        }}
-                        resizeMode={'contain'}/>
-                { canEdit && <Pressable style={styles.replaceButton}>
-                    <Text style={{color: '#fff'}}>Replace</Text>
-                </Pressable>}
+            <View style={styles.podcastInfo}>
+                <View style={styles.leftSide}>
+                    <Image style={styles.podImage}
+                            source={{
+                                uri: podInfo.image_uri
+                            }}
+                            resizeMode={'contain'}/>
+                    { canEdit && <Pressable style={styles.replaceButton} onPress={() => onReplace(tripIndex, podIndex)}>
+                        <Text style={{color: '#fff'}}>Replace</Text>
+                    </Pressable>}
+                </View>
+                <View style={styles.rightSide}>
+                    <Text style={styles.episodeTitle}>{podInfo.episode_name}</Text>
+                    <Text style={styles.showTitle}>{podInfo.show_name}</Text>
+                    <Text style={styles.episodeDescription}>{podInfo.description}</Text>
+                </View>
             </View>
-            <View style={styles.rightSide}>
-                <Text style={styles.episodeTitle}>{episode_name}</Text>
-                <Text style={styles.showTitle}>{show_name}</Text>
-                <Text style={styles.episodeDescription}>{episode_desc}</Text>
-            </View>
+            { canRate && <Rating
+                onFinishRating={(rating) => ratingCompleted(rating)}
+                style={{ paddingVertical: 10}}
+            /> }
         </View>
 
     )
 }
 
 const styles = StyleSheet.create({
-    podcastContainer : {
-        flexDirection: 'row',
+    podcastContainer: {
+        flexDirection: 'column',
         borderColor: 'grey',
         width: '100%',
         borderWidth: 1,
@@ -52,6 +59,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         bottomPadding: 5,
         backgroundColor: 'white'
+    },
+    podcastInfo : {
+        flexDirection: 'row',
+        width: '100%'
     },
     podcastImg : {
         width: 30

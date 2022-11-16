@@ -40,7 +40,7 @@ export default function PodcastChoice({ uri }) {
         setShowName(data[0][1])
         setRss('A link')
       }).catch(function(error) {
-        alert('An error occurred. Please try again.')
+        // alert('An error occurred. Please try again.')
       })
     }
 
