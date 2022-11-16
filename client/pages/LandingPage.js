@@ -27,10 +27,12 @@ export default function LandingPage({ navigation }) {
       return response.json();
     }).then((data) => {
       if (data.error) {
-        errorMessage = data.error
+        alert(data.error);
       } else {
         setLoginModalVisible(false);
-        navigation.navigate('Home', data);
+        global.user = data;
+        global.loggedIn = true;
+        navigation.navigate('Home',data);
       }
     }).catch((error) => console.log(error));
   }
@@ -53,10 +55,12 @@ export default function LandingPage({ navigation }) {
       return repsonse.json();
     }).then((data) => {
       if (data.error) {
-        errorMessage = data.error;
+        alert(data.error);
       } else {
         setCreateModalVisible(false);
-        navigation.navigate('Home', data);
+        global.user = data;
+        global.loggedIn = true;
+        navigation.navigate('Home',data);
       }
     }).catch((error) => console.log(error));
   }

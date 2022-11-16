@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { TextInput, Modal, View, Text, TouchableOpacity } from 'react-native';
 
-export default function AccountSettings({ route }) {
+export default function AccountSettings() {
 
   const [firstnameModalVisible, setFirstnameModalVisible] = useState(false);
   const [lastnameModalVisible, setLastnameModalVisible] = useState(false);
   const [phonenumberModalVisible, setPhonenumberModalVisible] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
 
-  const [firstname, setFirstname] = useState(route.params.firstname);
-  const [lastname, setLastname] = useState(route.params.lastname);
-  const [phonenumber, setPhonenumber] = useState(route.params.phonenumber);
-  const [oldPassword, setOldPassword] = useState(route.params.password);
+  const [firstname, setFirstname] = useState(global.user.firstname);
+  const [lastname, setLastname] = useState(global.user.lastname);
+  const [phonenumber, setPhonenumber] = useState(global.user.phonenumber);
+  const [oldPassword, setOldPassword] = useState(global.user.password);
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
@@ -92,7 +92,7 @@ export default function AccountSettings({ route }) {
               <View>
                 <TextInput
                   style={styles.TextInput}
-                  placeholder={route.params.firstname}
+                  placeholder={global.user.firstname}
                   placeholderTextColor="#003f5c"
                   onChangeText={(firstname) => setFirstname(firstname)}
                 />
@@ -121,7 +121,7 @@ export default function AccountSettings({ route }) {
               <View>
                 <TextInput
                   style={styles.TextInput}
-                  placeholder={route.params.lastname}
+                  placeholder={global.user.lastname}
                   placeholderTextColor="#003f5c"
                   onChangeText={(lastname) => setLastname(lastname)}
                 />
@@ -150,7 +150,7 @@ export default function AccountSettings({ route }) {
               <View>
                 <TextInput
                   style={styles.TextInput}
-                  placeholder={route.params.phonenumber}
+                  placeholder={global.user.phonenumber}
                   placeholderTextColor="#003f5c"
                   onChangeText={(phonenumber) => setPhonenumber(phonenumber)}
                 />
