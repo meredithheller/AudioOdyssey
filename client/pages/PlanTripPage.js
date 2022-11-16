@@ -12,10 +12,12 @@ import {
   StyleSheet,
   SafeAreaView,
   Pressable,
-  ScrollView
+  ScrollView,
+  Image
 } from 'react-native';
 import axios from 'axios';
 import categs from '../constants/categories'
+
 
 // insert api key here
 const GOOGLE_PLACES_API_KEY = 'AIzaSyBMjWK0DK6yaebYMZK5h98IPEgWPjwnB0I';
@@ -36,7 +38,10 @@ export default function PlanTripPage({ navigation, route }) {
 
   useEffect(() => {
     if(podcasts){
-      navigation.navigate("Select Podcasts", { podcasts: podcasts, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
+      const customJSON = require('./tripList.json')
+      console.log(customJSON)
+
+      navigation.navigate("Select Podcasts", { podcasts: customJSON, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
     }
   }, [podcasts])
 
@@ -86,14 +91,9 @@ export default function PlanTripPage({ navigation, route }) {
   }
 
   const getTripPodcastInfo = async () => {
-    let catList = []
-    let iter = categories.values()
-    i = 0
-    for(const entry of iter) {
-        catList[i] = entry
-        i++
-    }
-    const res = fetch('http://db8.cse.nd.edu:5001/tripPodcasts', {
+    let catList = [...categories]
+    // TODO: This should be a GET request
+    const res = fetch('http://db8.cse.nd.edu:5006/tripPodcasts', {
       method: 'POST',
       headers: {
         // also need to send the categories. right now it is a set (categories variable at the top) so we may have to convert this to a list or something
@@ -106,8 +106,6 @@ export default function PlanTripPage({ navigation, route }) {
       })   
     }).then(async (response) => response.json())
     .then((data) => {
-      console.log("the response")
-      console.log(data)
       setPodcasts(data)
     }).catch(function(error) {
       alert('An error occurred. Please try again.')
@@ -161,7 +159,7 @@ export default function PlanTripPage({ navigation, route }) {
             />
           )}
         </View>
-        <Text style={styles.redirectText}>Try our destination selector</Text>
+        <Image style={styles.roadImg} resizeMode="contain" source={require('../assets/road.png')}/>
         <Text style={styles.labelText}>Pick a destination: </Text>
         <View style={styles.autocompleteContainer}>
           <TextInput
@@ -285,15 +283,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     paddingTop: 10
   }, 
-  redirectText: {
-    color: 'black',
-    fontWeight: 'medium',
-    letterSpacing: 0.25,
-    fontStyle: 'italic',
-    textDecorationLine: 'underline',
-    fontSize: 12,
-    paddingTop: 10,
-    paddingBottom: 60
+  roadImg: {
+    height: 80
   },
   chipContainer: {
     backgroundColor: '#FFFFFF',

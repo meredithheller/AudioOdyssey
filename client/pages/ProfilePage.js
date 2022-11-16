@@ -47,13 +47,19 @@ export default function ProfilePage({ navigation, route }) {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {navigation.navigate("Upcoming Trips")}}>
           <View style={styles.linkContainer}>
-            <Text style={styles.link}>Upcoming Trips</Text>
+            <Text style={styles.link}>Current Trip</Text>
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {navigation.navigate("Past Trips")}}>  
           <View style={styles.linkContainer}>    
             <Text style={styles.link}>Past Trips</Text>
+            <Ionicons name="ios-play" size={25} color={'#003f5c'} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {navigation.navigate("Past Trips")}}>  
+          <View style={styles.linkContainer}>    
+            <Text style={styles.link}>My AudioOdyssey Wrapped</Text>
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
           </View>
         </TouchableOpacity>

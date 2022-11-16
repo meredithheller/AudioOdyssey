@@ -1,0 +1,68 @@
+// {
+//     "trips": [ 
+//       [{
+//         "episode_name": "first show",
+//         "show_name": "best podcast",
+//         "duration": "125",
+//         "description": "True Crime, paranormal, or whatever weird things we want to talk about. Flying by the seat of our pants. Be aware of unsolicited burps and swears. Support this podcast: https://anchor.fm/bnodpodcast/support",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2493250/2493250-1571260851467-0eaf5106f2d8a.jpg"
+//       }, {
+//         "episode_name": "next show",
+//         "show_name": "Nosilec za kolesa",
+//         "duration": "2005",
+//         "description": "The very first time Tristan Walker shaved, he woke up the next morning with razor bumps all over his face. \"I was like, what is this?\" he remembers saying. \"I am never shaving again—ever.\" He soon discovered that like him, many men of color were frustrated by the lack of shaving products for coarse or curly hair. Fifteen years after that first disastrous shave, and after countless meetings with doubtful investors, Tristan launched Bevel, a subscription shaving system built around a single-blade razor. Eventually his brand Walker & Company grew to include 36 hair and beauty products, used by millions of men and women across the U.S. In 2018, Walker & Company was sold to Proctor & Gamble, and Tristan became P&G's first black CEO.",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/1042677/1042677-1536679211677-0cca0609d0e29.jpg"
+//       }, {
+//         "episode_name": "last show",
+//         "show_name": "Nosilec za kolesa",
+//         "duration": "35",
+//         "description": "Let other students help you revise for your GCSE English Literature exams. In this series, students break down complicated revision subjects to its core components helping you rock your exams. Find your FREE online course here: http://bit.ly/2RXjdVp",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/2502650/2502650-1571380745236-5c92cb11a3dec.jpg"
+//       }],
+//       [{
+//         "episode_name": "epi",
+//         "show_name": "next pod",
+//         "duration": "14",
+//         "description": "a shorter description ayo",
+//         "img": ""
+//       }, {
+//         "episode_name": "jenna palek goes on an adventure in austin",
+//         "show_name": "jenna pod",
+//         "duration": "2005",
+//         "description": "The very first time Tristan Walker shaved, he woke up the next morning with razor bumps all over his face. \"I was like, what is this?\" he remembers saying. \"I am never shaving again—ever.\" He soon discovered that like him, many men of color were frustrated by the lack of shaving products for coarse or curly hair. Fifteen years after that first disastrous shave, and after countless meetings with doubtful investors, Tristan launched Bevel, a subscription shaving system built around a single-blade razor. Eventually his brand Walker & Company grew to include 36 hair and beauty products, used by millions of men and women across the U.S. In 2018, Walker & Company was sold to Proctor & Gamble, and Tristan became P&G's first black CEO.",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/1042677/1042677-1536679211677-0cca0609d0e29.jpg"
+//       }, {
+//         "episode_name": "last show",
+//         "show_name": "Nosilec za kolesa",
+//         "duration": "2005",
+//         "description": "Podcast is inspired by Love, God, Relationships, Spirituality, Justice, Culture, Family, Children, Finances, Freedom, Personal Growth, Energy &amp; Vibrations, Universal Principles, Health, Education, Masculine &amp; Feminine, Music.... and ALL THINGS of the Heart &amp; Soul!! Our goal is to reconnect our hearts with our minds. We want to be a beacon of Light on your life journey! Follow us on Instagram @mattersoftheheart_andsoul @nursepractitioner",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/2502650/2502650-1571380745236-5c92cb11a3dec.jpg"
+//       }],
+//       [{
+//         "episode_name": "first show",
+//         "show_name": "best podcast",
+//         "duration": "2005",
+//         "description": "777.0",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2120978/2120978-1618212849013-674f0610f4d79.jpg"
+//       }, {
+//         "episode_name": "next show",
+//         "show_name": "Nosilec za kolesa",
+//         "duration": "2005",
+//         "description": "The very first time Tristan Walker shaved, he woke up the next morning with razor bumps all over his face. \"I was like, what is this?\" he remembers saying. \"I am never shaving again—ever.\" He soon discovered that like him, many men of color were frustrated by the lack of shaving products for coarse or curly hair. Fifteen years after that first disastrous shave, and after countless meetings with doubtful investors, Tristan launched Bevel, a subscription shaving system built around a single-blade razor. Eventually his brand Walker & Company grew to include 36 hair and beauty products, used by millions of men and women across the U.S. In 2018, Walker & Company was sold to Proctor & Gamble, and Tristan became P&G's first black CEO.",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/1042677/1042677-1536679211677-0cca0609d0e29.jpg"
+//       }, {
+//         "episode_name": "last show",
+//         "show_name": "Nosilec za kolesa",
+//         "duration": "12.34",
+//         "description": "In this episode Peter talks to Alex (CEO/Founder) and Federica (Product Manager) of SpatialPort.SpatialPort is building an entirely new shopping experience tailored to the Metaverse. Creating a platform for artists, designers and shoppers to come together and buy and sell their work in a new 3",
+//         "img": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/2502650/2502650-1571380745236-5c92cb11a3dec.jpg"
+//       }]
+//     ]
+//   }
+{
+  "trips": [ 
+    [864535, 34594035, 324324, 46363023],
+    [45234090, 345094345, 34524514],
+    [3342429,3418934,351234563]
+  ]
+}

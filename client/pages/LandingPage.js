@@ -14,7 +14,7 @@ export default function LandingPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const login = () => {
-    return fetch('http://db8.cse.nd.edu:5001/login', {
+    return fetch('http://db8.cse.nd.edu:5006/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -26,7 +26,6 @@ export default function LandingPage({ navigation }) {
     }).then((response) => {
       return response.json();
     }).then((data) => {
-      console.log(data);
       if (data.error) {
         errorMessage = data.error
       } else {
@@ -37,7 +36,7 @@ export default function LandingPage({ navigation }) {
   }
 
   const createAccount = () => {
-    return fetch('http://db8.cse.nd.edu:5001/createAccount', {
+    return fetch('http://db8.cse.nd.edu:5006/createAccount', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
