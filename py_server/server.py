@@ -48,25 +48,25 @@ def parse_login():
 def trip_podcasts():
     data = request.json
 
-    cur = mysql.connection.cursor()
-    sql_query = '''SELECT p.episode_uri
-                FROM categories c, podcasts p
-                WHERE c.episode_uri = p.episode_uri and (p.duration > 35 and p.duration < 55) and 
-                (c.category = '{category}' '''.format(
-                    category = data['categories'][0]
-                )
-    for i in data['categories']:
-        if i == data['categories'][0]:
-            continue
-        sql_query += ''' or c.category = '{category}' '''.format(
-            category = i
-        )
-    sql_query += ''') LIMIT 5;'''
-    cur.execute(sql_query)
-    rv = cur.fetchall()
+    # cur = mysql.connection.cursor()
+    # sql_query = '''SELECT p.episode_uri
+    #             FROM categories c, podcasts p
+    #             WHERE c.episode_uri = p.episode_uri and (p.duration > 35 and p.duration < 55) and 
+    #             (c.category = '{category}' '''.format(
+    #                 category = data['categories'][0]
+    #             )
+    # for i in data['categories']:
+    #     if i == data['categories'][0]:
+    #         continue
+    #     sql_query += ''' or c.category = '{category}' '''.format(
+    #         category = i
+    #     )
+    # sql_query += ''') LIMIT 5;'''
+    # cur.execute(sql_query)
+    # rv = cur.fetchall()
     json_data = []
-    for result in rv:
-        json_data.append(result[0])
+    # for result in rv:
+    #     json_data.append(result[0])
     return json_data
 
 
@@ -121,6 +121,6 @@ def save_trip():
     return request.data 
 
 if __name__ == "__main__":
-    app.run(host='db8.cse.nd.edu',debug=True, port=5001)
+    app.run(host='db8.cse.nd.edu',debug=True, port=5006)
 
 

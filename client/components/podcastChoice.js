@@ -24,7 +24,7 @@ export default function PodcastChoice({ uri }) {
     // then set loading to false
     // if error, alert and leave loading true
     const podcasts_response = await fetch(
-      'http://db8.cse.nd.edu:5001/podcasts',
+      'http://db8.cse.nd.edu:5006/podcasts',
       {
         method: 'POST',
         headers: {
