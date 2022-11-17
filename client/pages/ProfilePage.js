@@ -48,9 +48,13 @@ export default function ProfilePage({ navigation }) {
     logoutText: {
       color: "white",
       padding: 10,
-      fontSize: 15,
+      fontSize: 15
+    },
+    container: {
+      backgroundColor: 'lightblue',
+      height: '100%'
     }
-  });
+});
 
   return (
     <SafeAreaView style={styles.container}>
