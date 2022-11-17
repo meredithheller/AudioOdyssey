@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function PastTripsPage() {
   return (
@@ -8,3 +8,21 @@ export default function PastTripsPage() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'lightblue',
+    height: '100%', 
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  header: {
+    color: 'black',
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    textTransform: 'uppercase',
+    fontSize: 24,
+    paddingTop: 10
+  }
+});

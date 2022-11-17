@@ -41,7 +41,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
     }
   }
 
-  const onReplace = (tripIndex, podcastIndex) => {
+  const onReplace = (podcastIndex, tripIndex) => {
     // TODO: make API call to replace the podcast
       // IN THIS CALL: get a new podcast of similar length from the categories that hasn't been listened to or replaced already
       // ALSO IN THIS CALL: add to the history that user replaced this podcast so we don't show in the future (probably do this first)
@@ -89,7 +89,19 @@ export default function SelectPodcastsPage({ navigation, route }) {
         <Text style={styles.header}>Select Podcasts</Text>
         { tripPossibilities.map((trip, index) => {
                 return (
-                  <TripCard onReplace={onReplace} canEdit={true} key={index} tripNum={index} onSelectTrip={onSelectTrip} tripInfo={trip} selected={selectedTrip == index}/>
+                  <TripCard 
+                    tripId={null}
+                    headerText={"Option " + index}
+                    disabled={false} 
+                    onReplace={onReplace} 
+                    canEdit={true} 
+                    key={index} 
+                    canRate={false}
+                    ratingCompleted={null}
+                    tripNum={index} 
+                    onSelectTrip={onSelectTrip} 
+                    tripInfo={trip} 
+                    selected={selectedTrip == index}/>
                 )
             })}
       </ScrollView>
