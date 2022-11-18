@@ -13,6 +13,7 @@ let modelTrip = { "trip_id": 4313254,
   "image_uri": "https://megaphone.imgix.net/podcasts/6343dace-1ae0-11ea-8c84-afebdfb406dd/image/Gimlet_TwoPrincesS1_ShowArt_3000x3000.jpg?ixlib=rails-2.1.2&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
   "show_name": "The Two Princes",
   "uri": "spotify:episode:01H2zsq0DPgqbLTgFmtbL4",
+  "rating": 0
 },
 { "description": "Recapping my life since I moved to Texas and my weekend in Waco Texas at the elite barrelnanza   ---   This episode is sponsored by  · Anchor: The easiest way to make a podcast.  https://anchor.fm/app",
   "duration": 33.62868333333333,
@@ -20,12 +21,14 @@ let modelTrip = { "trip_id": 4313254,
   "image_uri": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2330768/2330768-1573872310601-7bfb73e99f23.jpg",
   "show_name": "Betty Life: Behind the Scenes, stories and life lessons",
   "uri": "spotify:episode:09TwoMq3ZpNnigN7EP8rmn",
+  "rating": 0
 },{ "description": "Tree-Tree has an amazing dream that changes his life forever!  ---   Support this podcast: https://anchor.fm/kids-short-stories/support",
   "duration": 9.523666666666667,
   "episode_name": "The Small Tree With Big Dreams",
   "image_uri": "https://www.omnycontent.com/d/clips/f908bc33-68fa-4916-a2c1-af18015ff9f6/9df731a0-f896-428e-839d-af180160de06/718bfbb1-767d-4747-90e3-af18017a4c8e/image.jpg?t=1663887445&size=Large",
   "show_name": "Kids Short Stories",
   "uri": "spotify:episode:0AYRBGOGItwTrWpKBQAyvm",
+  "rating": 0
 }]}
 
 
@@ -66,7 +69,8 @@ export default function CurrentTrip() {
         // SEND IT username, podcast_id, tripId (prop), and rating
   }
 
-  const ratingCompleted = (rating) => {
+  const ratingCompleted = (rating, podcastId) => {
+    console.log(rating)
     // edit the current trip podcast information so that it reflects the new rating
   }
 

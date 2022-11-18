@@ -151,9 +151,11 @@ export default function PlanTripPage({ navigation, route }) {
             placeholderTextColor="#000"
             onChangeText={(text) => searchLocation(text, false)}
             value={searchStartKeyword}
+            onBlur={()=>setIsShowingStartResults(false)}
           />
           {isShowingStartResults && (
             <FlatList
+              key={"start"}
               data={startSearchResults}
               renderItem={({item, index}) => {
                 return (
@@ -184,9 +186,11 @@ export default function PlanTripPage({ navigation, route }) {
             placeholderTextColor="#000"
             onChangeText={(text) => searchLocation(text, true)}
             value={searchEndKeyword}
+            onBlur={()=>setIsShowingStartResults(false)}
           />
           {isShowingEndResults && (
             <FlatList
+              key={"end"}
               data={endSearchResults}
               renderItem={({item, index}) => {
                 return (

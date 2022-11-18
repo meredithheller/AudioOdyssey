@@ -91,7 +91,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
                 return (
                   <TripCard 
                     tripId={null}
-                    headerText={"Option " + index}
+                    headerText={"Option " + (index+1)}
                     disabled={false} 
                     onReplace={onReplace} 
                     canEdit={true} 

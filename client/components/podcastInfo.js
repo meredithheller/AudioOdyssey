@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView 
 import { Rating, AirbnbRating } from 'react-native-ratings';
 
 
-export default function PodcastInfo({ tripId, ratingCompleted, onReplace, tripIndex, canRate, canReplace, podInfo, podIndex }) {
+export default function PodcastInfo({ currentRating, tripId, ratingCompleted, onReplace, tripIndex, canRate, canReplace, podInfo, podIndex }) {
     const [ rating, setRating ] = useState(0)
 
     useEffect(() => {
@@ -37,7 +37,8 @@ export default function PodcastInfo({ tripId, ratingCompleted, onReplace, tripIn
                 </View>
             </View>
             { canRate && <Rating
-                onFinishRating={(rating) => ratingCompleted(rating)}
+                startingValue={currentRating}
+                onFinishRating={(rating) => ratingCompleted(rating, podIndex)}
                 style={{ paddingVertical: 10}}
             /> }
         </View>
