@@ -70,22 +70,24 @@ def find_trip(unrounded_trip_duration, podcast_dict, categories):
         if subset:
             trip_durs.append(subset)
             random.shuffle(dur_list)
-
+    print(trip_durs)
     trips = []
     count = 1
     total_dur = 0
     for subset in trip_durs:
         trip = []
         for duration in subset:
+            total_dur = 0
             podcast = duration_dict[duration]
             for i in podcast:
                 if i[1] != 1:
+                    print(duration)
                     total_dur += duration
                     trip.append(i)
                     i[1] = 1
-                    continue
-        if total_dur == trip_duration:
-            trips.append(trip)
+                    break
+        trips.append(trip)
+
         count += 1
     x = 0
     for pod in trips:
@@ -95,10 +97,13 @@ def find_trip(unrounded_trip_duration, podcast_dict, categories):
     # parse data to send
     final_trips = []
     final_trip = []
-    trip = trips[0]
-    for podcast in trip:
-        final_trip.append(podcast_dict[podcast[0].uri])
-    final_trips.append(final_trip)
+    for trip in trips:
+        final_trip = []
+        for podcast in trip:
+            print(podcast)
+            final_trip.append(podcast_dict[podcast[0].uri])
+        final_trips.append(final_trip)
+    print(len(final_trips[0]))
     return final_trips
 
 
