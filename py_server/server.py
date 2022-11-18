@@ -71,7 +71,8 @@ def getRandResults(duration):
 def trip_options():
     # deconstruct params
     args_dict = request.args.to_dict()
-    duration = float(args_dict['duration'])
+    duration = random.uniform(20, 150)
+    # duration = float(args_dict['duration'])
     if args_dict['categories'] == 'none':
         categories = {}
         # randomly select 200 podcasts if no categories were provided
@@ -192,7 +193,7 @@ def trip_options():
                 continue
             else:
                 # TODO: ensure I need to double [0] this
-                pod['image_url'] = rv[0][0]
+                pod['description'] = rv[0][0]
 
     # TODO: properly format the response
     cur.close()
