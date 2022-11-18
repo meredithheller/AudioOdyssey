@@ -21,7 +21,7 @@ export default function PodcastInfo({ currentRating, tripId, ratingCompleted, on
                 <View style={styles.leftSide}>
                     <Image style={styles.podImage}
                             source={{
-                                uri: podInfo.image_uri
+                                uri: podInfo.image_url
                             }}
                             resizeMode={'contain'}/>
                     { canReplace && <Pressable 
