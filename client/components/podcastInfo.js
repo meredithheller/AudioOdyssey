@@ -27,7 +27,7 @@ export default function PodcastInfo({ onReplace, tripIndex, canRate, canEdit, po
                 <View style={styles.leftSide}>
                     <Image style={styles.podImage}
                             source={{
-                                uri: podInfo.image_uri
+                                uri: podInfo.image_url
                             }}
                             resizeMode={'contain'}/>
                     { canEdit && <Pressable style={styles.replaceButton} onPress={() => onReplace(tripIndex, podIndex)}>
