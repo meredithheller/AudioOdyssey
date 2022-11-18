@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
-import PodcastChoice from '../components/podcastChoice';
 import TripCard from '../components/tripCard'
 
 export default function SelectPodcastsPage({ navigation, route }) {
@@ -23,7 +22,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }, [])
 
   const onSelectTrip = (id) => {
-    console.log(id)
     setSelectedTrip(id)
   }
 
@@ -33,7 +31,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
     }else{
-      console.log(tripPossibilities[selectedTrip])
       // TODO: THIS IS WHERE WE NEED TO MAKE POST REQUEST TO SAVE THE TRIP
       // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
         // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
@@ -101,7 +98,8 @@ export default function SelectPodcastsPage({ navigation, route }) {
                     tripNum={index} 
                     onSelectTrip={onSelectTrip} 
                     tripInfo={trip} 
-                    selected={selectedTrip == index}/>
+                    selected={selectedTrip == index}
+                    updateRatings={null}/>
                 )
             })}
       </ScrollView>

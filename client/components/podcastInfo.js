@@ -37,8 +37,8 @@ export default function PodcastInfo({ currentRating, tripId, ratingCompleted, on
                 </View>
             </View>
             { canRate && <Rating
-                startingValue={currentRating}
-                onFinishRating={(rating) => ratingCompleted(rating, podIndex)}
+                startingValue={podInfo.rating}
+                onFinishRating={(rating) => ratingCompleted(rating, podIndex, tripIndex)}
                 style={{ paddingVertical: 10}}
             /> }
         </View>

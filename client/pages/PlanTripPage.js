@@ -40,7 +40,6 @@ export default function PlanTripPage({ navigation, route }) {
   const [ trips, setTrips ] = useState(null)
 
   useEffect(() => {
-    console.log(trips)
     if(trips){
       navigation.navigate("Select Podcasts", { trips: trips, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
     }
@@ -104,7 +103,6 @@ export default function PlanTripPage({ navigation, route }) {
     if(categories.size > 0){
       formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
     }
-    console.log(formattedCategoryParam)
     // TODO: This should be a GET request
     const res = fetch('http://db8.cse.nd.edu:5006/tripOptions?' + new URLSearchParams({
       duration: duration,
@@ -113,8 +111,6 @@ export default function PlanTripPage({ navigation, route }) {
       return response.json()
     })
     .then((data) => {
-      console.log("-->HERE<--")
-      console.log(data)
       setTrips(data)
       setLoading(false)
     }).catch(function(error) {
