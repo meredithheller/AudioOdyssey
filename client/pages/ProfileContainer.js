@@ -8,7 +8,7 @@ import PastTripsPage from './PastTripsPage';
 
 const Stack = createNativeStackNavigator();
 
-export default function ProfileContainer({ route }) {
+export default function ProfileContainer() {
   return (
     <Stack.Navigator  
       initialRouteName="Profile Home"

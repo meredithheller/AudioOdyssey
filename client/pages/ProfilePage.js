@@ -48,11 +48,7 @@ export default function ProfilePage({ navigation }) {
     logoutText: {
       color: "white",
       padding: 10,
-      fontSize: 15
-    },
-    container: {
-      backgroundColor: 'lightblue',
-      height: '100%'
+      fontSize: 15,
     }
 });
 
