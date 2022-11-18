@@ -27,20 +27,19 @@ export default function PlanTripPage({ navigation, route }) {
   const [searchStartKeyword, setSearchStartKeyword] = useState('')
   const [startSearchResults, setStartSearchResults] = useState([])
   const [isShowingStartResults, setIsShowingStartResults] = useState(false)
-  const [ startLocation, setStartLocation ] = useState('Illinois')
+  const [ startLocation, setStartLocation ] = useState()
   const [searchEndKeyword, setSearchEndKeyword] = useState('')
   const [endSearchResults, setEndSearchResults] = useState([])
   const [isShowingEndResults, setIsShowingEndResults] = useState(false)
-  const [ endLocation, setEndLocation ] = useState('Texas')
+  const [ endLocation, setEndLocation ] = useState()
   const [ categories, setCategories ] = useState(new Set())
-  const [duration, setDuration ] = useState(45)
+  const [duration, setDuration ] = useState()
   const [ podcasts, setPodcasts ] = useState()
   const [ tripID, setTripID ] = useState(null)
   const [ loading, setLoading ] = useState(false)
   const [ trips, setTrips ] = useState(null)
 
   useEffect(() => {
-    console.log(trips)
     if(trips){
       navigation.navigate("Select Podcasts", { trips: trips, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
     }
@@ -104,7 +103,6 @@ export default function PlanTripPage({ navigation, route }) {
     if(categories.size > 0){
       formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
     }
-    console.log(formattedCategoryParam)
     // TODO: This should be a GET request
     const res = fetch('http://db8.cse.nd.edu:5006/tripOptions?' + new URLSearchParams({
       duration: duration,
@@ -113,8 +111,6 @@ export default function PlanTripPage({ navigation, route }) {
       return response.json()
     })
     .then((data) => {
-      // console.log("-->HERE<--")
-      // console.log(data)
       setTrips(data)
       setLoading(false)
     }).catch(function(error) {
@@ -151,9 +147,11 @@ export default function PlanTripPage({ navigation, route }) {
             placeholderTextColor="#000"
             onChangeText={(text) => searchLocation(text, false)}
             value={searchStartKeyword}
+            onBlur={()=>setIsShowingStartResults(false)}
           />
           {isShowingStartResults && (
             <FlatList
+              key={"start"}
               data={startSearchResults}
               renderItem={({item, index}) => {
                 return (
@@ -184,9 +182,11 @@ export default function PlanTripPage({ navigation, route }) {
             placeholderTextColor="#000"
             onChangeText={(text) => searchLocation(text, true)}
             value={searchEndKeyword}
+            onBlur={()=>setIsShowingStartResults(false)}
           />
           {isShowingEndResults && (
             <FlatList
+              key={"end"}
               data={endSearchResults}
               renderItem={({item, index}) => {
                 return (

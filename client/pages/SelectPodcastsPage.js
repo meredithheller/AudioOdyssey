@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
-import PodcastChoice from '../components/podcastChoice';
 import TripCard from '../components/tripCard'
 
 export default function SelectPodcastsPage({ navigation, route }) {
@@ -23,7 +22,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }, [])
 
   const onSelectTrip = (id) => {
-    console.log(id)
     setSelectedTrip(id)
   }
 
@@ -33,7 +31,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
     }else{
-      console.log(tripPossibilities[selectedTrip])
       // TODO: THIS IS WHERE WE NEED TO MAKE POST REQUEST TO SAVE THE TRIP
       // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
         // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
@@ -41,7 +38,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
     }
   }
 
-  const onReplace = (tripIndex, podcastIndex) => {
+  const onReplace = (podcastIndex, tripIndex) => {
     // TODO: make API call to replace the podcast
       // IN THIS CALL: get a new podcast of similar length from the categories that hasn't been listened to or replaced already
       // ALSO IN THIS CALL: add to the history that user replaced this podcast so we don't show in the future (probably do this first)
@@ -89,7 +86,20 @@ export default function SelectPodcastsPage({ navigation, route }) {
         <Text style={styles.header}>Select Podcasts</Text>
         { tripPossibilities.map((trip, index) => {
                 return (
-                  <TripCard onReplace={onReplace} canEdit={true} key={index} tripNum={index} onSelectTrip={onSelectTrip} tripInfo={trip} selected={selectedTrip == index}/>
+                  <TripCard 
+                    tripId={null}
+                    headerText={"Option " + (index+1)}
+                    disabled={false} 
+                    onReplace={onReplace} 
+                    canEdit={true} 
+                    key={index} 
+                    canRate={false}
+                    ratingCompleted={null}
+                    tripNum={index} 
+                    onSelectTrip={onSelectTrip} 
+                    tripInfo={trip} 
+                    selected={selectedTrip == index}
+                    updateRatings={null}/>
                 )
             })}
       </ScrollView>

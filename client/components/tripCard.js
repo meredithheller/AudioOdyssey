@@ -2,17 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView } from 'react-native';
 import PodcastInfo from './podcastInfo';
 
-export default function TripCard({ onReplace, isSavedTrip, canEdit, tripNum, tripInfo, onSelectTrip, selected }) {
+export default function TripCard({ updateRatings, tripId, ratingCompleted, canRate, headerText, disabled, onReplace, isSavedTrip, canEdit, tripNum, tripInfo, onSelectTrip, selected, canReplace}) {
     useEffect(() => {
     })
 
     return (
-        <TouchableOpacity style={selected ? styles.selectedTripContainer : styles.unselectedTripContainer} onPress={() => onSelectTrip(tripNum)}>
-            <Text style={styles.tripText}>Trip Option {tripNum}</Text>
+        <TouchableOpacity disabled={disabled} style={selected ? styles.selectedTripContainer : styles.unselectedTripContainer} onPress={() => onSelectTrip(tripNum)}>
+            <Text style={styles.tripText}>{headerText}</Text>
             { tripInfo.map((podcast, index) => { 
                 return (
-                <PodcastInfo tripIndex={tripNum} onReplace={onReplace} key={index} canEdit={true} canRate={true} podIndex={index} podInfo={podcast}/>
+                <PodcastInfo tripId={tripId} ratingCompleted={ratingCompleted} tripIndex={tripNum} onReplace={onReplace} key={index} canReplace={canEdit} canRate={canRate} podIndex={index} podInfo={podcast}/>
             )})}
+            { canRate && disabled && !canEdit &&
+            <TouchableOpacity style={styles.button} onPress={() => updateRatings(tripNum)}>
+                <Text style={styles.buttonText}>Update Trip Ratings</Text>
+            </TouchableOpacity>}
         </TouchableOpacity>
     )
 }
@@ -97,5 +101,22 @@ const styles = StyleSheet.create({
         marginTop: 5,
         alignItems: 'center',
         padding: 5
-    }
+    },
+    button: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        paddingVertical: 5,
+        width: 200,
+        borderRadius: 4,
+        elevation: 3,
+        backgroundColor: 'black',
+        margin: 10
+      },
+      buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        letterSpacing: 0.25,
+        textTransform: 'uppercase'
+      }
 })
