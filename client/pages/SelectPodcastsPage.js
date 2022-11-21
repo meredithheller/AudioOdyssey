@@ -26,7 +26,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }
 
 
-  const handleSaveTrip = () => {
+  const handleSaveTrip = async () => {
     // console.log(selectedTrip)
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
@@ -35,6 +35,25 @@ export default function SelectPodcastsPage({ navigation, route }) {
       // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
         // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
         // 
+        const res = fetch('http://db8.cse.nd.edu:5006/saveTrip', {
+          method: 'POST',
+          body: JSON.stringify({
+            username: global.user.username,
+            start_loc: route.params.startLocation,
+            destination: route.params.endLocation,
+            tripInfo: tripPossibilities[selectedTrip]}),
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+            }
+        }).then((response) => {
+          return response.json()
+        })
+        .then((data) => {
+          alert("Successfully saved your trip. View it in the current trip page of your profile.")
+          navigation.navigate('Plan Trip')
+        }).catch(function(error) {
+          alert('An error occurred. Please try again.')
+        })
     }
   }
 
