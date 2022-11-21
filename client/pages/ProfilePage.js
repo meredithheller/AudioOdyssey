@@ -81,7 +81,7 @@ export default function ProfilePage({ navigation }) {
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {navigation.navigate("Past Trips")}}>  
+        <TouchableOpacity onPress={() => {navigation.navigate("AudioOdyssey Wrapped")}}>  
           <View style={styles.linkContainer}>    
             <Text style={styles.link}>My AudioOdyssey Wrapped</Text>
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
