@@ -149,7 +149,7 @@ export default function LandingPage({ navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-            <TouchableOpacity onPress={() => setLoginModalVisible(false)}>
+              <TouchableOpacity onPress={() => setLoginModalVisible(false)}>
                 <Text style={styles.modalTitle}>Audio Odyssey</Text>
               </TouchableOpacity>
               <View>

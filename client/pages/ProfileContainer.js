@@ -5,6 +5,7 @@ import ProfilePage from './ProfilePage';
 import AccountSettings from './AccountSettings';
 import CurrentTripPage from './CurrentTripPage';
 import PastTripsPage from './PastTripsPage';
+import WrappedPage from './WrappedPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ export default function ProfileContainer() {
       <Stack.Screen name="Account Settings" component={AccountSettings}></Stack.Screen>
       <Stack.Screen name="Current Trip" component={CurrentTripPage}></Stack.Screen>
       <Stack.Screen name="Past Trips" component={PastTripsPage}></Stack.Screen>
+      <Stack.Screen name="AudioOdyssey Wrapped" options={{ gestureEnabled: false, headerShown: false }} component={WrappedPage}></Stack.Screen>
     </Stack.Navigator>
   );
 }
