@@ -22,7 +22,7 @@ export default function ProfileContainer() {
       <Stack.Screen name="Account Settings" component={AccountSettings}></Stack.Screen>
       <Stack.Screen name="Current Trip" component={CurrentTripPage}></Stack.Screen>
       <Stack.Screen name="Past Trips" component={PastTripsPage}></Stack.Screen>
-      <Stack.Screen name="AudioOdyssey Wrapped" component={WrappedPage}></Stack.Screen>
+      <Stack.Screen name="AudioOdyssey Wrapped" options={{ gestureEnabled: false, headerShown: false }} component={WrappedPage}></Stack.Screen>
     </Stack.Navigator>
   );
 }
