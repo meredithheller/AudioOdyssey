@@ -41,7 +41,7 @@ export default function PlanTripPage({ navigation, route }) {
 
   useEffect(() => {
     if(trips){
-      navigation.navigate("Select Podcasts", { trips: trips, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
+      navigation.navigate("Select Podcasts", { trips: trips, startLocation: 'Boston, MA', endLocation: 'South Bend, IN', categories: [...categories]})
     }
     // if(podcasts){
     //   const customJSON = require('./tripList.json')

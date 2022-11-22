@@ -110,14 +110,33 @@ export default function CurrentTrip({ navigation }) {
   const handleSaveRating = () => {
     // TODO: create backend endpoint to rate a podcast
         // SEND IT username, podcast_id, tripId (prop), and rating
+        let podRatings = [] 
+        for(let pod in podcasts){
+          podRatings.push((podcasts[pod].uri, podcasts[pod].rating))
+        }
+        const res = fetch('http://db8.cse.nd.edu:5006/saveRating',  {
+          method: 'POST',
+          body: JSON.stringify({
+            trip_id: tripId,
+            username: global.user.username,
+            podcastRatings: podRatings
+          }),
+          headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+          }
+        }).then((response) => {
+            return response.json()
+        }).then((data) => {
+          // handle response
+        }).catch(function(error) {
 
+        })
   }
 
   const ratingCompleted = (rating, podcastIndex) => {
     podcasts[podcastIndex].rating = rating;
     setPodcasts(podcasts)
     // edit the current trip podcast information so that it reflects the new rating
-    // im confused when this runs
   }
 
   return (

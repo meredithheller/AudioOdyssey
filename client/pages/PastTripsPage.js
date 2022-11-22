@@ -104,6 +104,27 @@ export default function PastTripsPage({ navigation, route }) {
   }, [tripHistory])
 
   const updateRating = (tripIndex) => {
+    let podRatings = [] 
+    for(let pod in tripHistory[tripIndex]){
+      podRatings.push((podcasts[pod].uri, podcasts[pod].rating))
+    }
+    const res = fetch('http://db8.cse.nd.edu:5006/saveRating',  {
+      method: 'POST',
+      body: JSON.stringify({
+        trip_id: tripHistory[tripId],
+        username: global.user.username,
+        podcastRatings: podRatings
+      }),
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      }
+    }).then((response) => {
+        return response.json()
+    }).then((data) => {
+      // handle response
+    }).catch(function(error) {
+
+    })
 
     // TODO: call endpoint to update the rating of this podcast in the backend
     // reload trips but just try to reload the single trip
