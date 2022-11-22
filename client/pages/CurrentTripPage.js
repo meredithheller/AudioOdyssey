@@ -33,7 +33,7 @@ let modelTrip = { "trip_id": 4313254,
 
 
 
-export default function CurrentTrip() {
+export default function CurrentTrip({ navigation }) {
 
   const [ loading, setLoading ] = useState(true)
   const [ tripId, setTripId ] = useState()
@@ -45,33 +45,79 @@ export default function CurrentTrip() {
   useEffect(() => {
     // TODO: on mount, call api to get the most recent trip
       // be sure to handle the fact that there is not a current trip
-    const timer = setTimeout(() => {
-      setTripId(modelTrip.trip_id)
-      setPodcasts(modelTrip.podcasts)
-      setStartingLocation(modelTrip.starting_loc)
-      setDestination(modelTrip.destination)
-    }, 1000);
+    setLoading(true)
+    getCurrentTrip()
+    // const timer = setTimeout(() => {
+    //   setTripId(modelTrip.trip_id)
+    //   setPodcasts(modelTrip.podcasts)
+    //   setStartingLocation(modelTrip.starting_loc)
+    //   setDestination(modelTrip.destination)
+    // }, 1000);
   }, [])
 
   useEffect(() => {
     if(tripId && podcasts){
-      setLoading(false)
+      console.log('setting loading false')
+      // setLoading(false)
     }
   }, [tripId, podcasts])
 
-  const onReplace = (podIndex) => {
+
+  const getCurrentTrip = async () => {
+    // TODO: This should be a GET request
+    const res = fetch('http://db8.cse.nd.edu:5006/getCurrTrip?' + new URLSearchParams({
+      username: global.user.username
+    })).then((response) => {
+      return response.json()
+    })
+    .then((data) => {
+      // setStartingLocation(data.start_loc)
+      // setDestination(data.destination)
+      // setPodcasts(data.podcasts)
+      // setTripId(data.trip_id)
+      // setLoading(false)
+      console.log(data)
+    }).catch(function(error) {
+      alert('An error occurred. Please try again.')
+      navigation.navigate('Profile Home')
+    })
+  }
+
+  const onReplace = async (podIndex) => {
     // TODO: CALL THE REPLACE ENDPOINT
+    // POST REQUEST
+    // THIS IS NOT DONE
+    const res = fetch('http://db8.cse.nd.edu:5006/updateHistSavedTrip',  {
+      method: 'POST',
+      body: JSON.stringify({
+        duration: podcasts[podIndex].duration,
+        categories: (route.params.categories).join(',').replace(/\s/g, '_'),
+        username: global.user.username
+      }),
+      headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+      }
+    }).then((response) => {
+        return response.json()
+    }).then((data) => {
+      // reload current trip information
+      // handle how to update the trip information probably just setPodcasts and it will update?
+    }).catch(function(error) {
+      alert('Unable to replace this podcast.')
+    })
   }
 
   const handleSaveRating = () => {
     // TODO: create backend endpoint to rate a podcast
         // SEND IT username, podcast_id, tripId (prop), and rating
+
   }
 
   const ratingCompleted = (rating, podcastIndex) => {
     podcasts[podcastIndex].rating = rating;
     setPodcasts(podcasts)
     // edit the current trip podcast information so that it reflects the new rating
+    // im confused when this runs
   }
 
   return (
