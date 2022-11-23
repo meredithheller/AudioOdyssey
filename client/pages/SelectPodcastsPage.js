@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
-import PodcastChoice from '../components/podcastChoice';
 import TripCard from '../components/tripCard'
 
 export default function SelectPodcastsPage({ navigation, route }) {
@@ -23,55 +22,62 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }, [])
 
   const onSelectTrip = (id) => {
-    console.log(id)
     setSelectedTrip(id)
   }
 
 
-  const handleSaveTrip = () => {
+  const handleSaveTrip = async () => {
     // console.log(selectedTrip)
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
     }else{
-      console.log(tripPossibilities[selectedTrip])
       // TODO: THIS IS WHERE WE NEED TO MAKE POST REQUEST TO SAVE THE TRIP
       // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
         // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
         // 
+        const res = fetch('http://db8.cse.nd.edu:5006/saveTrip', {
+          method: 'POST',
+          body: JSON.stringify({
+            username: global.user.username,
+            start_loc: route.params.startLocation,
+            destination: route.params.endLocation,
+            tripInfo: tripPossibilities[selectedTrip],
+            categories: route.params.categories
+          }),
+          headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+          }
+        }).then((response) => {
+          return response.json()
+        })
+        .then((data) => {
+          alert("Successfully saved your trip. View it in the current trip page of your profile.")
+          navigation.navigate('Plan Trip')
+        }).catch(function(error) {
+          alert('An error occurred. Please try again.')
+        })
     }
   }
 
-  const onReplace = (tripIndex, podcastIndex) => {
-    // TODO: make API call to replace the podcast
-      // IN THIS CALL: get a new podcast of similar length from the categories that hasn't been listened to or replaced already
-      // ALSO IN THIS CALL: add to the history that user replaced this podcast so we don't show in the future (probably do this first)
-    // update the trip options array with new podcast in correct trip option
-
-  //   console.log("here")
-  //   console.log(route.params.podcasts)
-  //   if(!route.params.podcasts.includes(selectedId)){
-  //     alert("Enter a valid podcast id")
-  //   }else{
-  //     navigation.navigate('Plan Trip')
-  //     const response = fetch('http://db8.cse.nd.edu:5006/saveTrip', {
-  //     method: 'POST',
-  //     headers: {
-  //     'Content-Type': 'application/json'
-  //   },
-  //     body: JSON.stringify({
-  //     start: route.params.startLocation,
-  //     stop: route.params.endLocation,
-  //     episode_uri: selectedId
-  //   })
-  //   }).then((response) => {
-  //   if(response.ok){
-  //   console.log(`this worked`)
-  //   }}
-  //   ).catch((e) => {
-  //     console.log(e.response);
-  //   });
-  // }
-  //   // 2nd endpoint: add the trip id, episode uri, and a rating of 0 to the trip_rating table
+  const onReplace = (podcastIndex, tripIndex) => {
+    // TODO implement replacing the podcast
+    const res = fetch('http://db8.cse.nd.edu:5006/updateHistNewTrip' + new URLSearchParams({
+      username: global.user.username
+    })).then((response) => {
+      return response.json()
+    })
+    .then((data) => {
+      // setStartingLocation(data.start_loc)
+      // setDestination(data.destination)
+      // setPodcasts(data.podcasts)
+      // setTripId(data.trip_id)
+      // setLoading(false)
+      console.log(data)
+    }).catch(function(error) {
+      setLoading(false)
+      alert('An error occurred. Please try again.')
+      navigation.navigate('Profile Home')
+    })
   }
 
   return (
@@ -89,7 +95,20 @@ export default function SelectPodcastsPage({ navigation, route }) {
         <Text style={styles.header}>Select Podcasts</Text>
         { tripPossibilities.map((trip, index) => {
                 return (
-                  <TripCard onReplace={onReplace} canEdit={true} key={index} tripNum={index} onSelectTrip={onSelectTrip} tripInfo={trip} selected={selectedTrip == index}/>
+                  <TripCard 
+                    tripId={null}
+                    headerText={"Option " + (index+1)}
+                    disabled={false} 
+                    onReplace={onReplace} 
+                    canEdit={true} 
+                    key={index} 
+                    canRate={false}
+                    ratingCompleted={null}
+                    tripNum={index} 
+                    onSelectTrip={onSelectTrip} 
+                    tripInfo={trip} 
+                    selected={selectedTrip == index}
+                    updateRatings={null}/>
                 )
             })}
       </ScrollView>

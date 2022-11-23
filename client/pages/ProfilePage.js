@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function ProfilePage({ navigation }) {
@@ -32,6 +32,10 @@ export default function ProfilePage({ navigation }) {
     info: {
       fontSize: 25
     },
+    container: {
+      backgroundColor: 'lightblue',
+      height: '100%'
+    },
     logoutBtn: {
       width:"80%",
       borderRadius: 10,
@@ -46,10 +50,10 @@ export default function ProfilePage({ navigation }) {
       padding: 10,
       fontSize: 15,
     }
-  });
+});
 
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
       <View style={styles.profileContainer}>
         <Ionicons name='ios-person' size={100} color={'#003f5c'}></Ionicons>
         <View>
@@ -65,7 +69,7 @@ export default function ProfilePage({ navigation }) {
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {navigation.navigate("Upcoming Trips")}}>
+        <TouchableOpacity onPress={() => {navigation.navigate("Current Trip")}}>
           <View style={styles.linkContainer}>
             <Text style={styles.link}>Current Trip</Text>
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
@@ -77,7 +81,7 @@ export default function ProfilePage({ navigation }) {
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {navigation.navigate("Past Trips")}}>  
+        <TouchableOpacity onPress={() => {navigation.navigate("AudioOdyssey Wrapped")}}>  
           <View style={styles.linkContainer}>    
             <Text style={styles.link}>My AudioOdyssey Wrapped</Text>
             <Ionicons name="ios-play" size={25} color={'#003f5c'} />
@@ -88,6 +92,6 @@ export default function ProfilePage({ navigation }) {
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

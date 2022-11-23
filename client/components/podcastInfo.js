@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView 
 import { Rating, AirbnbRating } from 'react-native-ratings';
 
 
-export default function PodcastInfo({ onReplace, tripIndex, canRate, canEdit, podInfo, podIndex }) {
+export default function PodcastInfo({ currentRating, tripId, ratingCompleted, onReplace, tripIndex, canRate, canReplace, podInfo, podIndex }) {
     const [ rating, setRating ] = useState(0)
 
     useEffect(() => {
@@ -14,12 +14,6 @@ export default function PodcastInfo({ onReplace, tripIndex, canRate, canEdit, po
     let episode_name = "Happy Family Organics"
     let episode_desc = "This episode gets very emotional very quickly, so don't be surprised if we suddenly burst out in tears. We talk about not feeling good enough, insecurities, and confrontation. It's an emotional rollercoaster.  ---   Support this podcast: https://anchor.fm/teenagertherapy/support"
 
-    const ratingCompleted = (rating) => {
-        // edit the podcast/trip object
-        console.log(rating)
-        setRating(rating)
-    }
-
     return (
         podInfo &&
         <View style={styles.podcastContainer}>
@@ -27,10 +21,12 @@ export default function PodcastInfo({ onReplace, tripIndex, canRate, canEdit, po
                 <View style={styles.leftSide}>
                     <Image style={styles.podImage}
                             source={{
-                                uri: podInfo.image_uri
+                                uri: podInfo.image_url
                             }}
                             resizeMode={'contain'}/>
-                    { canEdit && <Pressable style={styles.replaceButton} onPress={() => onReplace(tripIndex, podIndex)}>
+                    { canReplace && <Pressable 
+                        style={styles.replaceButton} 
+                        onPress={()=> onReplace(podIndex, tripIndex)}>
                         <Text style={{color: '#fff'}}>Replace</Text>
                     </Pressable>}
                 </View>
@@ -41,7 +37,8 @@ export default function PodcastInfo({ onReplace, tripIndex, canRate, canEdit, po
                 </View>
             </View>
             { canRate && <Rating
-                onFinishRating={(rating) => ratingCompleted(rating)}
+                startingValue={podInfo.rating}
+                onFinishRating={(rating) => ratingCompleted(rating, podIndex, tripIndex)}
                 style={{ paddingVertical: 10}}
             /> }
         </View>
