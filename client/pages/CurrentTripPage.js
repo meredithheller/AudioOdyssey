@@ -57,8 +57,7 @@ export default function CurrentTrip({ navigation }) {
 
   useEffect(() => {
     if(tripId && podcasts){
-      console.log('setting loading false')
-      // setLoading(false)
+      setLoading(false)
     }
   }, [tripId, podcasts])
 
@@ -71,12 +70,10 @@ export default function CurrentTrip({ navigation }) {
       return response.json()
     })
     .then((data) => {
-      // setStartingLocation(data.start_loc)
-      // setDestination(data.destination)
-      // setPodcasts(data.podcasts)
-      // setTripId(data.trip_id)
-      // setLoading(false)
-      console.log(data)
+      setStartingLocation(data.start_loc)
+      setDestination(data.destination)
+      setPodcasts(data.podcasts)
+      setTripId(data.trip_id)
     }).catch(function(error) {
       alert('An error occurred. Please try again.')
       navigation.navigate('Profile Home')
@@ -112,8 +109,9 @@ export default function CurrentTrip({ navigation }) {
         // SEND IT username, podcast_id, tripId (prop), and rating
         let podRatings = [] 
         for(let pod in podcasts){
-          podRatings.push((podcasts[pod].uri, podcasts[pod].rating))
+          podRatings.push({"uri": podcasts[pod].uri, "rating": podcasts[pod].rating})
         }
+        console.log(podRatings)
         const res = fetch('http://db8.cse.nd.edu:5006/saveRating',  {
           method: 'POST',
           body: JSON.stringify({
@@ -128,12 +126,14 @@ export default function CurrentTrip({ navigation }) {
             return response.json()
         }).then((data) => {
           // handle response
+          alert('Successfully saved ratings.')
         }).catch(function(error) {
-
+          alert('there was a problem saving podcast rating')
         })
   }
 
   const ratingCompleted = (rating, podcastIndex) => {
+    console.log('here')
     podcasts[podcastIndex].rating = rating;
     setPodcasts(podcasts)
     // edit the current trip podcast information so that it reflects the new rating
