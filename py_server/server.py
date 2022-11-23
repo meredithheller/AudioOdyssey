@@ -66,7 +66,7 @@ def getRandResults(duration):
 def trip_options():
     # deconstruct params
     args_dict = request.args.to_dict()
-    duration = float(args_dict['duration'])
+    duration = random.uniform(20, 150)
     if args_dict['categories'] == 'none':
         categories = {}
         # randomly select 200 podcasts if no categories were provided
@@ -198,7 +198,57 @@ def jsonify_podcasts(podcast_options):
 
 
 # return set of podcasts user has listened to or replaced
-def get_user_history():
+@app.route('/getCurrTrip', methods=['GET'])
+def get_curr_trip():
+     # deconstruct params
+    args_dict = request.args.to_dict()
+    cur = mysql.connection.cursor()
+    cur.execute("select * from trip_info where username = '{username}' order by date_created desc limit 1;".format(
+        username = args_dict['username']
+    ))
+    most_recent = cur.fetchone() # 0,0 or just 0? for whole row?
+    if most_recent == None:
+        most_recent = "You haven't listened to any podcasts yet"
+
+    else:
+        cur.execute("select episode_uri, rating from trip_episode_ratings where trip_id = {tripid};".format(
+            tripid=most_recent[0]
+        ))
+        eps = cur.fetchall()
+        podcasts = []
+        for x in range(0,3):
+
+            cur.execute("select episode_description from descriptions where episode_uri = '{uri}';".format(
+                uri=eps[x][0]
+            ))
+            desc = cur.fetchall()
+        
+            cur.execute("select episode_name, show_name from podcasts where episode_uri = '{uri}';".format(
+                uri=eps[x][0]
+            ))
+            pod = cur.fetchall()
+
+            '''
+            print(pod[0][1])
+            print(pod[0][0])
+            print(desc[0][0])
+            print(eps[x][1])
+            print("")
+            '''
+
+            current = {"rating": eps[x][1], "episode_name": pod[0][0], "show_name": pod[0][1], "description": desc[0][0]}
+            #print(current)
+            podcasts.append(current)
+
+    output = {"trip_id" : most_recent[0], "start_loc" : most_recent[2], "destination" : most_recent[3], "podcasts" : podcasts}
+                
+    mysql.connection.commit()
+    #output: (json)
+    
+    return output
+
+# need to handle paginated
+def get_user_hist():
     pass
 
 # need to handle what to do if they haven't listened to a podcast from that category yet
@@ -263,28 +313,133 @@ def parse_request():
 @app.route('/saveTrip', methods=['POST'])
 def save_trip():
     data = request.json
-
+    # username, categories (cat & rating), subcategories (cat & rating), description, duration, show_name, episode_name, 
     cur = mysql.connection.cursor()
     cur.execute("UPDATE total_trips SET num_trips = num_trips + 1;")
+    mysql.connection.commit()
     cur.execute("select * from total_trips limit 1;")
     trip_id = cur.fetchall()[0][0]
+    print(trip_id)
     cur.execute("select now()")
     date = cur.fetchall()[0][0]
-    cur.execute("INSERT INTO trip_info (trip_id, start_location, end_location, date_created) VALUES ('{tripid}','{start}','{stop}', '{date}');".format(
+    cur.execute("INSERT INTO trip_info (trip_id, username, start_location, stop_location, date_created) VALUES ('{tripid}', '{username}', '{start}','{stop}', '{date}');".format(
         tripid = trip_id,
-        start = data['start'],
-        stop = data['stop'],
+        username = data['username'],
+        start = data['start_loc'],
+        stop = data['destination'],
         date = date
     ))
+    # trip_info endpoint 1?
+    for podcast in data['tripInfo']:
+        cur.execute("INSERT INTO trip_episode_ratings (username, trip_id, episode_uri, rating) VALUES ('{uname}','{tripid}','{episode_uri}', '{rating}');".format(
+            uname = data['username'],
+            tripid = trip_id,
+            episode_uri = podcast['uri'],
+            rating = -1
+        ))
+    print(trip_id)
+    for cat in data["categories"]:
+        cur.execute("INSERT INTO trip_categories (trip_id, category) VALUES ('{tripid}', '{cat}');".format(
+            tripid  = trip_id,
+            cat     = cat
+        ))
 
-    cur.execute("INSERT INTO trip_episode_ratings (trip_id, episode_uri, rating) VALUES ('{tripid}','{episode_uri}', '{rating}');".format(
-        tripid = trip_id,
-        episode_uri = data['episode_uri'],
-        rating = 0
-    ))
-    
     mysql.connection.commit()
     return request.data 
+
+###
+### This is where I'm working
+###
+
+@app.route('/saveRating', methods=['POST'])
+def save_Rating():
+    data = request.json
+    cur = mysql.connection.cursor()
+    for row in data['podcasts']: # arbitary naming of this value passed as podcasts. can be changed whenever
+        '''
+        #cur.execute("INSERT INTO trip_episode_ratings VALUES ('{uname}', '{trip_id}', '{uri}', '{rating}');".format(
+            uname = data['username'],
+            trip_id = data['trip_id'],
+            uri = row[0],
+            rating = row[1]
+        )'''
+        # if they have already rated, then ignore a -1.
+        # if they haven't already rated, then check -1
+
+        if row[1] != -1:
+            ## categories
+            # acquires all categories associated with episode
+            # cur.execute("UPDATE trip_episode_ratings set "
+
+            cur.execute("select category from categories where episode_uri = '{uri}';").format(
+                uri = row[0]
+            )
+            cats = cur.fetchall()[0][0]
+
+            # for each category in the list of categories
+            for cat in cats:
+                # get the row in user_category_store associated with the username and category
+                cur.execute("select * from user_category_score where username = {uname} and category = {cat};").format(
+                    uname = data['username'],
+                    cat = cat
+                )
+                results = cur.fetchall()[0][0]
+
+                # if the row exists (returns non-empty table), updates the row
+                if results != '':
+                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = {user} and category = {cat};").format(
+                        rating = row[1],
+                        user = data['username']
+                    )
+                # otherwise- if the row is empty, insert the data into the user_category_score table
+                else:
+                    cur.execute("insert into user_category_score values ({user}, {cat}, {count}, {score};").format(
+                        user = data['username'],
+                        cat = cat,
+                        count = row[1],
+                        rating = row[1]
+                    )
+            
+            ## subcategories (same as categories)
+            cur.execute("select subcategory from subcategories where episode_uri = '{uri}';").format(
+                uri = row[0]
+            )
+            subcats = cur.fetchall()[0][0]
+            for subcat in subcats:
+                cur.execute("select * from user_subcategory_score where username = {uname} and subcategory = {subcat};").format(
+                    uname = data['username'],
+                    subcat = subcat
+                )
+                results = cur.fetchall()[0][0]
+                if results != '':
+                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = {user} and category = {subcat};").format(
+                        rating = row[1],
+                        user = data['username']
+                    )
+                else:
+                    cur.execute("insert into user_subcategory_score values ({user}, {subcat}, {count}, {score};").format(
+                        user = data['username'],
+                        subcat = subcat,
+                        count = row[1],
+                        rating = row[1]
+                    )
+
+
+    mysql.connection.commit()
+    return [] #UPDATE
+
+# /update_history
+@app.route('/updateHist', methods=['POST'])
+def update_History():
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO episode_history values('{user}','{uri}','{rep}');".format(
+        user = data['username'],
+        uri = data['episode_uri'],
+        rep = data['replaced']
+    ))
+
+    return []
 
 if __name__ == "__main__":
     app.run(host='db8.cse.nd.edu',debug=True, port=5006)
