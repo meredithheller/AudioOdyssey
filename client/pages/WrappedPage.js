@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ImageBackground, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { REACT_APP_PORT_NUM } from '@env'
 
 function Buddy(name='', phoneNumber='') {
   this.name = name
@@ -21,14 +22,13 @@ export default function WrappedPage({ navigation }) {
   const [ errorCategory, setErrorCategory ] = useState(false)
   const [ loadingCategory, setLoadingCategory ] = useState(true)
   const [ percentile, setPercentile ] = useState()
-  const [ buddy, setBuddy ] = useState()
+  const [ buddy, setBuddy ] = useState(new Buddy())
   const [ errorBuddy, setErrorBuddy ] = useState(false)
   const [ loadingBuddy, setLoadingBuddy ] = useState(true)
 
   useEffect(() => {
-
     const fetchData = async () => {
-      const minuteRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/minutes?' + new URLSearchParams({
+      const minuteRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/minutes?` + new URLSearchParams({
         username: global.user.username
       }))
       if( minuteRes.status == 200) {
@@ -39,7 +39,7 @@ export default function WrappedPage({ navigation }) {
         setLoadingMinutes(false)
         setErrorMinutes(true)
       }
-      const milesRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/miles?' + new URLSearchParams({
+      const milesRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/miles?` + new URLSearchParams({
         username: global.user.username
       }))
       if( milesRes.status == 200) {
@@ -50,7 +50,7 @@ export default function WrappedPage({ navigation }) {
         setLoadingMiles(false)
         setErrorMiles(true)
       }
-      const categoryRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/category?' + new URLSearchParams({
+      const categoryRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/category?` + new URLSearchParams({
         username: global.user.username
       }))
       if( categoryRes.status == 200) {
@@ -62,17 +62,18 @@ export default function WrappedPage({ navigation }) {
         setLoadingCategory(false)
         setErrorCategory(true)
       }
-      const buddyRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/buddy?' + new URLSearchParams({
+      const buddyRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/buddy?` + new URLSearchParams({
         username: global.user.username
       }))
       if( buddyRes.status == 200) {
         let data = await buddyRes.json()
+        console.log(data.firstName)
         let their_buddy = new Buddy((data.firstName + ' ' + data.lastName), data.phone)
         setBuddy(their_buddy)
         setLoadingBuddy(false)
       }else{
-        setLoadingBuddy(false)
         setErrorBuddy(true)
+        setLoadingBuddy(false)
       }
     }
 
@@ -190,7 +191,6 @@ export default function WrappedPage({ navigation }) {
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   container: {

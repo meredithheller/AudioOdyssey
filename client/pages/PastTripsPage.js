@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import TripCard from '../components/tripCard'
+import { REACT_APP_PORT_NUM } from '@env'
 
 let pastTrips = [{ "trip_id": 439841,
 "starting_loc": "Boston, MA",
@@ -108,7 +109,7 @@ export default function PastTripsPage({ navigation, route }) {
     for(let pod in tripHistory[tripIndex]){
       podRatings.push((podcasts[pod].uri, podcasts[pod].rating))
     }
-    const res = fetch('http://db8.cse.nd.edu:5006/saveRating',  {
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveRating`,  {
       method: 'POST',
       body: JSON.stringify({
         trip_id: tripHistory[tripId],

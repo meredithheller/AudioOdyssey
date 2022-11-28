@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import TripCard from '../components/tripCard'
+import { REACT_APP_PORT_NUM } from '@env'
 
 let modelTrip = { "trip_id": 4313254,
 "starting_loc": "Boston, MA",
@@ -47,12 +48,6 @@ export default function CurrentTrip({ navigation }) {
       // be sure to handle the fact that there is not a current trip
     setLoading(true)
     getCurrentTrip()
-    // const timer = setTimeout(() => {
-    //   setTripId(modelTrip.trip_id)
-    //   setPodcasts(modelTrip.podcasts)
-    //   setStartingLocation(modelTrip.starting_loc)
-    //   setDestination(modelTrip.destination)
-    // }, 1000);
   }, [])
 
   useEffect(() => {
@@ -64,7 +59,7 @@ export default function CurrentTrip({ navigation }) {
 
   const getCurrentTrip = async () => {
     // TODO: This should be a GET request
-    const res = fetch('http://db8.cse.nd.edu:5006/getCurrTrip?' + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/getCurrTrip?` + new URLSearchParams({
       username: global.user.username
     })).then((response) => {
       return response.json()
@@ -84,7 +79,7 @@ export default function CurrentTrip({ navigation }) {
     // TODO: CALL THE REPLACE ENDPOINT
     // POST REQUEST
     // THIS IS NOT DONE
-    const res = fetch('http://db8.cse.nd.edu:5006/updateHistSavedTrip',  {
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/updateHistSavedTrip`,  {
       method: 'POST',
       body: JSON.stringify({
         duration: podcasts[podIndex].duration,
@@ -112,7 +107,7 @@ export default function CurrentTrip({ navigation }) {
           podRatings.push({"uri": podcasts[pod].uri, "rating": podcasts[pod].rating})
         }
         console.log(podRatings)
-        const res = fetch('http://db8.cse.nd.edu:5006/saveRating',  {
+        const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveRating`,  {
           method: 'POST',
           body: JSON.stringify({
             trip_id: tripId,
@@ -168,7 +163,7 @@ export default function CurrentTrip({ navigation }) {
       <Pressable 
               style={styles.button} 
               onPress={() => {
-              handleSaveTrip()
+              handleSaveRating()
             }}>
               <Text style={styles.buttonText} onPress={() => handleSaveRating()}>Save Podcast Ratings</Text>
       </Pressable>

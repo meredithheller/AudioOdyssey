@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import TripCard from '../components/tripCard'
+import { REACT_APP_PORT_NUM } from '@env'
 
 export default function SelectPodcastsPage({ navigation, route }) {
 
@@ -35,7 +36,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
       // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
         // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
         // 
-        const res = fetch('http://db8.cse.nd.edu:5006/saveTrip', {
+        const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveTrip`, {
           method: 'POST',
           body: JSON.stringify({
             username: global.user.username,
@@ -61,7 +62,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
 
   const onReplace = (podcastIndex, tripIndex) => {
     // TODO implement replacing the podcast
-    const res = fetch('http://db8.cse.nd.edu:5006/updateHistNewTrip' + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/updateHistNewTrip` + new URLSearchParams({
       username: global.user.username
     })).then((response) => {
       return response.json()

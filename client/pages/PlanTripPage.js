@@ -18,10 +18,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import categs from '../constants/categories'
+import { REACT_APP_GOOGLE_PLACES_API_KEY, REACT_APP_PORT_NUM } from '@env'
 
-
-// insert api key here
-const GOOGLE_PLACES_API_KEY = 'AIzaSyBMjWK0DK6yaebYMZK5h98IPEgWPjwnB0I';
 
 export default function PlanTripPage({ navigation, route }) {
   const [searchStartKeyword, setSearchStartKeyword] = useState('')
@@ -83,7 +81,7 @@ export default function PlanTripPage({ navigation, route }) {
     axios
       .request({
         method: 'get',
-        url: `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${GOOGLE_PLACES_API_KEY}`,
+        url: `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${REACT_APP_GOOGLE_PLACES_API_KEY}`,
         headers: {}
       })
       .then((response) => {
@@ -104,7 +102,7 @@ export default function PlanTripPage({ navigation, route }) {
       formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
     }
     // TODO: This should be a GET request
-    const res = fetch('http://db8.cse.nd.edu:5006/tripOptions?' + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/tripOptions?` + new URLSearchParams({
       duration: duration,
       categories: formattedCategoryParam,
     })).then((response) => {
