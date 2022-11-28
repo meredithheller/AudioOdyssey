@@ -5,7 +5,8 @@ from flask import request
 import json
 import random
 from ex_response import backend_response
-from algorithms import find_trip
+from podcast_algorithm import find_trip
+import phonenumbers
 
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
@@ -306,6 +307,54 @@ def save_trip():
     mysql.connection.commit()
     return request.data
 
+# TODO: implement
+# args: username
+# return: total number of minutes of podcasts the user has listened to (as a formatted string please)
+@app.route('/wrapped/minutes', methods=['GET'])
+def minutes():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    totalMinutes = round(random.uniform(20, 10000000))
+    minutes = str("{:,}".format(totalMinutes))
+    return minutes # return as formatted string please (with commas)
+
+# TODO: implement
+# args: username
+# return: total number of miles user has traveled as a formatted string(could make this easier by adding a trip miles column to the trip_info table and calling the google maps api in that endpoint (/saveTrip) to get the miles between start location and destination, then just need to add all of the users miles from that table and return here)
+@app.route('/wrapped/miles', methods=['GET'])
+def miles():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    totalMiles = round(random.uniform(20, 10000000))
+    miles = str("{:,}".format(totalMiles))
+    return miles # return as formatted string please (with commas)
+
+# TODO: implement
+# args: username
+# return: json object of their highest rated category and the percentile (formatted as ordinal number, the function do so is already in here) of listeners that they are within that category
+@app.route('/wrapped/category', methods=['GET'])
+def topCategory():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    topCategory = 'News'
+    percentile = round(random.uniform(0, 100)) #convert (round to nearest whole percent) and return as a string here
+    ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+    ordinal_percentile = ordinal(percentile)
+    return { 'topCategory': topCategory, 'percentile': ordinal_percentile}
+
+# TODO: implement
+@app.route('/wrapped/buddy', methods=['GET'])
+def buddy():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    firstName = 'George'
+    lastName = 'Washington'
+    formatted_number = '3095334163'
+    try:
+        formatted_number = phonenumbers.format_number(phonenumbers.parse("8006397663", 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+    except: 
+        print('cannot format phone number')
+    return { 'firstName': firstName, 'lastName': lastName, 'phone': formatted_number }
 
 if __name__ == "__main__":
     app.run(host='db8.cse.nd.edu', debug=True, port=5006)
