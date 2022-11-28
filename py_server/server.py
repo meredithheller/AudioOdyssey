@@ -5,7 +5,9 @@ from flask import request
 import json
 import random
 from ex_response import backend_response
-from algorithms import find_trip
+from podcast_algorithm import find_trip
+import phonenumbers
+
 
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
@@ -462,6 +464,49 @@ def update_History():
     ))
 
     return []
+
+# TODO: implement
+@app.route('/wrapped/minutes', methods=['GET'])
+def minutes():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    totalMinutes = round(random.uniform(20, 10000000))
+    minutes = str("{:,}".format(totalMinutes))
+    return minutes #return as string please
+
+# TODO: implement
+@app.route('/wrapped/miles', methods=['GET'])
+def miles():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    totalMiles = round(random.uniform(20, 10000000))
+    miles = str("{:,}".format(totalMiles))
+    return miles # return as string please
+
+# TODO: implement
+@app.route('/wrapped/category', methods=['GET'])
+def topCategory():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    topCategory = 'News'
+    percentile = round(random.uniform(0, 100)) #convert (round to nearest whole percent) and return as a string here
+    ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+    ordinal_percentile = ordinal(percentile)
+    return { 'topCategory': topCategory, 'percentile': ordinal_percentile}
+
+# TODO: implement
+@app.route('/wrapped/buddy', methods=['GET'])
+def buddy():
+    args_dict = request.args.to_dict()
+    username = args_dict['username']
+    firstName = 'George'
+    lastName = 'Washington'
+    formatted_number = '3095334163'
+    try:
+        formatted_number = phonenumbers.format_number(phonenumbers.parse("8006397663", 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+    except: 
+        print('cannot format phone number')
+    return { 'firstName': firstName, 'lastName': lastName, 'phone': formatted_number }
 
 if __name__ == "__main__":
     app.run(host='db8.cse.nd.edu',debug=True, port=5006)
