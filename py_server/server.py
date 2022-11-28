@@ -210,6 +210,53 @@ def jsonify_podcasts(podcast_options):
             pod['categories'] = list(pod['categories'])
     return jsonify(podcast_options)
 
+# return set of podcasts user has listened to or replaced
+@app.route('/getCurrTrip', methods=['GET'])
+def get_curr_trip():
+     # deconstruct params
+    args_dict = request.args.to_dict()
+    cur = mysql.connection.cursor()
+    cur.execute("select * from trip_info where username = '{username}' order by date_created desc limit 1;".format(
+        username = args_dict['username']
+    ))
+    most_recent = cur.fetchone() # 0,0 or just 0? for whole row?
+    if most_recent == None:
+        most_recent = "You haven't listened to any podcasts yet"
+
+    else:
+        cur.execute("select episode_uri, rating from trip_episode_ratings where trip_id = {tripid};".format(
+            tripid=most_recent[0]
+        ))
+        eps = cur.fetchall()
+        podcasts = []
+        for x in range(0, len(eps)):
+
+            cur.execute("select episode_description from descriptions where episode_uri = '{uri}';".format(
+                uri=eps[x][0]
+            ))
+            desc = cur.fetchall()
+        
+            cur.execute("select episode_name, show_name from podcasts where episode_uri = '{uri}';".format(
+                uri=eps[x][0]
+            ))
+            pod = cur.fetchall()
+
+            cur.execute("select image_url from image_urls where episode_uri = '{uri}';".format(
+                uri=eps[x][0]
+            ))
+            img_url = cur.fetchall()
+
+            current = {"uri": eps[x][0], "image_url": img_url[0][0], "rating": eps[x][1], "episode_name": pod[0][0], "show_name": pod[0][1], "description": desc[0][0]}
+            #print(current)
+            podcasts.append(current)
+
+    output = {"trip_id" : most_recent[0], "start_loc" : most_recent[2], "destination" : most_recent[3], "podcasts" : podcasts}
+                
+    mysql.connection.commit()
+    #output: (json)
+    
+    return output
+
 
 # return set of podcasts user has listened to or replaced
 def get_user_history():
