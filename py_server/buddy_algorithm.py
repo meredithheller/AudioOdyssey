@@ -1,13 +1,23 @@
 from scipy import spatial
 
-def find_buddy(users):
-    
-    pass
+def find_buddy(username, users):
+    # create own vector
+    user_vector = [ users[username][cat] if users[username][cat] else 0 for cat in category_array]
+    most_similar_dist = None
+    most_similar_username = ''
+    for user in users:
+        dist = similarity(user_vector, users[user])
+        if most_similar_dist == None or dist < most_similar_dist:
+            most_similar_dist = dist
+            most_similar_username = user
+    return most_similar_username
 
 
 # compute the similarity between another user and 
 def similarity(user_vector, other_user_dict):
     # create their vectors
+    other_user_vect = [ other_user_dict[cat] if other_user_dict[cat] else 0 for cat in category_array]
+    userDistance = spatial.distance.cosine(other_user_vect, user_vector)
     pass
 
 
