@@ -229,7 +229,7 @@ def get_curr_trip():
         ))
         eps = cur.fetchall()
         podcasts = []
-        for x in range(0,3):
+        for x in range(0, len(eps)):
 
             cur.execute("select episode_description from descriptions where episode_uri = '{uri}';".format(
                 uri=eps[x][0]
@@ -241,15 +241,12 @@ def get_curr_trip():
             ))
             pod = cur.fetchall()
 
-            '''
-            print(pod[0][1])
-            print(pod[0][0])
-            print(desc[0][0])
-            print(eps[x][1])
-            print("")
-            '''
+            cur.execute("select image_url from image_urls where episode_uri = '{uri}';".format(
+                uri=eps[x][0]
+            ))
+            img_url = cur.fetchall()
 
-            current = {"rating": eps[x][1], "episode_name": pod[0][0], "show_name": pod[0][1], "description": desc[0][0]}
+            current = {"uri": eps[x][0], "image_url": img_url[0][0], "rating": eps[x][1], "episode_name": pod[0][0], "show_name": pod[0][1], "description": desc[0][0]}
             #print(current)
             podcasts.append(current)
 
@@ -375,7 +372,8 @@ def save_trip():
 def save_Rating():
     data = request.json
     cur = mysql.connection.cursor()
-    for row in data['podcasts']: # arbitary naming of this value passed as podcasts. can be changed whenever
+
+    for pod in data['podcastRatings']: # arbitary naming of this value passed as podcasts. can be changed whenever
         '''
         #cur.execute("INSERT INTO trip_episode_ratings VALUES ('{uname}', '{trip_id}', '{uri}', '{rating}');".format(
             uname = data['username'],
@@ -386,63 +384,67 @@ def save_Rating():
         # if they have already rated, then ignore a -1.
         # if they haven't already rated, then check -1
 
-        if row[1] != -1:
+        if pod['rating'] != -1:
             ## categories
             # acquires all categories associated with episode
             # cur.execute("UPDATE trip_episode_ratings set "
 
-            cur.execute("select category from categories where episode_uri = '{uri}';").format(
-                uri = row[0]
-            )
-            cats = cur.fetchall()[0][0]
+            cur.execute("select category from categories where episode_uri = '{uri}';".format(
+                uri = pod['uri']
+            ))
+            cats = cur.fetchall()
 
             # for each category in the list of categories
             for cat in cats:
+                print(cat[0])
                 # get the row in user_category_store associated with the username and category
-                cur.execute("select * from user_category_score where username = {uname} and category = {cat};").format(
+                # CAUSING AN ERROR FOR SOME REASON
+                cur.execute("select * from user_category_score where username = '{uname}' and category = '{cat}';".format(
                     uname = data['username'],
-                    cat = cat
-                )
-                results = cur.fetchall()[0][0]
+                    cat = cat[0]
+                ))
+                results = cur.fetchall()
+                print(results)
 
                 # if the row exists (returns non-empty table), updates the row
-                if results != '':
-                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = {user} and category = {cat};").format(
-                        rating = row[1],
-                        user = data['username']
-                    )
+                if results != '()':
+                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = '{user}' and category = '{cat}';".format(
+                        rating = pod['rating'],
+                        user = data['username'],
+                        cat = cat
+                    ))
                 # otherwise- if the row is empty, insert the data into the user_category_score table
                 else:
-                    cur.execute("insert into user_category_score values ({user}, {cat}, {count}, {score};").format(
+                    cur.execute("insert into user_category_score values ({user}, {cat}, {count}, {score};".format(
                         user = data['username'],
                         cat = cat,
-                        count = row[1],
-                        rating = row[1]
-                    )
+                        count = pod['rating'],
+                        rating = pod['rating']
+                    ))
             
             ## subcategories (same as categories)
-            cur.execute("select subcategory from subcategories where episode_uri = '{uri}';").format(
-                uri = row[0]
-            )
+            cur.execute("select subcategory from subcategories where episode_uri = '{uri}';".format(
+                uri = pod['uri']
+            ))
             subcats = cur.fetchall()[0][0]
             for subcat in subcats:
-                cur.execute("select * from user_subcategory_score where username = {uname} and subcategory = {subcat};").format(
+                cur.execute("select * from user_subcategory_score where username = {uname} and subcategory = {subcat};".format(
                     uname = data['username'],
                     subcat = subcat
-                )
+                ))
                 results = cur.fetchall()[0][0]
                 if results != '':
-                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = {user} and category = {subcat};").format(
-                        rating = row[1],
+                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = {user} and subcategory = {subcat};".format(
+                        rating = pod['rating'],
                         user = data['username']
-                    )
+                    ))
                 else:
-                    cur.execute("insert into user_subcategory_score values ({user}, {subcat}, {count}, {score};").format(
+                    cur.execute("insert into user_subcategory_score values ({user}, {subcat}, {count}, {score};".format(
                         user = data['username'],
                         subcat = subcat,
-                        count = row[1],
-                        rating = row[1]
-                    )
+                        count = pod['rating'],
+                        rating = pod['rating']
+                    ))
 
 
     mysql.connection.commit()
