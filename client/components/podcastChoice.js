@@ -35,7 +35,6 @@ export default function PodcastChoice({ uri }) {
         })
       }).then(async (response) => response.json())
       .then((data) => {
-        console.log(data)
         setEpisodeName(data[0][0])
         setShowName(data[0][1])
         setRss('A link')

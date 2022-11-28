@@ -1,84 +1,72 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ImageBackground, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+function Buddy(firstName= '', lastName='', phoneNumber='') {
+  this.firstName = firstName;
+  this.lastName = lastName;
+  this.phoneNumber = phoneNumber;
+}
+
+
 export default function WrappedPage({ navigation }) {
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    image: {
-      flex: 1,
-      alignItems: 'center',
-      width: '100%',
-      opacity: 1
-    },
-    title: {
-      fontSize: 30,
-      fontFamily: 'Zapfino',
-      fontWeight: 'bold',
-    },
-    wrapped: {
-      color: 'black',
-      textTransform: 'uppercase',
-      fontSize: 36 ,
-      textAlign: 'center'
-    },
-    tap: {
-      margin: 25,
-      textAlign: 'center'
-    },
-    centeredView: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    modalView: {
-      margin: 20,
-      backgroundColor: "white",
-      borderRadius: 20,
-      padding: 35,
-      alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-      justifyContent: 'space-between',
-      height: '30%',
-      width: '60%'
-    },
-    modalViewTitle: {
-      margin: 20,
-      backgroundColor: "white",
-      borderRadius: 20,
-      padding: 35,
-      alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5
-    },
-    number: {
-      fontSize: 50,
-      textAlign: 'center'
-    },
-    caption: {
-      fontSize: 20,
-      textAlign: 'center'
+  const [position, setPosition] = useState(0);
+  const [ totalMinutes, setTotalMinutes ] = useState(0)
+  const [ errorMinutes, setErrorMinutes ] = useState(false)
+  const [ loadingMinutes, setLoadingMinutes ] = useState(true)
+  const [ miles, setMiles ] = useState(0)
+  const [ errorMiles, setErrorMiles ] = useState(false)
+  const [ loadingMiles, setLoadingMiles ] = useState(true)
+  const [ topCategory, setTopCategory ] = useState()
+  const [ errorCategory, setErrorCategory ] = useState(false)
+  const [ loadingCategory, setLoadingCategory ] = useState(true)
+  const [ percentile, setPercentile ] = useState()
+  const [ errorPercentile, setErrorPercentile ] = useState(false)
+  const [ loadingPercentile, setLoadingPercentile ] = useState(true)
+  const [ buddy, setBuddy ] = useState()
+  const [ errorBuddy, setErrorBuddy ] = useState(false)
+  const [ loadingBuddy, setLoadingBuddy ] = useState(true)
+
+  useEffect(() => {
+
+    const fetchData = async () => {
+      const minuteRes = await fetch('http://db8.cse.nd.edu:5009/wrapped/minutes?' + new URLSearchParams({
+        username: global.user.username
+      }))
+      if( minuteRes.status == 200) {
+        let data = await minuteRes.text()
+        setTotalMinutes(data)
+        setLoadingMinutes(false)
+      }else{
+        setErrorMinutes(true)
+      }
     }
-  });
+    // const getTotalMinutes = async () => {
+    
+    //   const res = fetch('http://db8.cse.nd.edu:5009/wrapped/minutes?' + new URLSearchParams({
+    //     username: global.user.username,
+    //   })).then((response) => {
+    //     return response.json()
+    //   })
+    //   .then((data) => {
+    //     console.log('minutes: ')
+    //     console.log(data)
+    //     setTotalMinutes(data)
+    //     setErrorMinutes(false)
+    //     // setTrips(data)
+    //     // setLoading(false)
+    //   }).catch(function(error) {
+    //     setErrorMinutes(true)
+    //     // setLoading(false)
+    //     // alert('An error occurred. Please try again.')
+    //   }).finally(() => {
+    //     setLoadingMinutes(false)
+    //   })
+    // }
+    // getTotalMinutes()
+    fetchData()
+  }, [])
 
   function changeSlide() {
     setPosition(position + 1);
@@ -86,8 +74,6 @@ export default function WrappedPage({ navigation }) {
       navigation.navigate("Profile Home");
     }
   }
-
-  let [position, setPosition] = useState(0);
 
   return (
     <View style={styles.container} onTouchEnd={changeSlide}>
@@ -111,9 +97,12 @@ export default function WrappedPage({ navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Ionicons name="headset" size={75} />
-              <Text style={styles.number}>123</Text>
-              <Text style={styles.caption}>Podcast Minutes</Text>
+              { errorMinutes ? <Text style={styles.caption}>There was an error getting your wrapped minutes.</Text> : 
+              <View>
+                <Ionicons style={{alignSelf: 'center'}} name="headset" size={75} />
+                <Text style={styles.number}>{ loadingMinutes ? 'Loading' : totalMinutes}</Text>
+                <Text style={styles.caption}>Podcast Minutes</Text>
+              </View>}
             </View>
           </View>
         </Modal>
@@ -177,3 +166,80 @@ export default function WrappedPage({ navigation }) {
     </View>
   )
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    flex: 1,
+    alignItems: 'center',
+    width: '100%',
+    opacity: 1
+  },
+  title: {
+    fontSize: 30,
+    fontFamily: 'Zapfino',
+    fontWeight: 'bold',
+  },
+  wrapped: {
+    color: 'black',
+    textTransform: 'uppercase',
+    fontSize: 36 ,
+    textAlign: 'center'
+  },
+  tap: {
+    margin: 25,
+    textAlign: 'center'
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    justifyContent: 'space-between',
+    height: '30%',
+    width: '60%'
+  },
+  modalViewTitle: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  number: {
+    fontSize: 28,
+    textAlign: 'center'
+  },
+  caption: {
+    fontSize: 20,
+    textAlign: 'center'
+  }
+});
