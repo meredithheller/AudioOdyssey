@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ImageBackground, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-function Buddy(firstName= '', lastName='', phoneNumber='') {
-  this.firstName = firstName;
-  this.lastName = lastName;
+function Buddy(name='', phoneNumber='') {
+  this.name = name
   this.phoneNumber = phoneNumber;
 }
 
@@ -22,8 +21,6 @@ export default function WrappedPage({ navigation }) {
   const [ errorCategory, setErrorCategory ] = useState(false)
   const [ loadingCategory, setLoadingCategory ] = useState(true)
   const [ percentile, setPercentile ] = useState()
-  const [ errorPercentile, setErrorPercentile ] = useState(false)
-  const [ loadingPercentile, setLoadingPercentile ] = useState(true)
   const [ buddy, setBuddy ] = useState()
   const [ errorBuddy, setErrorBuddy ] = useState(false)
   const [ loadingBuddy, setLoadingBuddy ] = useState(true)
@@ -31,7 +28,7 @@ export default function WrappedPage({ navigation }) {
   useEffect(() => {
 
     const fetchData = async () => {
-      const minuteRes = await fetch('http://db8.cse.nd.edu:5009/wrapped/minutes?' + new URLSearchParams({
+      const minuteRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/minutes?' + new URLSearchParams({
         username: global.user.username
       }))
       if( minuteRes.status == 200) {
@@ -39,32 +36,46 @@ export default function WrappedPage({ navigation }) {
         setTotalMinutes(data)
         setLoadingMinutes(false)
       }else{
+        setLoadingMinutes(false)
         setErrorMinutes(true)
       }
+      const milesRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/miles?' + new URLSearchParams({
+        username: global.user.username
+      }))
+      if( milesRes.status == 200) {
+        let data = await milesRes.text()
+        setMiles(data)
+        setLoadingMiles(false)
+      }else{
+        setLoadingMiles(false)
+        setErrorMiles(true)
+      }
+      const categoryRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/category?' + new URLSearchParams({
+        username: global.user.username
+      }))
+      if( categoryRes.status == 200) {
+        let data = await categoryRes.json()
+        setTopCategory(data['topCategory'])
+        setPercentile(data['percentile'])
+        setLoadingCategory(false)
+      }else{
+        setLoadingCategory(false)
+        setErrorCategory(true)
+      }
+      const buddyRes = await fetch('http://db8.cse.nd.edu:5006/wrapped/buddy?' + new URLSearchParams({
+        username: global.user.username
+      }))
+      if( buddyRes.status == 200) {
+        let data = await buddyRes.json()
+        let their_buddy = new Buddy((data.firstName + ' ' + data.lastName), data.phone)
+        setBuddy(their_buddy)
+        setLoadingBuddy(false)
+      }else{
+        setLoadingBuddy(false)
+        setErrorBuddy(true)
+      }
     }
-    // const getTotalMinutes = async () => {
-    
-    //   const res = fetch('http://db8.cse.nd.edu:5009/wrapped/minutes?' + new URLSearchParams({
-    //     username: global.user.username,
-    //   })).then((response) => {
-    //     return response.json()
-    //   })
-    //   .then((data) => {
-    //     console.log('minutes: ')
-    //     console.log(data)
-    //     setTotalMinutes(data)
-    //     setErrorMinutes(false)
-    //     // setTrips(data)
-    //     // setLoading(false)
-    //   }).catch(function(error) {
-    //     setErrorMinutes(true)
-    //     // setLoading(false)
-    //     // alert('An error occurred. Please try again.')
-    //   }).finally(() => {
-    //     setLoadingMinutes(false)
-    //   })
-    // }
-    // getTotalMinutes()
+
     fetchData()
   }, [])
 
@@ -113,9 +124,12 @@ export default function WrappedPage({ navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Ionicons name="car" size={75} />
-              <Text style={styles.number}>1240</Text>
-              <Text style={styles.caption}>Miles Driven</Text>
+              { errorMiles ? <Text style={styles.caption}>There was an error getting your wrapped miles.</Text> : 
+              <View>
+                <Ionicons style={{alignSelf: 'center'}} name="car" size={75} />
+                <Text style={styles.number}>{ loadingMiles ? 'Loading' : miles}</Text>
+                <Text style={styles.caption}>Miles Driven</Text>
+              </View>}
             </View>
           </View>
         </Modal>
@@ -126,9 +140,13 @@ export default function WrappedPage({ navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Ionicons name="trophy" size={75} />
-              <Text style={styles.number}>Islam</Text>
-              <Text style={styles.caption}>Top Category</Text>
+              { errorCategory ? <Text style={styles.caption}>There was an error getting your top category.</Text>
+              : <View>
+                <Ionicons style={{alignSelf: 'center'}} name="trophy" size={75} />
+                <Text style={styles.number}>{ loadingCategory ? 'Loading' : topCategory}</Text>
+                <Text style={styles.caption}>Top Category</Text>
+              </View>
+              }
             </View>
           </View>
         </Modal>
@@ -139,9 +157,12 @@ export default function WrappedPage({ navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Ionicons name="trending-up" size={75} />
-              <Text style={styles.number}>99%</Text>
-              <Text style={styles.caption}>Percentile of Islam listeners</Text>
+              { errorCategory ? <Text style={styles.caption}>There was an error getting your top category percentile.</Text>
+              : <View>
+                <Ionicons style={{alignSelf: 'center'}} name="trending-up" size={75} />
+                <Text style={styles.number}>{ loadingCategory ? 'Loading' : percentile}</Text>
+                <Text style={styles.caption}>Percentile of {topCategory} listeners</Text>
+              </View>}
             </View>
           </View>
         </Modal>
@@ -152,13 +173,16 @@ export default function WrappedPage({ navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Ionicons name="people" size={75} />
-              <Text style={styles.caption}>Suggested Road Trip Buddy</Text>
-              <View>
-                <Text>LeBron</Text>
-                <Text>James</Text>
-                <Text>123-456-7890</Text>
-              </View>
+              { errorBuddy ? <Text style={styles.caption}>There was an error getting your podcast buddy.</Text>
+              : <View>
+                <Ionicons style={{alignSelf: 'center'}} name="people" size={75} />
+                { loadingBuddy ? <Text style={styles.caption}> Loading Road Trip Buddy</Text> : 
+                <View style={{alignItems: 'center'}}>
+                  <Text style={{...styles.caption}}>Your Road Trip Buddy</Text>
+                  <Text>{buddy.name}</Text>
+                  <Text>{buddy.phoneNumber}</Text>
+                </View>}
+              </View>}
             </View>
           </View>
         </Modal>
