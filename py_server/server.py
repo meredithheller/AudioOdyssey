@@ -338,7 +338,6 @@ def save_trip():
     mysql.connection.commit()
     cur.execute("select * from total_trips limit 1;")
     trip_id = cur.fetchall()[0][0]
-    print(trip_id)
     cur.execute("select now()")
     date = cur.fetchall()[0][0]
     cur.execute("INSERT INTO trip_info (trip_id, username, start_location, stop_location, date_created) VALUES ('{tripid}', '{username}', '{start}','{stop}', '{date}');".format(
@@ -356,7 +355,7 @@ def save_trip():
             episode_uri = podcast['uri'],
             rating = -1
         ))
-    print(trip_id)
+
     for cat in data["categories"]:
         cur.execute("INSERT INTO trip_categories (trip_id, category) VALUES ('{tripid}', '{cat}');".format(
             tripid  = trip_id,
@@ -366,39 +365,50 @@ def save_trip():
     mysql.connection.commit()
     return request.data 
 
-###
-### This is where I'm working
-###
-
 @app.route('/saveRating', methods=['POST'])
 def save_Rating():
     data = request.json
     cur = mysql.connection.cursor()
-
     for pod in data['podcastRatings']: # arbitary naming of this value passed as podcasts. can be changed whenever
-        '''
-        #cur.execute("INSERT INTO trip_episode_ratings VALUES ('{uname}', '{trip_id}', '{uri}', '{rating}');".format(
-            uname = data['username'],
-            trip_id = data['trip_id'],
-            uri = row[0],
-            rating = row[1]
-        )'''
+        
         # if they have already rated, then ignore a -1.
         # if they haven't already rated, then check -1
+        
+
+        # if past_rating != -1, subtract past rating from categories, subcategories before adding new.
 
         if pod['rating'] != -1:
             ## categories
             # acquires all categories associated with episode
             # cur.execute("UPDATE trip_episode_ratings set "
 
+            cur.execute("select rating from trip_episode_ratings where episode_uri = '{uri}' and username = '{user}';".format(
+                uri = pod['uri'],
+                user = data['username']
+            ))
+            past_rating = cur.fetchall()[0][0]
+            print("episode: ", pod['uri'])
+            print("past rating: ", past_rating)
+            print("new rating: ", pod['rating'])
+            cur.execute("update trip_episode_ratings set rating = {rating} where username = '{user}' and episode_uri = '{uri}';".format(
+                rating = pod['rating'],
+                user = data['username'],
+                uri = pod['uri']
+                ))
+                
             cur.execute("select category from categories where episode_uri = '{uri}';".format(
                 uri = pod['uri']
             ))
             cats = cur.fetchall()
 
+            cur.execute("insert into episode_history values ('{user}', '{uri}', {rep});".format(
+                        user = data['username'],
+                        uri = pod['uri'],
+                        rep = 0
+                ))
+
             # for each category in the list of categories
             for cat in cats:
-                print(cat[0])
                 # get the row in user_category_store associated with the username and category
                 # CAUSING AN ERROR FOR SOME REASON
                 cur.execute("select * from user_category_score where username = '{uname}' and category = '{cat}';".format(
@@ -406,53 +416,70 @@ def save_Rating():
                     cat = cat[0]
                 ))
                 results = cur.fetchall()
-                print(results)
 
                 # if the row exists (returns non-empty table), updates the row
-                if results != '()':
-                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = '{user}' and category = '{cat}';".format(
+                if len(results) != 0:
+                    cur.execute("update user_category_score set count = count + 1, score = score + {rating} where username = '{user}' and category = '{cat}';".format(
                         rating = pod['rating'],
                         user = data['username'],
-                        cat = cat
+                        cat = cat[0]
                     ))
+
+                    if past_rating != -1:
+                        cur.execute("update user_category_score set score = score - {old_rating}, count = count - 1 where username = '{user}' and category = '{cat}';".format(
+                            old_rating = past_rating,
+                            user = data['username'],
+                            cat = cat[0]
+                            ))
+                
+                
                 # otherwise- if the row is empty, insert the data into the user_category_score table
                 else:
-                    cur.execute("insert into user_category_score values ({user}, {cat}, {count}, {score};".format(
+                    cur.execute("insert into user_category_score values ('{user}', '{cat}', {count}, {rating});".format(
                         user = data['username'],
-                        cat = cat,
-                        count = pod['rating'],
+                        cat = cat[0],
+                        count = 1,
                         rating = pod['rating']
                     ))
-            
+                    
             ## subcategories (same as categories)
             cur.execute("select subcategory from subcategories where episode_uri = '{uri}';".format(
                 uri = pod['uri']
             ))
-            subcats = cur.fetchall()[0][0]
+            subcats = cur.fetchall()
             for subcat in subcats:
-                cur.execute("select * from user_subcategory_score where username = {uname} and subcategory = {subcat};".format(
+                cur.execute("select * from user_subcategory_score where username = '{uname}' and subcategory = '{subcat}';".format(
                     uname = data['username'],
-                    subcat = subcat
+                    subcat = subcat[0]
                 ))
-                results = cur.fetchall()[0][0]
-                if results != '':
-                    cur.execute("update user_category_score set count = count + 1 and score = score + {rating} where username = {user} and subcategory = {subcat};".format(
+                results = cur.fetchall()
+                if len(results) != 0:
+                    cur.execute("update user_subcategory_score set count = count + 1, score = score + {rating} where username = '{user}' and subcategory = '{subcat}';".format(
                         rating = pod['rating'],
-                        user = data['username']
-                    ))
-                else:
-                    cur.execute("insert into user_subcategory_score values ({user}, {subcat}, {count}, {score};".format(
                         user = data['username'],
-                        subcat = subcat,
-                        count = pod['rating'],
+                        subcat = subcat[0]
+                    ))
+
+                    if past_rating != pod['rating'] and past_rating != -1:
+                        cur.execute("update user_subcategory_score set score = score - {old_rating}, count = count - 1 where username = '{user}' and subcategory = '{subcat}';".format(
+                            old_rating = past_rating,
+                            user = data['username'],
+                            subcat = subcat[0]
+                            ))
+                        
+                else:
+                    cur.execute("insert into user_subcategory_score values ('{user}', '{subcat}', {count}, {rating});".format(
+                        user = data['username'],
+                        subcat = subcat[0],
+                        count = 1,
                         rating = pod['rating']
                     ))
 
 
     mysql.connection.commit()
-    return [] #UPDATE
+    return []
 
-# /update_history
+# Update History
 @app.route('/updateHist', methods=['POST'])
 def update_History():
     data = request.json
