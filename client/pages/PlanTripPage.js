@@ -39,7 +39,7 @@ export default function PlanTripPage({ navigation, route }) {
 
   useEffect(() => {
     if(trips){
-      navigation.navigate("Select Podcasts", { trips: trips, startLocation: 'Boston, MA', endLocation: 'South Bend, IN', categories: [...categories]})
+      navigation.navigate("Select Podcasts", { trips: trips, startLocation: searchStartKeyword, endLocation: searchEndKeyword, categories: [...categories]})
     }
     // if(podcasts){
     //   const customJSON = require('./tripList.json')
@@ -61,7 +61,7 @@ export default function PlanTripPage({ navigation, route }) {
     axios
       .request({
         method: 'post',
-        url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${GOOGLE_PLACES_API_KEY}&input=${keyword}`,
+        url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${REACT_APP_GOOGLE_PLACES_API_KEY}&input=${keyword}`,
       })
       .then((response) => {
         if(destination){
