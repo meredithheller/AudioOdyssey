@@ -262,46 +262,6 @@ def get_curr_trip():
 def get_user_history():
     pass
 
-# need to handle what to do if they haven't listened to a podcast from that category yet
-
-
-def get_subcat_score(user_id, subcat):
-    pass
-
-
-def get_cat_score(user_id, cat):
-    pass
-
-
-def jacks_func(trip_duration, podcasts, categories):
-    return []
-
-
-@app.route('/tripPodcasts', methods=['POST'])
-def trip_podcasts():
-    data = request.json
-
-    # cur = mysql.connection.cursor()
-    # sql_query = '''SELECT p.episode_uri
-    #             FROM categories c, podcasts p
-    #             WHERE c.episode_uri = p.episode_uri and (p.duration > 35 and p.duration < 55) and
-    #             (c.category = '{category}' '''.format(
-    #                 category = data['categories'][0]
-    #             )
-    # for i in data['categories']:
-    #     if i == data['categories'][0]:
-    #         continue
-    #     sql_query += ''' or c.category = '{category}' '''.format(
-    #         category = i
-    #     )
-    # sql_query += ''') LIMIT 5;'''
-    # cur.execute(sql_query)
-    # rv = cur.fetchall()
-    json_data = []
-    # for result in rv:
-    #     json_data.append(result[0])
-    return json_data
-
 
 @app.route('/createAccount', methods=['POST'])
 def parse_request():
@@ -327,32 +287,41 @@ def parse_request():
 
     return {"username": data['username'], "password": data['password'], "firstname": data['firstname'], "lastname": data['lastname'], "phoneNumber": data['phoneNumber']}
 
-
 @app.route('/saveTrip', methods=['POST'])
 def save_trip():
     data = request.json
-
+    # username, categories (cat & rating), subcategories (cat & rating), description, duration, show_name, episode_name, 
     cur = mysql.connection.cursor()
     cur.execute("UPDATE total_trips SET num_trips = num_trips + 1;")
+    mysql.connection.commit()
     cur.execute("select * from total_trips limit 1;")
     trip_id = cur.fetchall()[0][0]
     cur.execute("select now()")
     date = cur.fetchall()[0][0]
-    cur.execute("INSERT INTO trip_info (trip_id, start_location, end_location, date_created) VALUES ('{tripid}','{start}','{stop}', '{date}');".format(
-        tripid=trip_id,
-        start=data['start'],
-        stop=data['stop'],
-        date=date
+    cur.execute("INSERT INTO trip_info (trip_id, username, start_location, stop_location, date_created) VALUES ('{tripid}', '{username}', '{start}','{stop}', '{date}');".format(
+        tripid = trip_id,
+        username = data['username'],
+        start = data['start_loc'],
+        stop = data['destination'],
+        date = date
     ))
+    # trip_info endpoint 1?
+    for podcast in data['tripInfo']:
+        cur.execute("INSERT INTO trip_episode_ratings (username, trip_id, episode_uri, rating) VALUES ('{uname}','{tripid}','{episode_uri}', '{rating}');".format(
+            uname = data['username'],
+            tripid = trip_id,
+            episode_uri = podcast['uri'],
+            rating = -1
+        ))
 
-    cur.execute("INSERT INTO trip_episode_ratings (trip_id, episode_uri, rating) VALUES ('{tripid}','{episode_uri}', '{rating}');".format(
-        tripid=trip_id,
-        episode_uri=data['episode_uri'],
-        rating=0
-    ))
+    for cat in data["categories"]:
+        cur.execute("INSERT INTO trip_categories (trip_id, category) VALUES ('{tripid}', '{cat}');".format(
+            tripid  = trip_id,
+            cat     = cat
+        ))
 
     mysql.connection.commit()
-    return request.data
+    return request.data 
 
 # TODO: implement
 # args: username
