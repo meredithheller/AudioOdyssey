@@ -106,7 +106,6 @@ export default function CurrentTrip({ navigation }) {
         for(let pod in podcasts){
           podRatings.push({"uri": podcasts[pod].uri, "rating": podcasts[pod].rating})
         }
-        console.log(podRatings)
         const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveRating`,  {
           method: 'POST',
           body: JSON.stringify({
