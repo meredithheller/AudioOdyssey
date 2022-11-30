@@ -60,9 +60,7 @@ export default function LandingPage({ navigation }) {
         alert(data.error);
       } else {
         setCreateModalVisible(false);
-        global.user = data;
-        global.loggedIn = true;
-        navigation.navigate('Home',data);
+        setLoginModalVisible(true)
       }
     }).catch((error) => console.log(error));
   }
