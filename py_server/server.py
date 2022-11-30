@@ -510,6 +510,9 @@ def topCategory():
         result = cur.fetchall()
         topCategory = result[0][0]
         score = result[0][1]
+        print(topCategory)
+        print(score)
+
         # convert (round to nearest whole percent) and return as a string here
         sql_query = '''SELECT (
                         SELECT count(score)
@@ -523,11 +526,11 @@ def topCategory():
         )
         cur = mysql.connection.cursor()
         cur.execute(sql_query)
-        percentile = round(float(1-cur.fetchall()[0][0]))
+        percentile = round(float(100-100*(cur.fetchall()[0][0])))
+        print(percentile)
     def ordinal(n): return "%d%s" % (
         n, "tsnrhtdd"[(n//10 % 10 != 1)*(n % 10 < 4)*n % 10::4])
     ordinal_percentile = ordinal(percentile)
-    print(topCategory)
     print(ordinal_percentile)
     return {'topCategory': topCategory, 'percentile': ordinal_percentile}
 
