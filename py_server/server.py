@@ -463,7 +463,7 @@ def minutes():
     )
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
-    totalMinutes = cur.fetchall()[0]
+    totalMinutes = cur.fetchall()[0][0]
     minutes = str("{:,}".format(totalMinutes))
     print(minutes)
     return minutes  # return as formatted string please (with commas)
@@ -499,8 +499,8 @@ def topCategory():
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
     result = cur.fetchall()
-    topCategory = result[0]
-    score = result[1]
+    topCategory = result[0][0]
+    score = result[0][1]
     # convert (round to nearest whole percent) and return as a string here
     sql_query = '''SELECT (
                     SELECT count(score)
@@ -514,7 +514,7 @@ def topCategory():
     )
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
-    percentile = round(cur.fetchall()[0])
+    percentile = round(float(cur.fetchall()[0][0]))
     def ordinal(n): return "%d%s" % (
         n, "tsnrhtdd"[(n//10 % 10 != 1)*(n % 10 < 4)*n % 10::4])
     ordinal_percentile = ordinal(percentile)
