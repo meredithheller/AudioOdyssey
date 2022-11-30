@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ImageBackground, Text, Modal } from 'react-native';
+import { View, StyleSheet, ImageBackground, Text, Modal, TouchableOpacity, Linking } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { REACT_APP_PORT_NUM } from '@env'
 
-function Buddy(name='', phoneNumber='') {
-  this.name = name
+function Buddy(firstName='', lastName='', phoneNumber='') {
+  this.firstName = firstName;
+  this.lastName = lastName;
   this.phoneNumber = phoneNumber;
 }
-
 
 export default function WrappedPage({ navigation }) {
 
@@ -22,6 +22,15 @@ export default function WrappedPage({ navigation }) {
   const [ buddy, setBuddy ] = useState(new Buddy())
   const [ errorBuddy, setErrorBuddy ] = useState(false)
   const [ loadingBuddy, setLoadingBuddy ] = useState(true)
+
+  function openUrl(url) {
+    return Linking.openURL(url);
+  }
+  
+  function openSmsUrl(name, phone) {
+    let body  = `Hi there ${name}! This is ${global.user.firstname} ${global.user.lastname}. I found your number on Audio Odyssey. We seem to have similar interests! Wanna go on a road trip with me?`; 
+    return openUrl(`sms:${phone}&body=${body}`);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,8 +62,7 @@ export default function WrappedPage({ navigation }) {
       }))
       if( buddyRes.status == 200) {
         let data = await buddyRes.json()
-        console.log(data.firstName)
-        let their_buddy = new Buddy((data.firstName + ' ' + data.lastName), data.phone)
+        let their_buddy = new Buddy(data.firstName, data.lastName, data.phone);
         setBuddy(their_buddy)
         setLoadingBuddy(false)
       }else{
@@ -74,9 +82,9 @@ export default function WrappedPage({ navigation }) {
   }
 
   return (
-    <View style={styles.container} onTouchEnd={changeSlide}>
+    <View style={styles.container} onTouchEnd={changeSlide} >
       <ImageBackground source={require('../assets/wrapped-img.jpg')} resizeMode="cover" style={styles.image}>
-        <Modal 
+        <Modal  
           animationType="fade"
           transparent={true}
           visible={position == 0}>
@@ -150,8 +158,10 @@ export default function WrappedPage({ navigation }) {
                 { loadingBuddy ? <Text style={styles.caption}> Loading Road Trip Buddy</Text> : 
                 <View style={{alignItems: 'center'}}>
                   <Text style={{...styles.caption}}>Your Road Trip Buddy</Text>
-                  <Text>{buddy.name}</Text>
-                  <Text>{buddy.phoneNumber}</Text>
+                  <Text>{buddy.firstName} {buddy.lastName}</Text>
+                  <TouchableOpacity onPress={() => openSmsUrl(buddy.firstName, buddy.phoneNumber)}>
+                    <Text>{buddy.phoneNumber}</Text>
+                  </TouchableOpacity>
                 </View>}
               </View>}
             </View>
