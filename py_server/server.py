@@ -523,7 +523,7 @@ def topCategory():
         )
         cur = mysql.connection.cursor()
         cur.execute(sql_query)
-        percentile = round(float(cur.fetchall()[0][0]))
+        percentile = round(float(1-cur.fetchall()[0][0]))
     def ordinal(n): return "%d%s" % (
         n, "tsnrhtdd"[(n//10 % 10 != 1)*(n % 10 < 4)*n % 10::4])
     ordinal_percentile = ordinal(percentile)
@@ -555,12 +555,12 @@ def buddy():
                         FROM users
                         ORDER BY RAND() 
                         LIMIT 1;'''
-    else:    
+    else:
         buddy_info_query = ''' SELECT firstname, lastname, phonenumber 
                             FROM users 
                             WHERE username='{uname}';'''.format(
-                                uname = buddy_username,
-                            )
+            uname=buddy_username,
+        )
     cur.execute(buddy_info_query)
     buddy_info = cur.fetchall()
 
@@ -568,11 +568,12 @@ def buddy():
     lastName = buddy_info[0][1]
     formatted_number = buddy_info[0][2]
     try:
-        formatted_number = phonenumbers.format_number(phonenumbers.parse(formatted_number, 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
-    except: 
+        formatted_number = phonenumbers.format_number(phonenumbers.parse(
+            formatted_number, 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+    except:
         print('cannot format phone number')
     return {'firstName': firstName, 'lastName': lastName, 'phone': formatted_number}
 
 
 if __name__ == "__main__":
-    app.run(host='db8.cse.nd.edu', debug=True, port=5005)
+    app.run(host='db8.cse.nd.edu', debug=True, port=5006)
