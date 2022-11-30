@@ -463,7 +463,11 @@ def minutes():
     )
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
-    totalMinutes = cur.fetchall()[0][0]
+    result = cur.fetchall()[0][0]
+    if result == None:
+        totalMinutes = 0.0
+    else:
+        totalMinutes = result
     minutes = str("{:,}".format(totalMinutes))
     print(minutes)
     return minutes  # return as formatted string please (with commas)
@@ -498,23 +502,27 @@ def topCategory():
     )
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
-    result = cur.fetchall()
-    topCategory = result[0][0]
-    score = result[0][1]
-    # convert (round to nearest whole percent) and return as a string here
-    sql_query = '''SELECT (
-                    SELECT count(score)
-                    FROM user_category_score u 
-                    WHERE score>={score} AND u.category='{category}') / (
-                    SELECT count(score)
-                    FROM user_category_score u
-                    WHERE u.category='{category}') as percentile;'''.format(
-        score=score,
-        category=topCategory
-    )
-    cur = mysql.connection.cursor()
-    cur.execute(sql_query)
-    percentile = round(float(cur.fetchall()[0][0]))
+    if cur.rowcount == 0:
+        topCategory = "None"
+        percentile = 100
+    else:
+        result = cur.fetchall()
+        topCategory = result[0][0]
+        score = result[0][1]
+        # convert (round to nearest whole percent) and return as a string here
+        sql_query = '''SELECT (
+                        SELECT count(score)
+                        FROM user_category_score u 
+                        WHERE score>={score} AND u.category='{category}') / (
+                        SELECT count(score)
+                        FROM user_category_score u
+                        WHERE u.category='{category}') as percentile;'''.format(
+            score=score,
+            category=topCategory
+        )
+        cur = mysql.connection.cursor()
+        cur.execute(sql_query)
+        percentile = round(float(cur.fetchall()[0][0]))
     def ordinal(n): return "%d%s" % (
         n, "tsnrhtdd"[(n//10 % 10 != 1)*(n % 10 < 4)*n % 10::4])
     ordinal_percentile = ordinal(percentile)
