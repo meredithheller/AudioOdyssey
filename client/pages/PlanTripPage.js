@@ -43,14 +43,20 @@ export default function PlanTripPage({ navigation, route }) {
     }
   }, [trips])
 
+  useEffect(() => {
+    if (endLocation && startLocation) {
+      getRoute();
+    }
+  }), [endLocation, startLocation];
+
   let searchLocation = async (text, destination) => {
-    let keyword = ''
-    if(destination){
-      setSearchEndKeyword(text)
-      keyword = text
-    }else{
-      setSearchStartKeyword(text)
-      keyword = text
+    let keyword = '';
+    if (destination) {
+      setSearchEndKeyword(text);
+      keyword = text;
+    } else {
+      setSearchStartKeyword(text);
+      keyword = text;
     }
     
     axios
@@ -76,15 +82,14 @@ export default function PlanTripPage({ navigation, route }) {
     axios
       .request({
         method: 'get',
-        url: `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${REACT_APP_GOOGLE_PLACES_API_KEY}`,
+        url: `https://maps.googleapis.com/maps/api/directions/json?origin=place_id:${startLocation}&destination=place_id:${endLocation}&key=${REACT_APP_GOOGLE_PLACES_API_KEY}`,
         headers: {}
       })
       .then((response) => {
-        // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
-        setDuration(45)
+        setDuration(response.data.routes[0].legs[0].duration.value);
       })
       .catch((e) => {
-        console.log(e.response);
+        console.log(e);
       });
   }
 
