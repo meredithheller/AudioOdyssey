@@ -63,12 +63,6 @@ export default function ProfilePage({ navigation }) {
         </View>
       </View>
       <View>
-        <TouchableOpacity onPress={() => {navigation.navigate("Account Settings")}}>
-          <View style={styles.linkContainer}>
-            <Text style={styles.link}>Account Settings</Text>
-            <Ionicons name="ios-play" size={25} color={'#003f5c'} />
-          </View>
-        </TouchableOpacity>
         <TouchableOpacity onPress={() => {navigation.navigate("Current Trip")}}>
           <View style={styles.linkContainer}>
             <Text style={styles.link}>Current Trip</Text>
