@@ -1,3 +1,5 @@
+from unicodedata import category
+from unittest import result
 from urllib.parse import _NetlocResultMixinBase
 from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
@@ -72,7 +74,11 @@ def getRandResults(duration):
 def trip_options():
     # deconstruct params
     args_dict = request.args.to_dict()
-    duration = random.uniform(20, 150)
+    if (args_dict['duration']):
+        duration = float(args_dict['duration'])/60.
+    else:
+        duration = random.uniform(20, 150)
+
     # duration = float(args_dict['duration'])
     if args_dict['categories'] == 'none':
         categories = {}
@@ -211,15 +217,17 @@ def jsonify_podcasts(podcast_options):
     return jsonify(podcast_options)
 
 # return set of podcasts user has listened to or replaced
+
+
 @app.route('/getCurrTrip', methods=['GET'])
 def get_curr_trip():
-     # deconstruct params
+    # deconstruct params
     args_dict = request.args.to_dict()
     cur = mysql.connection.cursor()
     cur.execute("select * from trip_info where username = '{username}' order by date_created desc limit 1;".format(
-        username = args_dict['username']
+        username=args_dict['username']
     ))
-    most_recent = cur.fetchone() # 0,0 or just 0? for whole row?
+    most_recent = cur.fetchone()  # 0,0 or just 0? for whole row?
     if most_recent == None:
         most_recent = "You haven't listened to any podcasts yet"
 
@@ -235,7 +243,7 @@ def get_curr_trip():
                 uri=eps[x][0]
             ))
             desc = cur.fetchall()
-        
+
             cur.execute("select episode_name, show_name from podcasts where episode_uri = '{uri}';".format(
                 uri=eps[x][0]
             ))
@@ -246,15 +254,17 @@ def get_curr_trip():
             ))
             img_url = cur.fetchall()
 
-            current = {"uri": eps[x][0], "image_url": img_url[0][0], "rating": eps[x][1], "episode_name": pod[0][0], "show_name": pod[0][1], "description": desc[0][0]}
-            #print(current)
+            current = {"uri": eps[x][0], "image_url": img_url[0][0], "rating": eps[x][1],
+                       "episode_name": pod[0][0], "show_name": pod[0][1], "description": desc[0][0]}
+            # print(current)
             podcasts.append(current)
 
-    output = {"trip_id" : most_recent[0], "start_loc" : most_recent[2], "destination" : most_recent[3], "podcasts" : podcasts}
-                
+    output = {"trip_id": most_recent[0], "start_loc": most_recent[2],
+              "destination": most_recent[3], "podcasts": podcasts}
+
     mysql.connection.commit()
     #output: (json)
-    
+
     return output
 
 
@@ -287,10 +297,11 @@ def parse_request():
 
     return {"username": data['username'], "password": data['password'], "firstname": data['firstname'], "lastname": data['lastname'], "phoneNumber": data['phoneNumber']}
 
+
 @app.route('/saveTrip', methods=['POST'])
 def save_trip():
     data = request.json
-    # username, categories (cat & rating), subcategories (cat & rating), description, duration, show_name, episode_name, 
+    # username, categories (cat & rating), subcategories (cat & rating), description, duration, show_name, episode_name,
     cur = mysql.connection.cursor()
     cur.execute("UPDATE total_trips SET num_trips = num_trips + 1;")
     mysql.connection.commit()
@@ -299,140 +310,139 @@ def save_trip():
     cur.execute("select now()")
     date = cur.fetchall()[0][0]
     cur.execute("INSERT INTO trip_info (trip_id, username, start_location, stop_location, date_created) VALUES ('{tripid}', '{username}', '{start}','{stop}', '{date}');".format(
-        tripid = trip_id,
-        username = data['username'],
-        start = data['start_loc'],
-        stop = data['destination'],
-        date = date
+        tripid=trip_id,
+        username=data['username'],
+        start=data['start_loc'],
+        stop=data['destination'],
+        date=date
     ))
     # trip_info endpoint 1?
     for podcast in data['tripInfo']:
         cur.execute("INSERT INTO trip_episode_ratings (username, trip_id, episode_uri, rating) VALUES ('{uname}','{tripid}','{episode_uri}', '{rating}');".format(
-            uname = data['username'],
-            tripid = trip_id,
-            episode_uri = podcast['uri'],
-            rating = -1
+            uname=data['username'],
+            tripid=trip_id,
+            episode_uri=podcast['uri'],
+            rating=-1
         ))
 
     for cat in data["categories"]:
         cur.execute("INSERT INTO trip_categories (trip_id, category) VALUES ('{tripid}', '{cat}');".format(
-            tripid  = trip_id,
-            cat     = cat
+            tripid=trip_id,
+            cat=cat
         ))
 
     mysql.connection.commit()
-    return request.data 
+    return request.data
+
 
 @app.route('/saveRating', methods=['POST'])
 def save_Rating():
     data = request.json
     cur = mysql.connection.cursor()
-    for pod in data['podcastRatings']: # arbitary naming of this value passed as podcasts. can be changed whenever
-        
+    # arbitary naming of this value passed as podcasts. can be changed whenever
+    for pod in data['podcastRatings']:
+
         # if they have already rated, then ignore a -1.
         # if they haven't already rated, then check -1
-        
 
         # if past_rating != -1, subtract past rating from categories, subcategories before adding new.
 
         if pod['rating'] != -1:
-            ## categories
+            # categories
             # acquires all categories associated with episode
             # cur.execute("UPDATE trip_episode_ratings set "
 
             cur.execute("select rating from trip_episode_ratings where episode_uri = '{uri}' and username = '{user}';".format(
-                uri = pod['uri'],
-                user = data['username']
+                uri=pod['uri'],
+                user=data['username']
             ))
             past_rating = cur.fetchall()[0][0]
             print("episode: ", pod['uri'])
             print("past rating: ", past_rating)
             print("new rating: ", pod['rating'])
             cur.execute("update trip_episode_ratings set rating = {rating} where username = '{user}' and episode_uri = '{uri}';".format(
-                rating = pod['rating'],
-                user = data['username'],
-                uri = pod['uri']
-                ))
-                
+                rating=pod['rating'],
+                user=data['username'],
+                uri=pod['uri']
+            ))
+
             cur.execute("select category from categories where episode_uri = '{uri}';".format(
-                uri = pod['uri']
+                uri=pod['uri']
             ))
             cats = cur.fetchall()
 
             cur.execute("insert into episode_history values ('{user}', '{uri}', {rep});".format(
-                        user = data['username'],
-                        uri = pod['uri'],
-                        rep = 0
-                ))
+                        user=data['username'],
+                        uri=pod['uri'],
+                        rep=0
+                        ))
 
             # for each category in the list of categories
             for cat in cats:
                 # get the row in user_category_store associated with the username and category
                 # CAUSING AN ERROR FOR SOME REASON
                 cur.execute("select * from user_category_score where username = '{uname}' and category = '{cat}';".format(
-                    uname = data['username'],
-                    cat = cat[0]
+                    uname=data['username'],
+                    cat=cat[0]
                 ))
                 results = cur.fetchall()
 
                 # if the row exists (returns non-empty table), updates the row
                 if len(results) != 0:
                     cur.execute("update user_category_score set count = count + 1, score = score + {rating} where username = '{user}' and category = '{cat}';".format(
-                        rating = pod['rating'],
-                        user = data['username'],
-                        cat = cat[0]
+                        rating=pod['rating'],
+                        user=data['username'],
+                        cat=cat[0]
                     ))
 
                     if past_rating != -1:
                         cur.execute("update user_category_score set score = score - {old_rating}, count = count - 1 where username = '{user}' and category = '{cat}';".format(
-                            old_rating = past_rating,
-                            user = data['username'],
-                            cat = cat[0]
-                            ))
-                
-                
+                            old_rating=past_rating,
+                            user=data['username'],
+                            cat=cat[0]
+                        ))
+
                 # otherwise- if the row is empty, insert the data into the user_category_score table
                 else:
                     cur.execute("insert into user_category_score values ('{user}', '{cat}', {count}, {rating});".format(
-                        user = data['username'],
-                        cat = cat[0],
-                        count = 1,
-                        rating = pod['rating']
+                        user=data['username'],
+                        cat=cat[0],
+                        count=1,
+                        rating=pod['rating']
                     ))
-                    
-            ## subcategories (same as categories)
+
+            # subcategories (same as categories)
             cur.execute("select subcategory from subcategories where episode_uri = '{uri}';".format(
-                uri = pod['uri']
+                uri=pod['uri']
             ))
             subcats = cur.fetchall()
             for subcat in subcats:
                 cur.execute("select * from user_subcategory_score where username = '{uname}' and subcategory = '{subcat}';".format(
-                    uname = data['username'],
-                    subcat = subcat[0]
+                    uname=data['username'],
+                    subcat=subcat[0]
                 ))
                 results = cur.fetchall()
                 if len(results) != 0:
                     cur.execute("update user_subcategory_score set count = count + 1, score = score + {rating} where username = '{user}' and subcategory = '{subcat}';".format(
-                        rating = pod['rating'],
-                        user = data['username'],
-                        subcat = subcat[0]
+                        rating=pod['rating'],
+                        user=data['username'],
+                        subcat=subcat[0]
                     ))
 
                     if past_rating != pod['rating'] and past_rating != -1:
                         cur.execute("update user_subcategory_score set score = score - {old_rating}, count = count - 1 where username = '{user}' and subcategory = '{subcat}';".format(
-                            old_rating = past_rating,
-                            user = data['username'],
-                            subcat = subcat[0]
-                            ))
-                        
+                            old_rating=past_rating,
+                            user=data['username'],
+                            subcat=subcat[0]
+                        ))
+
                 else:
                     cur.execute("insert into user_subcategory_score values ('{user}', '{subcat}', {count}, {rating});".format(
-                        user = data['username'],
-                        subcat = subcat[0],
-                        count = 1,
-                        rating = pod['rating']
+                        user=data['username'],
+                        subcat=subcat[0],
+                        count=1,
+                        rating=pod['rating']
                     ))
-
 
     mysql.connection.commit()
     return []
@@ -440,39 +450,81 @@ def save_Rating():
 # TODO: implement
 # args: username
 # return: total number of minutes of podcasts the user has listened to (as a formatted string please)
+
+
 @app.route('/wrapped/minutes', methods=['GET'])
 def minutes():
     args_dict = request.args.to_dict()
     username = args_dict['username']
-    totalMinutes = round(random.uniform(20, 10000000))
+    sql_query = '''SELECT sum(duration)
+                    FROM episode_history e, podcasts p
+                    WHERE e.episode_uri=p.episode_uri AND e.username='{username}' AND e.replaced=0;'''.format(
+        username=username
+    )
+    cur = mysql.connection.cursor()
+    cur.execute(sql_query)
+    totalMinutes = cur.fetchall()[0][0]
     minutes = str("{:,}".format(totalMinutes))
-    return minutes # return as formatted string please (with commas)
+    print(minutes)
+    return minutes  # return as formatted string please (with commas)
 
 # TODO: implement
 # args: username
 # return: total number of miles user has traveled as a formatted string(could make this easier by adding a trip miles column to the trip_info table and calling the google maps api in that endpoint (/saveTrip) to get the miles between start location and destination, then just need to add all of the users miles from that table and return here)
+
+
 @app.route('/wrapped/miles', methods=['GET'])
 def miles():
     args_dict = request.args.to_dict()
     username = args_dict['username']
     totalMiles = round(random.uniform(20, 10000000))
     miles = str("{:,}".format(totalMiles))
-    return miles # return as formatted string please (with commas)
+    return miles  # return as formatted string please (with commas)
 
 # TODO: implement
 # args: username
 # return: json object of their highest rated category and the percentile (formatted as ordinal number, the function do so is already in here) of listeners that they are within that category
+
+
 @app.route('/wrapped/category', methods=['GET'])
 def topCategory():
     args_dict = request.args.to_dict()
     username = args_dict['username']
-    topCategory = 'News'
-    percentile = round(random.uniform(0, 100)) #convert (round to nearest whole percent) and return as a string here
-    ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+    sql_query = '''SELECT category, score
+                    FROM user_category_score u
+                    WHERE u.username='{username}'
+                    ORDER BY score desc LIMIT 1;'''.format(
+        username=username
+    )
+    cur = mysql.connection.cursor()
+    cur.execute(sql_query)
+    result = cur.fetchall()
+    topCategory = result[0][0]
+    score = result[0][1]
+    # convert (round to nearest whole percent) and return as a string here
+    sql_query = '''SELECT (
+                    SELECT count(score)
+                    FROM user_category_score u 
+                    WHERE score>={score} AND u.category='{category}') / (
+                    SELECT count(score)
+                    FROM user_category_score u
+                    WHERE u.category='{category}') as percentile;'''.format(
+        score=score,
+        category=topCategory
+    )
+    cur = mysql.connection.cursor()
+    cur.execute(sql_query)
+    percentile = round(float(cur.fetchall()[0][0]))
+    def ordinal(n): return "%d%s" % (
+        n, "tsnrhtdd"[(n//10 % 10 != 1)*(n % 10 < 4)*n % 10::4])
     ordinal_percentile = ordinal(percentile)
-    return { 'topCategory': topCategory, 'percentile': ordinal_percentile}
+    print(topCategory)
+    print(ordinal_percentile)
+    return {'topCategory': topCategory, 'percentile': ordinal_percentile}
 
 # TODO: implement
+
+
 @app.route('/wrapped/buddy', methods=['GET'])
 def buddy():
     args_dict = request.args.to_dict()
@@ -481,10 +533,12 @@ def buddy():
     lastName = 'Washington'
     formatted_number = '3095334163'
     try:
-        formatted_number = phonenumbers.format_number(phonenumbers.parse("8006397663", 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
-    except: 
+        formatted_number = phonenumbers.format_number(phonenumbers.parse(
+            "8006397663", 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+    except:
         print('cannot format phone number')
-    return { 'firstName': firstName, 'lastName': lastName, 'phone': formatted_number }
+    return {'firstName': firstName, 'lastName': lastName, 'phone': formatted_number}
+
 
 if __name__ == "__main__":
     app.run(host='db8.cse.nd.edu', debug=True, port=5006)
