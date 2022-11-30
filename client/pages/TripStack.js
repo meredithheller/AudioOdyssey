@@ -11,8 +11,12 @@ export default function TripStackNavigator({ navigation, route }) {
         screenOptions={{
             headerShown: false
       }}>
-      <Stack.Screen name="Plan Trip" component={PlanTripPage} />
-      <Stack.Screen name="Select Podcasts" component={SelectPodcastsPage} />
+      <Stack.Screen 
+        name="Plan Trip" 
+        component={PlanTripPage} />
+      <Stack.Screen 
+        name="Select Podcasts" 
+        component={SelectPodcastsPage} />
     </Stack.Navigator>
   );
 }

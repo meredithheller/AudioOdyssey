@@ -1,6 +1,8 @@
 import { Button, ImageBackground, StyleSheet, Text, View, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
+import { REACT_APP_PORT_NUM } from '@env'
+
 
 export default function LandingPage({ navigation }) {
 
@@ -14,7 +16,7 @@ export default function LandingPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const login = () => {
-    return fetch('http://db8.cse.nd.edu:5006/login', {
+    return fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -38,7 +40,7 @@ export default function LandingPage({ navigation }) {
   }
 
   const createAccount = () => {
-    return fetch('http://db8.cse.nd.edu:5006/createAccount', {
+    return fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/createAccount`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
