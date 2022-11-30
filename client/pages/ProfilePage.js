@@ -59,7 +59,7 @@ export default function ProfilePage({ navigation }) {
         <View>
           <Text style={styles.info}>{global.user.firstname} {global.user.lastname}</Text>
           <Text>{global.user.username}</Text>
-          <Text>{global.user.phonenumber.slice(0,3)}-{global.user.phonenumber.slice(3,6)}-{global.user.phonenumber.slice(6,11)}</Text>
+          <Text>({global.user.phonenumber.slice(0,3)}) {global.user.phonenumber.slice(3,6)}-{global.user.phonenumber.slice(6,11)}</Text>
         </View>
       </View>
       <View>
