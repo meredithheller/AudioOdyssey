@@ -149,23 +149,23 @@ export default function PlanTripPage({ navigation, route }) {
           />
           {isShowingStartResults && (
             <FlatList
-              key={"start"}
               data={startSearchResults}
               renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
-                    key={index}
                     style={styles.resultItem}
                     onPress={() =>  {
                       setSearchStartKeyword(item.description)
                       setIsShowingStartResults(false)
                       setStartLocation(item.place_id)
                     }}>
-                    <Text>{item.description}</Text>
+                    <Text key={item}>{item.description}</Text>
                   </TouchableOpacity>
                 );
               }}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => {
+                return item.place_id;
+              }}
               style={styles.searchResultsStartContainer}
             />
           )}
@@ -184,12 +184,10 @@ export default function PlanTripPage({ navigation, route }) {
           />
           {isShowingEndResults && (
             <FlatList
-              key={"end"}
               data={endSearchResults}
               renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
-                    key={index}
                     style={styles.resultItem}
                     onPress={() =>  {
                       setSearchEndKeyword(item.description)
@@ -200,7 +198,9 @@ export default function PlanTripPage({ navigation, route }) {
                   </TouchableOpacity>
                 );
               }}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => {
+                return item.place_id;
+              }}
               style={styles.searchResultsEndContainer}
             />
           )}
@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'lightblue',
     alignItems: 'center',
+    justifyContent: 'center'
   },
   labelText: {
     padding: 5,
