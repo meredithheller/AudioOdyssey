@@ -43,14 +43,20 @@ export default function PlanTripPage({ navigation, route }) {
     }
   }, [trips])
 
+  useEffect(() => {
+    if (endLocation && startLocation) {
+      getRoute();
+    }
+  }), [endLocation, startLocation];
+
   let searchLocation = async (text, destination) => {
-    let keyword = ''
-    if(destination){
-      setSearchEndKeyword(text)
-      keyword = text
-    }else{
-      setSearchStartKeyword(text)
-      keyword = text
+    let keyword = '';
+    if (destination) {
+      setSearchEndKeyword(text);
+      keyword = text;
+    } else {
+      setSearchStartKeyword(text);
+      keyword = text;
     }
     
     axios
@@ -76,15 +82,14 @@ export default function PlanTripPage({ navigation, route }) {
     axios
       .request({
         method: 'get',
-        url: `https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=${REACT_APP_GOOGLE_PLACES_API_KEY}`,
+        url: `https://maps.googleapis.com/maps/api/directions/json?origin=place_id:${startLocation}&destination=place_id:${endLocation}&key=${REACT_APP_GOOGLE_PLACES_API_KEY}`,
         headers: {}
       })
       .then((response) => {
-        // TODO: we need to convert the duration of trip to minutes for the database AND CHANGE THIS
-        setDuration(45)
+        setDuration(response.data.routes[0].legs[0].duration.value);
       })
       .catch((e) => {
-        console.log(e.response);
+        console.log(e);
       });
   }
 
@@ -144,23 +149,23 @@ export default function PlanTripPage({ navigation, route }) {
           />
           {isShowingStartResults && (
             <FlatList
-              key={"start"}
               data={startSearchResults}
               renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
-                    key={index}
                     style={styles.resultItem}
                     onPress={() =>  {
                       setSearchStartKeyword(item.description)
                       setIsShowingStartResults(false)
                       setStartLocation(item.place_id)
                     }}>
-                    <Text>{item.description}</Text>
+                    <Text key={item}>{item.description}</Text>
                   </TouchableOpacity>
                 );
               }}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => {
+                return item.place_id;
+              }}
               style={styles.searchResultsStartContainer}
             />
           )}
@@ -179,12 +184,10 @@ export default function PlanTripPage({ navigation, route }) {
           />
           {isShowingEndResults && (
             <FlatList
-              key={"end"}
               data={endSearchResults}
               renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
-                    key={index}
                     style={styles.resultItem}
                     onPress={() =>  {
                       setSearchEndKeyword(item.description)
@@ -195,7 +198,9 @@ export default function PlanTripPage({ navigation, route }) {
                   </TouchableOpacity>
                 );
               }}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => {
+                return item.place_id;
+              }}
               style={styles.searchResultsEndContainer}
             />
           )}
@@ -259,6 +264,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'lightblue',
     alignItems: 'center',
+    justifyContent: 'center'
   },
   labelText: {
     padding: 5,

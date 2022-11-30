@@ -1,7 +1,7 @@
 import { Button, ImageBackground, StyleSheet, Text, View, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { REACT_APP_PORT_NUM } from '@env'
+import { REACT_APP_PORT_NUM } from '@env';
 
 
 export default function LandingPage({ navigation }) {
@@ -60,9 +60,7 @@ export default function LandingPage({ navigation }) {
         alert(data.error);
       } else {
         setCreateModalVisible(false);
-        global.user = data;
-        global.loggedIn = true;
-        navigation.navigate('Home',data);
+        setLoginModalVisible(true)
       }
     }).catch((error) => console.log(error));
   }
