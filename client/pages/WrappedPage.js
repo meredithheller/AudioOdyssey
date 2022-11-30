@@ -15,9 +15,6 @@ export default function WrappedPage({ navigation }) {
   const [ totalMinutes, setTotalMinutes ] = useState(0)
   const [ errorMinutes, setErrorMinutes ] = useState(false)
   const [ loadingMinutes, setLoadingMinutes ] = useState(true)
-  const [ miles, setMiles ] = useState(0)
-  const [ errorMiles, setErrorMiles ] = useState(false)
-  const [ loadingMiles, setLoadingMiles ] = useState(true)
   const [ topCategory, setTopCategory ] = useState()
   const [ errorCategory, setErrorCategory ] = useState(false)
   const [ loadingCategory, setLoadingCategory ] = useState(true)
@@ -38,17 +35,6 @@ export default function WrappedPage({ navigation }) {
       }else{
         setLoadingMinutes(false)
         setErrorMinutes(true)
-      }
-      const milesRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/miles?` + new URLSearchParams({
-        username: global.user.username
-      }))
-      if( milesRes.status == 200) {
-        let data = await milesRes.text()
-        setMiles(data)
-        setLoadingMiles(false)
-      }else{
-        setLoadingMiles(false)
-        setErrorMiles(true)
       }
       const categoryRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/category?` + new URLSearchParams({
         username: global.user.username
@@ -82,7 +68,7 @@ export default function WrappedPage({ navigation }) {
 
   function changeSlide() {
     setPosition(position + 1);
-    if (position == 5) {
+    if (position == 4) {
       navigation.navigate("Profile Home");
     }
   }
@@ -125,22 +111,6 @@ export default function WrappedPage({ navigation }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              { errorMiles ? <Text style={styles.caption}>There was an error getting your wrapped miles.</Text> : 
-              <View>
-                <Ionicons style={{alignSelf: 'center'}} name="car" size={75} />
-                <Text style={styles.number}>{ loadingMiles ? 'Loading' : miles}</Text>
-                <Text style={styles.caption}>Miles Driven</Text>
-              </View>}
-            </View>
-          </View>
-        </Modal>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={position == 3}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
               { errorCategory ? <Text style={styles.caption}>There was an error getting your top category.</Text>
               : <View>
                 <Ionicons style={{alignSelf: 'center'}} name="trophy" size={75} />
@@ -154,7 +124,7 @@ export default function WrappedPage({ navigation }) {
         <Modal
           animationType="fade"
           transparent={true}
-          visible={position == 4}
+          visible={position == 3}
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
@@ -170,7 +140,7 @@ export default function WrappedPage({ navigation }) {
         <Modal
           animationType="fade"
           transparent={true}
-          visible={position == 5}
+          visible={position == 4}
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>

@@ -41,11 +41,6 @@ export default function PlanTripPage({ navigation, route }) {
     if(trips){
       navigation.navigate("Select Podcasts", { trips: trips, startLocation: searchStartKeyword, endLocation: searchEndKeyword, categories: [...categories]})
     }
-    // if(podcasts){
-    //   const customJSON = require('./tripList.json')
-
-    //   navigation.navigate("Select Podcasts", { podcasts: customJSON, startLocation: 'Boston, MA', endLocation: 'South Bend, IN' })
-    // }
   }, [trips])
 
   let searchLocation = async (text, destination) => {

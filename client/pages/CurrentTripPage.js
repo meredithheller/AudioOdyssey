@@ -120,6 +120,7 @@ export default function CurrentTrip({ navigation }) {
             return response.json()
         }).then((data) => {
           // handle response
+          navigation.navigate('Profile Home')
           alert('Successfully saved ratings.')
         }).catch(function(error) {
           alert('there was a problem saving podcast rating')
