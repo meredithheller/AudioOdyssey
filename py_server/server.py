@@ -6,6 +6,7 @@ import json
 import random
 from ex_response import backend_response
 from podcast_algorithm import find_trip
+from buddy_algorithm import find_buddy
 import phonenumbers
 
 app = Flask(__name__)
@@ -72,8 +73,11 @@ def getRandResults(duration):
 def trip_options():
     # deconstruct params
     args_dict = request.args.to_dict()
-    duration = random.uniform(20, 150)
-    # duration = float(args_dict['duration'])
+    if(args_dict['duration']):
+        duration = float(args_dict['duration'])
+    else:
+        duration = random.uniform(20, 150)
+    print(duration)
     if args_dict['categories'] == 'none':
         categories = {}
         # randomly select 200 podcasts if no categories were provided
@@ -477,14 +481,40 @@ def topCategory():
 def buddy():
     args_dict = request.args.to_dict()
     username = args_dict['username']
-    firstName = 'George'
-    lastName = 'Washington'
-    formatted_number = '3095334163'
+    cur = mysql.connection.cursor()
+    cat_sql_query = 'SELECT username, category, score/count as user_avg_cat_rating FROM user_category_score;'
+    cur.execute(cat_sql_query)
+    category_scores = cur.fetchall()
+    user_categories_dict = {}
+    for result in category_scores:
+        if result[0] in user_categories_dict:
+            user_categories_dict[result[0]][result[1]] = result[2]
+        else:
+            user_categories_dict[result[0]] = {result[1]: result[2]}
+    buddy_username = find_buddy(username, user_categories_dict)
+    if buddy_username == 'no username data':
+        print('no data')
+        buddy_info_query = ''' SELECT firstname, lastname, phonenumber 
+                        FROM users
+                        ORDER BY RAND() 
+                        LIMIT 1;'''
+    else:    
+        buddy_info_query = ''' SELECT firstname, lastname, phonenumber 
+                            FROM users 
+                            WHERE username='{uname}';'''.format(
+                                uname = buddy_username,
+                            )
+    cur.execute(buddy_info_query)
+    buddy_info = cur.fetchall()
+
+    firstName = buddy_info[0][0]
+    lastName = buddy_info[0][1]
+    formatted_number = buddy_info[0][2]
     try:
-        formatted_number = phonenumbers.format_number(phonenumbers.parse("8006397663", 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+        formatted_number = phonenumbers.format_number(phonenumbers.parse(formatted_number, 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
     except: 
         print('cannot format phone number')
     return { 'firstName': firstName, 'lastName': lastName, 'phone': formatted_number }
 
 if __name__ == "__main__":
-    app.run(host='db8.cse.nd.edu', debug=True, port=5006)
+    app.run(host='db8.cse.nd.edu', debug=True, port=5005)
