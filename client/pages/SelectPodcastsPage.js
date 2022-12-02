@@ -62,7 +62,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }
 
   const onReplace = (podcastIndex, tripIndex) => {
-    // TODO implement replacing the podcast
+
     let replaceURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/replacePlanningPodcast`
     const res = fetch(replaceURL + new URLSearchParams({
       username: global.user.username,
