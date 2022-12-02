@@ -19,6 +19,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
     // console.log("IN SLECT PODCASTS PAGE WE HAVE: ")
     // console.log(route.params.trips)
     setTripPossibilities(route.params.trips)
+    console.log(route.params.trips)
     setLoading(false)
   }, [])
 
@@ -62,7 +63,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
 
   const onReplace = (podcastIndex, tripIndex) => {
     // TODO implement replacing the podcast
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/updateHistNewTrip` + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/replacePlanningPodcast` + new URLSearchParams({
       username: global.user.username
     })).then((response) => {
       return response.json()
@@ -77,7 +78,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
     }).catch(function(error) {
       setLoading(false)
       alert('An error occurred. Please try again.')
-      navigation.navigate('Profile Home')
     })
   }
 

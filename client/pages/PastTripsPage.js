@@ -94,11 +94,7 @@ export default function PastTripsPage({ navigation, route }) {
   const [ tripHistory, setTripHistory ] = useState()
 
   useEffect(() => {
-    setLoading(true)
-    const timer = setTimeout(() => {
-      setTripHistory(pastTrips)
-    }, 1000);
-    // getTripHist()
+    getTripHist()
   }, [])
 
   useEffect(() => {
@@ -115,7 +111,7 @@ export default function PastTripsPage({ navigation, route }) {
 
   const getTripHist = () => {
     setLoading(true)
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/getPastTrips?` + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/get_user_history?` + new URLSearchParams({
       username: global.user.username,
       page: page
     })).then((response) => {

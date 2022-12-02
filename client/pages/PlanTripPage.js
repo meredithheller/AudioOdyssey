@@ -102,7 +102,8 @@ export default function PlanTripPage({ navigation, route }) {
       formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
     }
     // TODO: This should be a GET request
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/tripOptions?` + new URLSearchParams({
+    let fetchURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/tripOptions?`
+    const res = fetch(fetchURL + new URLSearchParams({
       duration: duration,
       categories: formattedCategoryParam,
     })).then((response) => {
