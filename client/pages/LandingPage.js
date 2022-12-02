@@ -16,7 +16,8 @@ export default function LandingPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const login = () => {
-    return fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/login`, {
+    let loginUrl = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/login`
+    return fetch(loginUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -36,7 +37,10 @@ export default function LandingPage({ navigation }) {
         global.loggedIn = true;
         navigation.navigate('Home',data);
       }
-    }).catch((error) => console.log(error));
+    }).catch((error) => {
+      alert('There was an error logging you in. Please try again.')
+      console.log(error)
+    });
   }
 
   const createAccount = () => {

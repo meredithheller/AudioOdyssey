@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native';
 import TripCard from '../components/tripCard'
 import { REACT_APP_PORT_NUM } from '@env'
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 let pastTrips = [{ "trip_id": 439841,
 "starting_loc": "Boston, MA",
@@ -89,6 +90,7 @@ let pastTrips = [{ "trip_id": 439841,
 export default function PastTripsPage({ navigation, route }) {
 
   const [ loading, setLoading ] = useState(true)
+  const [ page, setPage ] = useState(0)
   const [ tripHistory, setTripHistory ] = useState()
 
   useEffect(() => {
@@ -96,6 +98,7 @@ export default function PastTripsPage({ navigation, route }) {
     const timer = setTimeout(() => {
       setTripHistory(pastTrips)
     }, 1000);
+    // getTripHist()
   }, [])
 
   useEffect(() => {
@@ -103,6 +106,30 @@ export default function PastTripsPage({ navigation, route }) {
       setLoading(false)
     }
   }, [tripHistory])
+
+  useEffect(() => {
+    if(page){
+      getTripHist()
+    }
+  }, [page])
+
+  const getTripHist = () => {
+    setLoading(true)
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/getPastTrips?` + new URLSearchParams({
+      username: global.user.username,
+      page: page
+    })).then((response) => {
+      return response.json()
+    })
+    .then((data) => {
+
+      // handle if no more previous trips
+      setTripHistory(data.trips)
+    }).catch(function(error) {
+      alert('An error occurred. Please try again.')
+      navigation.navigate('Profile Home')
+    })
+  }
 
   const updateRating = (tripIndex) => {
     let podRatings = [] 
@@ -122,13 +149,10 @@ export default function PastTripsPage({ navigation, route }) {
     }).then((response) => {
         return response.json()
     }).then((data) => {
-      // handle response
+      alert('Successfully updated podcast ratings.')
     }).catch(function(error) {
-
+      alert('There was an error updating podcast ratings.')
     })
-
-    // TODO: call endpoint to update the rating of this podcast in the backend
-    // reload trips but just try to reload the single trip
   }
 
   const ratingCompleted = (rating, podIndex, tripIndex) => {
@@ -142,12 +166,26 @@ export default function PastTripsPage({ navigation, route }) {
       </SafeAreaView>: 
     <View style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
     <SafeAreaView>
+      <View style={styles.lockedHeader}>
+        <TouchableOpacity  
+          onPress={() => {
+            page > 0 && setPage(page - 1)
+        }}>
+          <Ionicons style={styles.backButton} name={'arrow-back-circle'} size={25} color={'black'} />
+        </TouchableOpacity>
+        <Text style={styles.header}>Past Trips</Text>
+        <TouchableOpacity 
+          onPress={() => {
+            setPage(page + 1)
+        }}>
+          <Ionicons style={styles.nextButton} name={'arrow-forward-circle'} size={25} color={'black'} />
+        </TouchableOpacity>
+      </View>
       <ScrollView 
         style={styles.container}
         contentContainerStyle={{display: "flex", flexDirection: "column", justifyContent: "center", alignContent: 'center'}}
         showsVerticalScrollIndicator={true} 
         persistentScrollbar={true}>
-        <Text style={styles.header}>Past Trips</Text>
         { tripHistory.map((trip, index) => {
                 return (
                   <TripCard 
@@ -180,6 +218,19 @@ export default function PastTripsPage({ navigation, route }) {
 const styles = StyleSheet.create({
     loading : {
       alignSelf: 'center',
+    },
+    lockedHeader: {
+      flexDirection: 'row',
+      width: "100%",
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: 50
+    },
+    backButton: {
+      justifySelf: 'flex-start'
+    },
+    nextButton: {
+      justifySelf: 'flex-end'
     },
     input : {
       height: 40,
@@ -217,7 +268,8 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         fontSize: 24,
         paddingTop: 10,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        paddingHorizontal: 70
       },
       container: {
         height: '100%'
