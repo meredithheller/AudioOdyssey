@@ -48,11 +48,11 @@ export default function CurrentTrip({ navigation }) {
     // TODO: CALL THE REPLACE ENDPOINT
     // POST REQUEST
     // THIS IS NOT DONE
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/updateHistSavedTrip`,  {
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/replaceCurrPodcast`,  {
       method: 'POST',
       body: JSON.stringify({
-        duration: podcasts[podIndex].duration,
-        categories: (route.params.categories).join(',').replace(/\s/g, '_'),
+        tripId: tripId,
+        podcastId: podcasts[podIndex],
         username: global.user.username
       }),
       headers: {
@@ -60,11 +60,14 @@ export default function CurrentTrip({ navigation }) {
       }
     }).then((response) => {
         return response.json()
+        // TODO: need to handle if there wasn't a podcast that it could be replaced with
+        // alert('No possible podcast substitutions.')
     }).then((data) => {
-      // reload current trip information
-      // handle how to update the trip information probably just setPodcasts and it will update?
+      setLoading(true)
+      getCurrentTrip()
     }).catch(function(error) {
-      alert('Unable to replace this podcast.')
+      alert('An error occurred. Please try again.')
+      navigation.navigate('Profile Home')
     })
   }
 

@@ -34,7 +34,8 @@ export default function WrappedPage({ navigation }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const minuteRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/minutes?` + new URLSearchParams({
+      let minutesURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/minutes?`
+      const minuteRes = await fetch(minutesURL + new URLSearchParams({
         username: global.user.username
       }))
       if( minuteRes.status == 200) {
@@ -45,7 +46,8 @@ export default function WrappedPage({ navigation }) {
         setLoadingMinutes(false)
         setErrorMinutes(true)
       }
-      const categoryRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/category?` + new URLSearchParams({
+      let categoryURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/category?`
+      const categoryRes = await fetch(categoryURL + new URLSearchParams({
         username: global.user.username
       }))
       if( categoryRes.status == 200) {
@@ -57,7 +59,8 @@ export default function WrappedPage({ navigation }) {
         setLoadingCategory(false)
         setErrorCategory(true)
       }
-      const buddyRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/buddy?` + new URLSearchParams({
+      let buddyURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/buddy?`
+      const buddyRes = await fetch(buddyURL + new URLSearchParams({
         username: global.user.username
       }))
       if( buddyRes.status == 200) {
@@ -106,7 +109,7 @@ export default function WrappedPage({ navigation }) {
               { errorMinutes ? <Text style={styles.caption}>There was an error getting your wrapped minutes.</Text> : 
               <View>
                 <Ionicons style={{alignSelf: 'center'}} name="headset" size={75} />
-                <Text style={styles.number}>{ loadingMinutes ? 'Loading' : Math.round(totalMinutes)}</Text>
+                <Text style={styles.number}>{ loadingMinutes ? 'Loading' : totalMinutes}</Text>
                 <Text style={styles.caption}>Podcast Minutes</Text>
               </View>}
             </View>

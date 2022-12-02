@@ -63,17 +63,19 @@ export default function SelectPodcastsPage({ navigation, route }) {
 
   const onReplace = (podcastIndex, tripIndex) => {
     // TODO implement replacing the podcast
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/replacePlanningPodcast` + new URLSearchParams({
-      username: global.user.username
+    let replaceURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/replacePlanningPodcast`
+    const res = fetch(replaceURL + new URLSearchParams({
+      username: global.user.username,
+      duration: tripPossibilities[tripIndex][podcastIndex].duration,
+      categories: route.params.categories
     })).then((response) => {
       return response.json()
+      // TODO: figure out how to handle no podcast replacement available
     })
     .then((data) => {
-      // setStartingLocation(data.start_loc)
-      // setDestination(data.destination)
-      // setPodcasts(data.podcasts)
-      // setTripId(data.trip_id)
-      // setLoading(false)
+      let newPodInfo = data.podcast
+      tripPossibilities[tripIndex][podcastIndex] = newPodInfo
+      setTripPossibilities(tripPossibilities)
       console.log(data)
     }).catch(function(error) {
       setLoading(false)
