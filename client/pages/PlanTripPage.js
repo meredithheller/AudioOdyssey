@@ -94,6 +94,15 @@ export default function PlanTripPage({ navigation, route }) {
   }
 
   const getTripPodcastInfo = async () => {
+
+    if(!endLocation || !startLocation || !duration){
+      alert('Please enter valid starting and destination locations')
+      return
+    }
+    if(duration > 108000){
+      alert('Trip is too long. Please choose a shorter travel distance.')
+      return
+    }
     setLoading(true)
     // TODO: make sure a destination has been sent and duration is a valid number
     let catList = [...categories]
