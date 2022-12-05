@@ -66,44 +66,53 @@ def find_trip(unrounded_trip_duration, podcast_dict, categories):
     trip_durs = []
 
     for i in range(5):
-        subset = subsetsum(dur_list, trip_duration)
+        subset = subset_sum(dur_list, trip_duration)
         if subset:
             trip_durs.append(subset)
             random.shuffle(dur_list)
-    print(trip_durs)
     trips = []
     count = 1
     total_dur = 0
+    laps = 3
     for subset in trip_durs:
         trip = []
         for duration in subset:
+            find = False
+            valid_trip = True
+            thresh = 1
             total_dur = 0
             podcast = duration_dict[duration]
             for i in podcast:
-                if i[1] != 1:
-                    print(duration)
-                    total_dur += duration
-                    trip.append(i)
-                    i[1] = 1
+                for x in range(laps):
+                    if i[1] < thresh:
+                        total_dur += duration
+                        trip.append(i)
+                        i[1] = thresh
+                        find = True
+                        break
+                    thresh += 1
+                if find:
                     break
-        trips.append(trip)
+            else:
+                valid_trip = False
+        if valid_trip:
+            trips.append(trip)
 
         count += 1
-    x = 0
-    for pod in trips:
-        for i in pod:
-            x += i[0].duration
+    # x = 0
+    # for pod in trips:
+    #     for i in pod:
+    #         x += i[0].duration
 
     # parse data to send
     final_trips = []
     final_trip = []
+    print(trips)
     for trip in trips:
         final_trip = []
         for podcast in trip:
-            print(podcast)
             final_trip.append(podcast_dict[podcast[0].uri])
         final_trips.append(final_trip)
-    print(len(final_trips[0]))
     return final_trips
 
 
@@ -114,7 +123,7 @@ class podcast_node:
         self.duration = duration
 
 
-def subsetsum(array, num):
+def subset_sum(array, num):
     if num == 0 or num < 1:
         return None
     elif len(array) == 0:
@@ -123,8 +132,8 @@ def subsetsum(array, num):
         if array[0] == num:
             return [array[0]]
         else:
-            with_v = subsetsum(array[1:], (num - array[0]))
+            with_v = subset_sum(array[1:], (num - array[0]))
             if with_v:
                 return [array[0]] + with_v
             else:
-                return subsetsum(array[1:], num)
+                return subset_sum(array[1:], num)
