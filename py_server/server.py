@@ -274,7 +274,7 @@ def get_curr_trip():
 def get_user_history():
     # deconstruct params
     args_dict = request.args.to_dict()
-    page= int(args_dict['page'])
+    page = int(args_dict['page'])
     page = (page*5)+1
     cur = mysql.connection.cursor()
 
@@ -288,7 +288,7 @@ def get_user_history():
 
     cur.execute("select trip_id from trip_info where username = '{username}' group by trip_id order by trip_id desc limit {page}, 5;".format(
         username=args_dict['username'],
-        page = page
+        page=page
     ))
     raw_trip_ids = cur.fetchall()
     trip_ids = []
@@ -300,46 +300,48 @@ def get_user_history():
         episodes = []
         cur.execute("select start_location, stop_location from trip_info where username = '{username}' and trip_id = '{trip}';".format(
             username=args_dict['username'],
-            trip = trip
+            trip=trip
         ))
         start_stop = cur.fetchall()
-        
+
         cur.execute("select episode_uri from trip_episode_ratings where username = '{username}' and trip_id = '{trip}';".format(
             username=args_dict['username'],
-            trip = trip
+            trip=trip
         ))
         raw_uris = cur.fetchall()
         uris = []
 
         for uri in raw_uris:
             uris.append(uri[0])
-        
+
         for uri in uris:
             cur.execute("select episode_description from descriptions where episode_uri = '{uri}';".format(
                 uri=uri
-                ))
+            ))
             desc = cur.fetchall()
 
             cur.execute("select episode_name, show_name, duration from podcasts where episode_uri = '{uri}';".format(
                 uri=uri
-                ))
+            ))
             pod = cur.fetchall()
 
             cur.execute("select image_url from image_urls where episode_uri = '{uri}';".format(
                 uri=uri
-                ))
+            ))
             img_url = cur.fetchall()
 
             cur.execute("select rating from trip_episode_ratings where episode_uri = '{uri}' and username = '{user}';".format(
                 uri=uri,
                 user=args_dict['username']
-                ))
+            ))
             rating = cur.fetchall()
 
-            episode = {"uri": uri, "image_url": img_url[0][0], "rating": rating[0][0], "episode_name": pod[0][0], "show_name": pod[0][1], "duration": pod[0][2], "description": desc[0][0]}
+            episode = {"uri": uri, "image_url": img_url[0][0], "rating": rating[0][0], "episode_name": pod[0]
+                       [0], "show_name": pod[0][1], "duration": pod[0][2], "description": desc[0][0]}
             episodes.append(episode)
-        
-        full_trip = {"trip_id": trip, "starting_loc": start_stop[0][0], "destination": start_stop[0][1], "podcasts": episodes}
+
+        full_trip = {
+            "trip_id": trip, "starting_loc": start_stop[0][0], "destination": start_stop[0][1], "podcasts": episodes}
         trips.append(full_trip)
     return trips
 
@@ -518,6 +520,7 @@ def save_Rating():
     mysql.connection.commit()
     return []
 
+
 # TODO: implement
 # args: username
 # return: total number of minutes of podcasts the user has listened to (as a formatted string please)
@@ -588,6 +591,7 @@ def update_History_New_trip():
 
     return []
     '''
+
 
 @app.route('/wrapped/minutes', methods=['GET'])
 def minutes():
@@ -713,16 +717,18 @@ def buddy():
         print('cannot format phone number')
     return {'firstName': firstName, 'lastName': lastName, 'phone': formatted_number}
 
+
 @app.route('/replacePlanningPodcast', methods=['GET'])
 def replacePlanningPodcast():
     args_dict = request.args.to_dict()
     cur = mysql.connection.cursor()
+    username = args_dict['username']
     duration = args_dict['duration']
     categories = args_dict['categories'].replace('_', ' ').split(',')
     duration = float(duration)
     upper_dur = duration + duration * .1
     lower_dur = duration - duration * .1
-    sql_query = '''SELECT c.episode_uri, duration, show_name, episode_name
+    sql_query = '''SELECT p.episode_uri, duration, show_name, episode_name
                     FROM podcasts p, categories c
                     WHERE c.episode_uri = p.episode_uri AND p.duration < {upper_dur} AND 
                     p.duration > {lower_dur} AND c.category = '{category}'
@@ -761,7 +767,7 @@ def replacePlanningPodcast():
                 WHERE i.episode_uri = '{uri}'
                 '''.format(uri=uri)
     cur.execute(sql_query)
-    image_url = cur.fetchall()
+    image_url = cur.fetchall()[0]
     return_dict['image_url'] = image_url[0]
     sql_query = '''SELECT category
                 FROM categories c
@@ -773,7 +779,7 @@ def replacePlanningPodcast():
     for i in result:
         categories.append(i)
     return_dict['categories'] = categories
-    sql_query = '''SELECT subcategory
+    sql_query = '''SELECT subcategory, is_power
                 FROM subcategories s
                 WHERE s.episode_uri = '{uri}'
                 '''.format(uri=uri)
@@ -781,10 +787,26 @@ def replacePlanningPodcast():
     result = cur.fetchall()
     subcategories = list()
     for i in result:
-        subcategories.append(i)
+        subcatlist = list()
+        subcatlist.append(i[0])
+        sql_query = '''SELECT score
+                        FROM user_subcategory_score u
+                        WHERE u.username = '{username}' AND u.subcategory = '{subcategory}'
+                    '''.format(username=username, subcategory=i[0])
+        print(sql_query)
+        cur.execute(sql_query)
+        score = cur.fetchall()
+
+        try:
+            subcatlist.append(score[0][0])
+        except:
+            subcatlist.append(0)
+        subcatlist.append(i[1])
+        subcategories.append(subcatlist)
     return_dict['subcategories'] = subcategories
     print(return_dict)
     return return_dict
+
 
 if __name__ == "__main__":
     app.run(host='db8.cse.nd.edu', debug=True, port=5009)
