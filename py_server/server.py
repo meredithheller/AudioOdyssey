@@ -521,78 +521,6 @@ def save_Rating():
     return []
 
 
-# TODO: implement
-# args: username
-# return: total number of minutes of podcasts the user has listened to (as a formatted string please)
-'''
-@app.route('/updateHistSavedTrip', methods=['POST'])
-def update_History_Saved_Trip():
-    data = request.json
-    # trip_id, episode_uri, username
-    # Insert into episode_history this information with replaced=1- update? since already in table
-    # Remove this trip id and episode uri row from trip episode ratings
-    cur = mysql.connection.cursor()
-
-    # update episode_history -> set replaced = 1
-    cur.execute("UPDATE episode_history set replaced = 1 where username = '{user}' and episode_uri = '{uri}';".format(
-        user = data['username'],
-        uri = data['episode_uri']
-    ))
-
-    # Delete podcast from trip_episode_ratings
-    cur.execute("delete from trip_episode_ratings where username = '{user}' and episode_uri = '{uri}';".format(
-        user = data['username'],
-        uri = data['episode_uri']
-    ))
-
-    # get the categories of that episode
-    cur.execute("select category from categories where episode_uri = '{uri}';".format(
-        uri = pod['uri']
-        ))
-    cats = cur.fetchall()
-
-    # get the duration of the podcast to be replaced
-    cur.execute("select duration from podcasts where episode_uri = '{uri}';".format(
-        uri = pod['uri']
-    ))
-    duration = cur.fetchall()
-
-    options = []
-
-    # for each category
-    for cat in cats:
-        cur.execute("select episode_uri from podcasts where category = '{cat}' and abs(duration -'{dur}') < 5;".format(
-            cat = cat[0],
-            dur = duration[0]
-        ))
-        podcasts = cur.fetchall()
-        options.append(podcasts)
-        
-    print(options)
-    
-    newEpisode = []
-    for episode in options:
-        cur.execute("select * from episode_history where episode_uri = '{uri}';".format(
-            uri = episode[0]
-        ))
-        alreadyListened = cur.fetchall()
-        if len(alreadyListened) != 0:
-            newEpisode.append(episode)
-            break
-        
-
-    return newEpisode
-    
-
-@app.route('/updateHistNewTrip', methods=['GET'])
-def update_History_New_trip():
-    args_dict = request.args.to_dict()
-    username = args_dict['username']
-
-    return []
-    '''
-
-
 @app.route('/wrapped/minutes', methods=['GET'])
 def minutes():
     args_dict = request.args.to_dict()
@@ -609,6 +537,7 @@ def minutes():
         totalMinutes = 0.0
     else:
         totalMinutes = result
+    totalMinutes = round(totalMinutes, 2)
     minutes = str("{:,}".format(totalMinutes))
     print(minutes)
     return minutes  # return as formatted string please (with commas)
