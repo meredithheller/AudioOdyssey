@@ -1,8 +1,6 @@
 import { Button, ImageBackground, StyleSheet, Text, View, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { REACT_APP_PORT_NUM } from '@env';
-
 
 export default function LandingPage({ navigation }) {
 
@@ -16,8 +14,7 @@ export default function LandingPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const login = () => {
-    let loginUrl = `http://db8.cse.nd.edu:5009/login`
-    return fetch(loginUrl, {
+    return fetch(`http://db8.cse.nd.edu:${global.port}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -44,7 +41,7 @@ export default function LandingPage({ navigation }) {
   }
 
   const createAccount = () => {
-    return fetch(`http://db8.cse.nd.edu:5009/createAccount`, {
+    return fetch(`http://db8.cse.nd.edu:${global.port}/createAccount`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -64,7 +61,7 @@ export default function LandingPage({ navigation }) {
         alert(data.error);
       } else {
         setCreateModalVisible(false);
-        setLoginModalVisible(true)
+        setLoginModalVisible(true);
       }
     }).catch((error) => console.log(error));
   }
@@ -129,7 +126,7 @@ export default function LandingPage({ navigation }) {
     loginText: {
       color: "white",
       padding: 25,
-      fontSize: 20,
+      fontSize: 20
     }
   });
 
@@ -179,7 +176,7 @@ export default function LandingPage({ navigation }) {
 
               <View style={{alignItems: 'center'}}>
                 <Text>Don't have an account? </Text>
-                <TouchableOpacity onPress={() => {setLoginModalVisible(false); setCreateModalVisible(true)}}>
+                <TouchableOpacity onPress={() => {setLoginModalVisible(false); setCreateModalVisible(true);}}>
                   <Text style={{color: "#003f5c"}}>Create account</Text>
                 </TouchableOpacity>
               </View>

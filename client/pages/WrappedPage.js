@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ImageBackground, Text, Modal, TouchableOpacity, Linking } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { REACT_APP_PORT_NUM } from '@env'
 
 function Buddy(firstName='', lastName='', phoneNumber='') {
   this.firstName = firstName;
@@ -34,8 +33,7 @@ export default function WrappedPage({ navigation }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      let minutesURL = `http://db8.cse.nd.edu:5009/wrapped/minutes?`
-      const minuteRes = await fetch(minutesURL + new URLSearchParams({
+      const minuteRes = await fetch(`http://db8.cse.nd.edu:${global.port}/wrapped/minutes?` + new URLSearchParams({
         username: global.user.username
       }))
       if( minuteRes.status == 200) {
@@ -46,8 +44,7 @@ export default function WrappedPage({ navigation }) {
         setLoadingMinutes(false)
         setErrorMinutes(true)
       }
-      let categoryURL = `http://db8.cse.nd.edu:5009/wrapped/category?`
-      const categoryRes = await fetch(categoryURL + new URLSearchParams({
+      const categoryRes = await fetch(`http://db8.cse.nd.edu:${global.port}/wrapped/category?` + new URLSearchParams({
         username: global.user.username
       }))
       if( categoryRes.status == 200) {
@@ -59,33 +56,28 @@ export default function WrappedPage({ navigation }) {
         setLoadingCategory(false)
         setErrorCategory(true)
       }
-      let buddyURL = `http://db8.cse.nd.edu:5009/wrapped/buddy?`
-      const buddyRes = await fetch(buddyURL + new URLSearchParams({
+      const buddyRes = await fetch(`http://db8.cse.nd.edu:${global.port}/wrapped/buddy?` + new URLSearchParams({
         username: global.user.username
       }))
       if( buddyRes.status == 200) {
         let data = await buddyRes.json()
         let their_buddy = new Buddy(data.firstName, data.lastName, data.phone);
-        setBuddy(their_buddy)
-        setLoadingBuddy(false)
+        setBuddy(their_buddy);
+        setLoadingBuddy(false);
       }else{
-        setErrorBuddy(true)
-        setLoadingBuddy(false)
+        setErrorBuddy(true);
+        setLoadingBuddy(false);
       }
     }
-
-    fetchData()
+    fetchData();
   }, [])
 
   function changeSlide() {
     setPosition(position + 1);
-    if (position == 4) {
-      navigation.navigate("Profile Home");
-    }
   }
 
   return (
-    <View style={styles.container} onTouchEnd={changeSlide} >
+    <View style={styles.container} onTouchEnd={changeSlide}>
       <ImageBackground source={require('../assets/wrapped-img.jpg')} resizeMode="cover" style={styles.image}>
         <Modal  
           animationType="fade"
@@ -158,15 +150,52 @@ export default function WrappedPage({ navigation }) {
               { errorBuddy ? <Text style={styles.caption}>There was an error getting your podcast buddy.</Text>
               : <View>
                 <Ionicons style={{alignSelf: 'center'}} name="people" size={75} />
-                { loadingBuddy ? <Text style={styles.caption}> Loading Road Trip Buddy</Text> : 
+                { loadingBuddy ? 
+                  <Text style={styles.caption}> Loading Road Trip Buddy</Text> : 
+                  <View style={{alignItems: 'center'}}>
+                    <Text style={{...styles.caption}}>Your Road Trip Buddy</Text>
+                    <Text>{buddy.firstName} {buddy.lastName}</Text>
+                    <TouchableOpacity onPress={() => openSmsUrl(buddy.firstName, buddy.phoneNumber)}>
+                      <Text style={styles.phoneNumber}>{buddy.phoneNumber}</Text>
+                    </TouchableOpacity>
+                  </View>
+                }
+              </View>}
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={position > 4}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalViewSummary}>
+              <Text style={styles.summaryTitle}>Audio Odyssey</Text>
+              <View style={styles.row}>
+                <Text>Minutes</Text>
+                <Text>{Math.round(totalMinutes)}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text>Top Category</Text>
+                <Text>{topCategory}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text>{topCategory} Percentile</Text>
+                <Text>{percentile}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text>Buddy</Text>
                 <View style={{alignItems: 'center'}}>
-                  <Text style={{...styles.caption}}>Your Road Trip Buddy</Text>
                   <Text>{buddy.firstName} {buddy.lastName}</Text>
                   <TouchableOpacity onPress={() => openSmsUrl(buddy.firstName, buddy.phoneNumber)}>
-                    <Text>{buddy.phoneNumber}</Text>
+                    <Text style={styles.phoneNumber}>{buddy.phoneNumber}</Text>
                   </TouchableOpacity>
-                </View>}
-              </View>}
+                </View>
+              </View>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile Home')}>
+                <Text style={styles.buttonText}>Done</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -199,6 +228,11 @@ const styles = StyleSheet.create({
     fontSize: 36 ,
     textAlign: 'center'
   },
+  summaryTitle: {
+    fontSize: 20,
+    fontFamily: 'Zapfino',
+    fontWeight: 'bold'
+  },
   tap: {
     margin: 25,
     textAlign: 'center'
@@ -214,6 +248,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
+    justifyContent: 'center',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -222,7 +257,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    justifyContent: 'space-between',
     height: '30%',
     width: '60%'
   },
@@ -248,5 +282,45 @@ const styles = StyleSheet.create({
   caption: {
     fontSize: 20,
     textAlign: 'center'
+  },
+  phoneNumber: {
+    color: 'blue' 
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    borderBottomColor: 'black',
+    paddingBottom: 30
+  },
+  modalViewSummary: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    height: '40%',
+    width: '80%'
+  },
+  button: {
+    width:"80%",
+    borderRadius: 10,
+    alignItems:"center",
+    justifyContent:"center",
+    backgroundColor:"#003f5c",
+    width: 100
+  },
+  buttonText: {
+    color: 'white',
+    padding: 10
   }
 });

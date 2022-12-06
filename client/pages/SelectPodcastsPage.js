@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
-import TripCard from '../components/tripCard'
-import { REACT_APP_PORT_NUM } from '@env'
+import TripCard from '../components/tripCard';
 
 export default function SelectPodcastsPage({ navigation, route }) {
 
@@ -13,12 +12,12 @@ export default function SelectPodcastsPage({ navigation, route }) {
   useEffect(() => {
     setLoading(true)
     if(!tripPossibilities){
-      alert("there was an error")
-      navigation.navigate('Plan Trip')
+      alert("there was an error");
+      navigation.navigate('Plan Trip');
     }
     setTripPossibilities(route.params.trips)
     setLoading(false)
-  }, [])
+  }, []);
 
   useEffect(() => {
     setLoading(false)
@@ -32,51 +31,47 @@ export default function SelectPodcastsPage({ navigation, route }) {
     setSelectedTrip(id)
   }
 
-
   const handleSaveTrip = async () => {
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
-    }else{
+    } else {
       // TODO: THIS IS WHERE WE NEED TO MAKE POST REQUEST TO SAVE THE TRIP
       // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
         // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
         // 
-        const res = fetch(`http://db8.cse.nd.edu:5009/saveTrip`, {
-          method: 'POST',
-          body: JSON.stringify({
-            username: global.user.username,
-            start_loc: route.params.startLocation,
-            destination: route.params.endLocation,
-            tripInfo: tripPossibilities[selectedTrip],
-            categories: route.params.categories
-          }),
-          headers: {
-              'Content-type': 'application/json; charset=UTF-8',
-          }
-        }).then((response) => {
-          return response.json()
-        })
-        .then((data) => {
-          alert("Successfully saved your trip. View it in the current trip page of your profile.")
-          navigation.navigate('Plan Trip')
-        }).catch(function(error) {
-          alert('An error occurred. Please try again.')
-        })
+        const res = fetch(`http://db8.cse.nd.edu:${global.port}/saveTrip`, {
+            method: 'POST',
+            body: JSON.stringify({
+              username: global.user.username,
+              start_loc: route.params.startLocation,
+              destination: route.params.endLocation,
+              tripInfo: tripPossibilities[selectedTrip],
+              categories: route.params.categories
+            }),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+          }).then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            alert("Successfully saved your trip. View it in the current trip page of your profile.");
+            navigation.navigate('Plan Trip');
+          }).catch(function(error) {
+            alert('An error occurred. Please try again.');
+          });
     }
   }
 
   const onReplace = (podcastIndex, tripIndex) => {
     setLoading(true)
-    let replaceURL = `http://db8.cse.nd.edu:5009/replacePlanningPodcast?`
-    const res = fetch(replaceURL + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${global.port}/replacePlanningPodcast?`+ new URLSearchParams({
       username: global.user.username,
       duration: tripPossibilities[tripIndex][podcastIndex].duration,
       categories: route.params.categories
     })).then((response) => {
       return response.json()
-      // TODO: figure out how to handle no podcast replacement available
-    })
-    .then((data) => {
+    }).then((data) => {
       let newTripPossibilities = tripPossibilities
       newTripPossibilities[tripIndex][podcastIndex] = data
       setTripPossibilities(newTripPossibilities)
@@ -134,7 +129,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
 
 const styles = StyleSheet.create({
     loading : {
-      alignSelf: 'center',
+      alignSelf: 'center'
     },
     input : {
       height: 40,
@@ -146,36 +141,35 @@ const styles = StyleSheet.create({
       borderColor: 'white'
     },
     button: {
-        position: 'absolute',
-        bottom: 0,
+      position: 'absolute',
+      bottom: 0,
 
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        paddingVertical: 12,
-        width: 200,
-        borderRadius: 4,
-        elevation: 3,
-        backgroundColor: 'black',
-        margin: 10
-      },
-      buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        letterSpacing: 0.25,
-        textTransform: 'uppercase'
-      },
-      header: {
-        color: 'black',
-        fontWeight: 'bold',
-        letterSpacing: 0.25,
-        textTransform: 'uppercase',
-        fontSize: 24,
-        paddingTop: 10,
-        alignSelf: 'center'
-      },
-      container: {
-        height: '100%'
-      }
-
-})
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'center',
+      paddingVertical: 12,
+      width: 200,
+      borderRadius: 4,
+      elevation: 3,
+      backgroundColor: 'black',
+      margin: 10
+    },
+    buttonText: {
+      color: '#fff',
+      fontWeight: 'bold',
+      letterSpacing: 0.25,
+      textTransform: 'uppercase'
+    },
+    header: {
+      color: 'black',
+      fontWeight: 'bold',
+      letterSpacing: 0.25,
+      textTransform: 'uppercase',
+      fontSize: 24,
+      paddingTop: 10,
+      alignSelf: 'center'
+    },
+    container: {
+      height: '100%'
+    }
+});

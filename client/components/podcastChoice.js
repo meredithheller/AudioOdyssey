@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
-import { REACT_APP_PORT_NUM } from '@env'
 
 export default function PodcastChoice({ uri }) {
     const [ loading, setLoading ] = useState(true)
@@ -25,7 +24,7 @@ export default function PodcastChoice({ uri }) {
     // then set loading to false
     // if error, alert and leave loading true
     const podcasts_response = await fetch(
-      `http://db8.cse.nd.edu:5009/podcasts`,
+      `http://db8.cse.nd.edu:${global.port}/podcasts`,
       {
         method: 'POST',
         headers: {

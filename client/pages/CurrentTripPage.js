@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, Pressable, ScrollView } from 'react-native';
-import TripCard from '../components/tripCard'
-import { REACT_APP_PORT_NUM } from '@env'
+import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, Pressable, ScrollView, TouchableOpacity } from 'react-native';
+import TripCard from '../components/tripCard';
+import openMap from 'react-native-open-maps';
 
 export default function CurrentTrip({ navigation }) {
 
@@ -28,20 +28,19 @@ export default function CurrentTrip({ navigation }) {
 
   const getCurrentTrip = async () => {
     // TODO: This should be a GET request
-    let curTripURL = `http://db8.cse.nd.edu:5009/getCurrTrip?`
-    const res = fetch(curTripURL + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${global.port}/getCurrTrip?` + new URLSearchParams({
       username: global.user.username
     })).then((response) => {
       return response.json()
     })
     .then((data) => {
-      setStartingLocation(data.start_loc)
-      setDestination(data.destination)
-      setPodcasts(data.podcasts)
-      setTripId(data.trip_id)
+      setStartingLocation(data.start_loc);
+      setDestination(data.destination);
+      setPodcasts(data.podcasts);
+      setTripId(data.trip_id);
     }).catch(function(error) {
-      alert('An error occurred. Please try again.')
-      navigation.navigate('Profile Home')
+      alert('An error occurred. Please try again.');
+      navigation.navigate('Profile Home');
     })
   }
 
@@ -49,8 +48,7 @@ export default function CurrentTrip({ navigation }) {
     // TODO: CALL THE REPLACE ENDPOINT
     // POST REQUEST
     // THIS IS NOT DONE
-    let replaceURL = `http://db8.cse.nd.edu:5009/replaceCurrPodcast`
-    const res = fetch(replaceURL,  {
+    const res = fetch(`http://db8.cse.nd.edu:${global.port}/updateHistSavedTrip`, {
       method: 'POST',
       body: JSON.stringify({
         tripId: tripId,
@@ -77,11 +75,10 @@ export default function CurrentTrip({ navigation }) {
     // TODO: create backend endpoint to rate a podcast
         // SEND IT username, podcast_id, tripId (prop), and rating
         let podRatings = [] 
-        for(let pod in podcasts){
-          podRatings.push({"uri": podcasts[pod].uri, "rating": podcasts[pod].rating})
+        for (let pod in podcasts) {
+          podRatings.push({"uri": podcasts[pod].uri, "rating": podcasts[pod].rating});
         }
-        let saveRatingURL = `http://db8.cse.nd.edu:5009/saveRating`
-        const res = fetch(saveRatingURL,  {
+        const res = fetch(`http://db8.cse.nd.edu:${global.port}/saveRating`,  {
           method: 'POST',
           body: JSON.stringify({
             trip_id: tripId,
@@ -104,16 +101,23 @@ export default function CurrentTrip({ navigation }) {
 
   const ratingCompleted = (rating, podcastIndex) => {
     podcasts[podcastIndex].rating = rating;
-    setPodcasts(podcasts)
+    setPodcasts(podcasts);
     // edit the current trip podcast information so that it reflects the new rating
   }
 
+  const startTrip = () => {
+    openMap({ start: startingLocation, end: destination });
+  }
+
   return (
-    loading ? <SafeAreaView style={styles.container}>
+    loading ? 
+      <SafeAreaView style={styles.container}>
         <ActivityIndicator size="large" />
       </SafeAreaView> :
-    <SafeAreaView style={styles.container}>
-          <Text style={styles.header}>Current Trip</Text>
+      <SafeAreaView style={styles.container}>
+          <TouchableOpacity style={styles.startBtn} onPress={() => startTrip()}>
+            <Text style={styles.header}>Start Trip</Text>
+          </TouchableOpacity>
           <ScrollView
             style={{height: '100%', paddingBotton: 20}}
             showsVerticalScrollIndicator={true} 
@@ -153,13 +157,11 @@ const styles = StyleSheet.create({
     height: '100%'
   },
   header: {
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
     letterSpacing: 0.25,
-    textTransform: 'uppercase',
     fontSize: 24,
-    paddingTop: 10,
-    alignSelf: 'center'
+    padding: 10
   },
   labelText: {
     padding: 5,
@@ -187,4 +189,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     textTransform: 'uppercase'
   },
+  startBtn: {
+    width:"80%",
+    borderRadius: 10,
+    alignItems:"center",
+    justifyContent:"center",
+    backgroundColor:"#003f5c",
+    margin: 16,
+    width: 200,
+    alignSelf: 'center'
+  }
 });

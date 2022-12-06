@@ -62,9 +62,7 @@ export default function PastTripsPage({ navigation, route }) {
     for(let pod in tripHistory[tripIndex].podcasts){
       podRatings.push({"uri": tripHistory[tripIndex].podcasts[pod].uri, "rating": tripHistory[tripIndex].podcasts[pod].rating} )
     }
-    console.log("ratings: ")
-    console.log(podRatings)
-    const res = fetch(`http://db8.cse.nd.edu:5009/saveRating`,  {
+    const res = fetch(`http://db8.cse.nd.edu:${global.port}/saveRating`,  {
       method: 'POST',
       body: JSON.stringify({
         trip_id: tripHistory[tripIndex],
