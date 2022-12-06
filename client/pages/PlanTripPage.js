@@ -94,6 +94,15 @@ export default function PlanTripPage({ navigation, route }) {
   }
 
   const getTripPodcastInfo = async () => {
+
+    if(!endLocation || !startLocation || !duration){
+      alert('Please enter valid starting and destination locations')
+      return
+    }
+    if(duration > 108000){
+      alert('Trip is too long. Please choose a shorter travel distance.')
+      return
+    }
     setLoading(true)
     // TODO: make sure a destination has been sent and duration is a valid number
     let catList = [...categories]
@@ -102,7 +111,8 @@ export default function PlanTripPage({ navigation, route }) {
       formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
     }
     // TODO: This should be a GET request
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/tripOptions?` + new URLSearchParams({
+    let fetchURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/tripOptions?`
+    const res = fetch(fetchURL + new URLSearchParams({
       duration: duration,
       categories: formattedCategoryParam,
     })).then((response) => {

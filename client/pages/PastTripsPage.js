@@ -92,13 +92,11 @@ export default function PastTripsPage({ navigation, route }) {
   const [ loading, setLoading ] = useState(true)
   const [ page, setPage ] = useState(0)
   const [ tripHistory, setTripHistory ] = useState()
+  const [ canGoForward, setCanGoForward ] = useState(true)
+  const [ canGoBackward, setCanGoBackward ] = useState(false)
 
   useEffect(() => {
-    setLoading(true)
-    const timer = setTimeout(() => {
-      setTripHistory(pastTrips)
-    }, 1000);
-    // getTripHist()
+    getTripHist()
   }, [])
 
   useEffect(() => {
@@ -108,17 +106,23 @@ export default function PastTripsPage({ navigation, route }) {
   }, [tripHistory])
 
   useEffect(() => {
-    if(page){
+    if(page && page > 0){
       getTripHist()
     }
   }, [page])
 
   const getTripHist = () => {
     setLoading(true)
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/getPastTrips?` + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/get_user_history?` + new URLSearchParams({
       username: global.user.username,
       page: page
     })).then((response) => {
+      if(!response.ok){
+        // need to determine how to handle the errors
+        alert('No more trips in your history')
+        setLoading(false)
+        return
+      }
       return response.json()
     })
     .then((data) => {
@@ -139,7 +143,7 @@ export default function PastTripsPage({ navigation, route }) {
     const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveRating`,  {
       method: 'POST',
       body: JSON.stringify({
-        trip_id: tripHistory[tripId],
+        trip_id: tripHistory[tripIndex],
         username: global.user.username,
         podcastRatings: podRatings
       }),
@@ -158,6 +162,7 @@ export default function PastTripsPage({ navigation, route }) {
   const ratingCompleted = (rating, podIndex, tripIndex) => {
     // update local version of the trip
     tripHistory[tripIndex].podcasts[podIndex].rating = rating
+    setTripHistory(tripHistory)
   }
 
   return (
@@ -167,19 +172,21 @@ export default function PastTripsPage({ navigation, route }) {
     <View style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
     <SafeAreaView>
       <View style={styles.lockedHeader}>
-        <TouchableOpacity  
+        { page > 0 && <TouchableOpacity  
           onPress={() => {
-            page > 0 && setPage(page - 1)
+            if(page > 0){
+              setPage(page - 1)
+            }
         }}>
           <Ionicons style={styles.backButton} name={'arrow-back-circle'} size={25} color={'black'} />
-        </TouchableOpacity>
+        </TouchableOpacity>}
         <Text style={styles.header}>Past Trips</Text>
-        <TouchableOpacity 
+        { canGoForward && <TouchableOpacity 
           onPress={() => {
             setPage(page + 1)
         }}>
           <Ionicons style={styles.nextButton} name={'arrow-forward-circle'} size={25} color={'black'} />
-        </TouchableOpacity>
+        </TouchableOpacity> }
       </View>
       <ScrollView 
         style={styles.container}
