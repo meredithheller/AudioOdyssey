@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ImageBackground, Text, Modal, TouchableOpacity, Linking } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { REACT_APP_PORT_NUM } from '@env'
 
 function Buddy(firstName='', lastName='', phoneNumber='') {
   this.firstName = firstName;
@@ -34,7 +33,7 @@ export default function WrappedPage({ navigation }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const minuteRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/minutes?` + new URLSearchParams({
+      const minuteRes = await fetch(`http://db8.cse.nd.edu:${global.port}/wrapped/minutes?` + new URLSearchParams({
         username: global.user.username
       }))
       if( minuteRes.status == 200) {
@@ -45,7 +44,7 @@ export default function WrappedPage({ navigation }) {
         setLoadingMinutes(false)
         setErrorMinutes(true)
       }
-      const categoryRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/category?` + new URLSearchParams({
+      const categoryRes = await fetch(`http://db8.cse.nd.edu:${global.port}/wrapped/category?` + new URLSearchParams({
         username: global.user.username
       }))
       if( categoryRes.status == 200) {
@@ -57,7 +56,7 @@ export default function WrappedPage({ navigation }) {
         setLoadingCategory(false)
         setErrorCategory(true)
       }
-      const buddyRes = await fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/buddy?` + new URLSearchParams({
+      const buddyRes = await fetch(`http://db8.cse.nd.edu:${global.port}/wrapped/buddy?` + new URLSearchParams({
         username: global.user.username
       }))
       if( buddyRes.status == 200) {
