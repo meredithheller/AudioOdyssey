@@ -17,8 +17,8 @@ import {
   ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
-import categs from '../constants/categories'
-import { REACT_APP_GOOGLE_PLACES_API_KEY, REACT_APP_PORT_NUM } from '@env'
+import categs from '../constants/categories';
+import { REACT_APP_GOOGLE_PLACES_API_KEY } from '@env';
 
 
 export default function PlanTripPage({ navigation, route }) {
@@ -38,16 +38,16 @@ export default function PlanTripPage({ navigation, route }) {
   const [ trips, setTrips ] = useState(null)
 
   useEffect(() => {
-    if(trips){
-      navigation.navigate("Select Podcasts", { trips: trips, startLocation: searchStartKeyword, endLocation: searchEndKeyword, categories: [...categories]})
+    if (trips) {
+      navigation.navigate("Select Podcasts", { trips: trips, startLocation: searchStartKeyword, endLocation: searchEndKeyword, categories: [...categories]});
     }
-  }, [trips])
+  }, [trips]);
 
   useEffect(() => {
     if (endLocation && startLocation) {
       getRoute();
     }
-  }), [endLocation, startLocation];
+  }, [endLocation, startLocation]);
 
   let searchLocation = async (text, destination) => {
     let keyword = '';
@@ -62,13 +62,13 @@ export default function PlanTripPage({ navigation, route }) {
     axios
       .request({
         method: 'post',
-        url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${REACT_APP_GOOGLE_PLACES_API_KEY}&input=${keyword}`,
+        url: `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${REACT_APP_GOOGLE_PLACES_API_KEY}&input=${keyword}`
       })
       .then((response) => {
-        if(destination){
+        if (destination) {
           setEndSearchResults(response.data.predictions);
           setIsShowingEndResults(true)
-        }else{
+        } else {
           setStartSearchResults(response.data.predictions);
           setIsShowingStartResults(true);
         }
@@ -91,41 +91,43 @@ export default function PlanTripPage({ navigation, route }) {
       .catch((e) => {
         console.log(e);
       });
-  }
+  };
 
   const getTripPodcastInfo = async () => {
-    setLoading(true)
+    setLoading(true);
     // TODO: make sure a destination has been sent and duration is a valid number
-    let catList = [...categories]
-    let formattedCategoryParam = 'none'
-    if(categories.size > 0){
-      formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
+    let catList = [...categories];
+    let formattedCategoryParam = 'none';
+    if (categories.size > 0) {
+      formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_');
     }
     // TODO: This should be a GET request
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/tripOptions?` + new URLSearchParams({
-      duration: duration,
-      categories: formattedCategoryParam,
-    })).then((response) => {
-      return response.json()
-    })
-    .then((data) => {
-      setTrips(data)
-      setLoading(false)
-    }).catch(function(error) {
-      setLoading(false)
-      alert('An error occurred. Please try again.')
-    })
-  }
+    const res = fetch(`http://db8.cse.nd.edu:${global.port}/tripOptions?` + new URLSearchParams({
+        duration: duration,
+        categories: formattedCategoryParam
+      }))
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setTrips(data);
+        setLoading(false);
+      })
+      .catch(function(error) {
+        setLoading(false);
+        alert('An error occurred. Please try again.');
+      });
+  };
 
   const handleChipPress = (cat) =>{
-    if(categories.has(cat)){
+    if(categories.has(cat)) {
       let clonedSet = new Set(categories);
-      clonedSet.delete(cat)
-      setCategories(clonedSet)
-    }else{
+      clonedSet.delete(cat);
+      setCategories(clonedSet);
+    } else {
       let clonedSet = new Set(categories);
-      clonedSet.add(cat)
-      setCategories(clonedSet)
+      clonedSet.add(cat);
+      setCategories(clonedSet);
     }
   }
 
@@ -145,7 +147,7 @@ export default function PlanTripPage({ navigation, route }) {
             placeholderTextColor="#000"
             onChangeText={(text) => searchLocation(text, false)}
             value={searchStartKeyword}
-            onBlur={()=>setIsShowingStartResults(false)}
+            onBlur={() => setIsShowingStartResults(false)}
           />
           {isShowingStartResults && (
             <FlatList
@@ -155,9 +157,9 @@ export default function PlanTripPage({ navigation, route }) {
                   <TouchableOpacity
                     style={styles.resultItem}
                     onPress={() =>  {
-                      setSearchStartKeyword(item.description)
-                      setIsShowingStartResults(false)
-                      setStartLocation(item.place_id)
+                      setSearchStartKeyword(item.description);
+                      setIsShowingStartResults(false);
+                      setStartLocation(item.place_id);
                     }}>
                     <Text key={item}>{item.description}</Text>
                   </TouchableOpacity>
@@ -180,7 +182,7 @@ export default function PlanTripPage({ navigation, route }) {
             placeholderTextColor="#000"
             onChangeText={(text) => searchLocation(text, true)}
             value={searchEndKeyword}
-            onBlur={()=>setIsShowingStartResults(false)}
+            onBlur={() => setIsShowingStartResults(false)}
           />
           {isShowingEndResults && (
             <FlatList
@@ -190,9 +192,9 @@ export default function PlanTripPage({ navigation, route }) {
                   <TouchableOpacity
                     style={styles.resultItem}
                     onPress={() =>  {
-                      setSearchEndKeyword(item.description)
-                      setIsShowingEndResults(false)
-                      setEndLocation(item.place_id)
+                      setSearchEndKeyword(item.description);
+                      setIsShowingEndResults(false);
+                      setEndLocation(item.place_id);
                     }}>
                     <Text>{item.description}</Text>
                   </TouchableOpacity>
@@ -218,28 +220,27 @@ export default function PlanTripPage({ navigation, route }) {
         <Pressable style={styles.button} onPress={getTripPodcastInfo}>
           <Text style={styles.buttonText}>Plan my trip</Text>
         </Pressable>
-
       </SafeAreaView>
       )
   }
 
 const styles = StyleSheet.create({
   autocompleteContainer: {
-    zIndex: 1,
+    zIndex: 1
   },
   searchResultsStartContainer: {
     width: 340,
     height: 100,
     backgroundColor: '#fff',
     position: 'absolute',
-    top: 50,
+    top: 50
   },
   searchResultsEndContainer: {
     width: 340,
     height: 100,
     backgroundColor: '#fff',
     position: 'absolute',
-    top: 50,
+    top: 50
   },
   resultItem: {
     width: '100%',
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
-    paddingLeft: 15,
+    paddingLeft: 15
   },
   searchBox: {
     width: 340,
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     color: '#000',
     backgroundColor: '#fff',
     borderWidth: 1.5,
-    paddingLeft: 15,
+    paddingLeft: 15
   },
   container: {
     flex: 1,

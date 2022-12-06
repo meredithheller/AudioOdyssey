@@ -1,2 +1,3 @@
 global.loggedIn = false;
-global.user = {}
+global.user = {};
+global.port = '5009';
