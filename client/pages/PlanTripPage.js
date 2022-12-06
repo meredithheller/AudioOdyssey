@@ -20,6 +20,7 @@ import axios from 'axios';
 import categs from '../constants/categories';
 import { REACT_APP_GOOGLE_PLACES_API_KEY } from '@env';
 
+const tripOptionsURL = `http://db8.cse.nd.edu:5009/tripOptions?`
 
 export default function PlanTripPage({ navigation, route }) {
   const [searchStartKeyword, setSearchStartKeyword] = useState('')
@@ -38,8 +39,10 @@ export default function PlanTripPage({ navigation, route }) {
   const [ trips, setTrips ] = useState(null)
 
   useEffect(() => {
-    if (trips) {
-      navigation.navigate("Select Podcasts", { trips: trips, startLocation: searchStartKeyword, endLocation: searchEndKeyword, categories: [...categories]});
+    if(trips && trips.length == 0){
+      alert('No possibilities. Try selecting more categories.')
+    }else if(trips){
+      navigation.navigate("Select Podcasts", { trips: trips, startLocation: searchStartKeyword, endLocation: searchEndKeyword, categories: [...categories]})
     }
   }, [trips]);
 
@@ -94,7 +97,16 @@ export default function PlanTripPage({ navigation, route }) {
   };
 
   const getTripPodcastInfo = async () => {
-    setLoading(true);
+
+    if(!endLocation || !startLocation || !duration){
+      alert('Please enter valid starting and destination locations')
+      return
+    }
+    if(duration > 108000){
+      alert('Trip is too long. Please choose a shorter travel distance.')
+      return
+    }
+    setLoading(true)
     // TODO: make sure a destination has been sent and duration is a valid number
     let catList = [...categories];
     let formattedCategoryParam = 'none';

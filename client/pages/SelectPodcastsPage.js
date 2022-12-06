@@ -19,12 +19,19 @@ export default function SelectPodcastsPage({ navigation, route }) {
     setLoading(false)
   }, []);
 
+  useEffect(() => {
+    setLoading(false)
+    if(tripPossibilities){
+      setLoading(false)
+    }
+  }, [tripPossibilities])
+
+
   const onSelectTrip = (id) => {
     setSelectedTrip(id)
   }
 
   const handleSaveTrip = async () => {
-    // console.log(selectedTrip)
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
     } else {
@@ -57,23 +64,22 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }
 
   const onReplace = (podcastIndex, tripIndex) => {
-    // TODO implement replacing the podcast
-    const res = fetch(`http://db8.cse.nd.edu:${global.port}/updateHistNewTrip` + new URLSearchParams({
-      username: global.user.username
+    setLoading(true)
+    const res = fetch(`http://db8.cse.nd.edu:${global.port}/replacePlanningPodcast?`+ new URLSearchParams({
+      username: global.user.username,
+      duration: tripPossibilities[tripIndex][podcastIndex].duration,
+      categories: route.params.categories
     })).then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      // setStartingLocation(data.start_loc)
-      // setDestination(data.destination)
-      // setPodcasts(data.podcasts)
-      // setTripId(data.trip_id)
-      // setLoading(false)
-      console.log(data)
+      return response.json()
+    }).then((data) => {
+      let newTripPossibilities = tripPossibilities
+      newTripPossibilities[tripIndex][podcastIndex] = data
+      setTripPossibilities(newTripPossibilities)
     }).catch(function(error) {
       setLoading(false)
       alert('An error occurred. Please try again.')
-      navigation.navigate('Profile Home')
+    }).finally(() => {
+      setLoading(false)
     })
   }
 

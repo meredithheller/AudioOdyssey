@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView } from 'react-native';
 import { Rating, AirbnbRating } from 'react-native-ratings';
+import * as Linking from 'expo-linking';
 
 
 export default function PodcastInfo({ currentRating, tripId, ratingCompleted, onReplace, tripIndex, canRate, canReplace, podInfo, podIndex }) {
     const [ rating, setRating ] = useState(0)
-
-    useEffect(() => {
-    })
+    const [ canOpenLink, setCanOpenLink ] = useState(false)
 
     let image_url = "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2493250/2493250-1571260851467-0eaf5106f2d8a.jpg"
     let show_name = "How I Built This"
@@ -29,11 +28,20 @@ export default function PodcastInfo({ currentRating, tripId, ratingCompleted, on
                         onPress={()=> onReplace(podIndex, tripIndex)}>
                         <Text style={{color: '#fff'}}>Replace</Text>
                     </Pressable>}
+                    <Pressable 
+                        style={{...styles.replaceButton, backgroundColor: 'black'}} 
+                        onPress={()=> {
+                            Linking.openURL(podInfo.uri)
+                        }}>
+                        <Text style={{color: '#fff'}}>View in Spotify</Text>
+                    </Pressable> 
                 </View>
                 <View style={styles.rightSide}>
                     <Text style={styles.episodeTitle}>{podInfo.episode_name}</Text>
                     <Text style={styles.showTitle}>{podInfo.show_name}</Text>
-                    <Text style={styles.episodeDescription}>{podInfo.description}</Text>
+                    <ScrollView style={{height: 30, width: "90%", borderColor: 'black', borderRadius: 3, borderWidth: .5, padding: 3, backgroundColor: '#d9d9d9'}}>
+                        <Text style={{ ...styles.episodeDescription, marginBottom: 5}}>{podInfo.description}</Text>
+                    </ScrollView>
                 </View>
             </View>
             { canRate && <Rating
@@ -76,10 +84,12 @@ const styles = StyleSheet.create({
     episodeTitle: {
         fontSize: 16,
         fontWeight: 'bold',
+        width: "95%"
     },
 
     showTitle : {
         fontSize: 14,
+        width: "90%"
     },
     episodeDescription: {
         fontSize: 11

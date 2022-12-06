@@ -34,7 +34,10 @@ export default function LandingPage({ navigation }) {
         global.loggedIn = true;
         navigation.navigate('Home',data);
       }
-    }).catch((error) => console.log(global.port));
+    }).catch((error) => {
+      alert('There was an error logging you in. Please try again.')
+      console.log(error)
+    });
   }
 
   const createAccount = () => {

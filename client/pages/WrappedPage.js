@@ -101,7 +101,7 @@ export default function WrappedPage({ navigation }) {
               { errorMinutes ? <Text style={styles.caption}>There was an error getting your wrapped minutes.</Text> : 
               <View>
                 <Ionicons style={{alignSelf: 'center'}} name="headset" size={75} />
-                <Text style={styles.number}>{ loadingMinutes ? 'Loading' : Math.round(totalMinutes)}</Text>
+                <Text style={styles.number}>{ loadingMinutes ? 'Loading' : totalMinutes}</Text>
                 <Text style={styles.caption}>Podcast Minutes</Text>
               </View>}
             </View>
