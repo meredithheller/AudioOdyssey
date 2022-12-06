@@ -469,7 +469,7 @@ def minutes():
         totalMinutes = 0.0
     else:
         totalMinutes = result
-    minutes = str("{:,}".format(totalMinutes))
+    minutes = str("{:,}".format(round(totalMinutes)))
     print(minutes)
     return minutes  # return as formatted string please (with commas)
 
@@ -579,4 +579,4 @@ def buddy():
 
 
 if __name__ == "__main__":
-    app.run(host='db8.cse.nd.edu', debug=True, port=5006)
+    app.run(host='db8.cse.nd.edu', debug=True, port=5009)
