@@ -20,6 +20,16 @@ export default function SelectPodcastsPage({ navigation, route }) {
     setLoading(false)
   }, [])
 
+  useEffect(() => {
+    setLoading(false)
+    if(tripPossibilities){
+      console.log("zuchinni")
+      console.log(tripPossibilities)
+      setLoading(false)
+    }
+  }, [tripPossibilities])
+
+
   const onSelectTrip = (id) => {
     setSelectedTrip(id)
   }
@@ -58,8 +68,8 @@ export default function SelectPodcastsPage({ navigation, route }) {
   }
 
   const onReplace = (podcastIndex, tripIndex) => {
-
-    let replaceURL = `http://db8.cse.nd.edu:5009/replacePlanningPodcast`
+    setLoading(true)
+    let replaceURL = `http://db8.cse.nd.edu:5009/replacePlanningPodcast?`
     const res = fetch(replaceURL + new URLSearchParams({
       username: global.user.username,
       duration: tripPossibilities[tripIndex][podcastIndex].duration,
@@ -69,12 +79,14 @@ export default function SelectPodcastsPage({ navigation, route }) {
       // TODO: figure out how to handle no podcast replacement available
     })
     .then((data) => {
-      let newPodInfo = data.podcast
-      tripPossibilities[tripIndex][podcastIndex] = newPodInfo
-      setTripPossibilities(tripPossibilities)
+      let newTripPossibilities = tripPossibilities
+      newTripPossibilities[tripIndex][podcastIndex] = data
+      setTripPossibilities(newTripPossibilities)
     }).catch(function(error) {
       setLoading(false)
       alert('An error occurred. Please try again.')
+    }).finally(() => {
+      setLoading(false)
     })
   }
 
