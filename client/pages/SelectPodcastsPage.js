@@ -23,8 +23,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
   useEffect(() => {
     setLoading(false)
     if(tripPossibilities){
-      console.log("zuchinni")
-      console.log(tripPossibilities)
       setLoading(false)
     }
   }, [tripPossibilities])
