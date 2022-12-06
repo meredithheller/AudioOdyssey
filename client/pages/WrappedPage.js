@@ -34,7 +34,7 @@ export default function WrappedPage({ navigation }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      let minutesURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/minutes?`
+      let minutesURL = `http://db8.cse.nd.edu:5009/wrapped/minutes?`
       const minuteRes = await fetch(minutesURL + new URLSearchParams({
         username: global.user.username
       }))
@@ -46,7 +46,7 @@ export default function WrappedPage({ navigation }) {
         setLoadingMinutes(false)
         setErrorMinutes(true)
       }
-      let categoryURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/category?`
+      let categoryURL = `http://db8.cse.nd.edu:5009/wrapped/category?`
       const categoryRes = await fetch(categoryURL + new URLSearchParams({
         username: global.user.username
       }))
@@ -59,7 +59,7 @@ export default function WrappedPage({ navigation }) {
         setLoadingCategory(false)
         setErrorCategory(true)
       }
-      let buddyURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/wrapped/buddy?`
+      let buddyURL = `http://db8.cse.nd.edu:5009/wrapped/buddy?`
       const buddyRes = await fetch(buddyURL + new URLSearchParams({
         username: global.user.username
       }))

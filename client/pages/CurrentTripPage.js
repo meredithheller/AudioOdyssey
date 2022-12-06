@@ -28,7 +28,8 @@ export default function CurrentTrip({ navigation }) {
 
   const getCurrentTrip = async () => {
     // TODO: This should be a GET request
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/getCurrTrip?` + new URLSearchParams({
+    let curTripURL = `http://db8.cse.nd.edu:5009/getCurrTrip?`
+    const res = fetch(curTripURL + new URLSearchParams({
       username: global.user.username
     })).then((response) => {
       return response.json()
@@ -48,7 +49,8 @@ export default function CurrentTrip({ navigation }) {
     // TODO: CALL THE REPLACE ENDPOINT
     // POST REQUEST
     // THIS IS NOT DONE
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/replaceCurrPodcast`,  {
+    let replaceURL = `http://db8.cse.nd.edu:5009/replaceCurrPodcast`
+    const res = fetch(replaceURL,  {
       method: 'POST',
       body: JSON.stringify({
         tripId: tripId,
@@ -78,7 +80,8 @@ export default function CurrentTrip({ navigation }) {
         for(let pod in podcasts){
           podRatings.push({"uri": podcasts[pod].uri, "rating": podcasts[pod].rating})
         }
-        const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveRating`,  {
+        let saveRatingURL = `http://db8.cse.nd.edu:5009/saveRating`
+        const res = fetch(saveRatingURL,  {
           method: 'POST',
           body: JSON.stringify({
             trip_id: tripId,
@@ -100,7 +103,6 @@ export default function CurrentTrip({ navigation }) {
   }
 
   const ratingCompleted = (rating, podcastIndex) => {
-    console.log('here')
     podcasts[podcastIndex].rating = rating;
     setPodcasts(podcasts)
     // edit the current trip podcast information so that it reflects the new rating

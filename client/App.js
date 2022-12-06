@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LandingPage from './pages/LandingPage';
 import HomeContainer from './pages/HomeContainer';
 import './global.js';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Constants.platform.ios.model', 'Please report: Excessive number', 'Warning: Each']); 
 
 const Stack = createNativeStackNavigator();
 

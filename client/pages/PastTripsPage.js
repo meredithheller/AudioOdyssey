@@ -1,91 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native';
 import TripCard from '../components/tripCard'
-import { REACT_APP_PORT_NUM } from '@env'
 import Ionicons from '@expo/vector-icons/Ionicons';
-
-let pastTrips = [{ "trip_id": 439841,
-"starting_loc": "Boston, MA",
-"destination": "South Bend, IN",
-"podcasts": 
-[{
-  "description": "blah blah blah blah",
-  "duration": 21.460466666666665,
-  "episode_name": "S1 Ep4: Life Upon the Wicked Stage",
-  "image_url": "https://megaphone.imgix.net/podcasts/6343dace-1ae0-11ea-8c84-afebdfb406dd/image/Gimlet_TwoPrincesS1_ShowArt_3000x3000.jpg?ixlib=rails-2.1.2&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
-  "show_name": "Taylor Swift",
-  "uri": "spotify:episode:01H2zsq0DPgqbLTgFmtbL4",
-  "rating": 0
-},
-{ "description": "Recapping my life since I moved to Texas and my weekend in Waco Texas at the elite barrelnanza   ---   This episode is sponsored by  · Anchor: The easiest way to make a podcast.  https://anchor.fm/app",
-  "duration": 33.62868333333333,
-  "episode_name": "Introductory episode. ",
-  "image_url": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2330768/2330768-1573872310601-7bfb73e99f23.jpg",
-  "show_name": "Betty Life: Behind the Scenes, stories and life lessons",
-  "uri": "spotify:episode:09TwoMq3ZpNnigN7EP8rmn",
-  "rating": 2
-},{ "description": "Tree-Tree has an amazing dream that changes his life forever!  ---   Support this podcast: https://anchor.fm/kids-short-stories/support",
-  "duration": 9.523666666666667,
-  "episode_name": "The Small Tree With Big Dreams",
-  "image_url": "https://www.omnycontent.com/d/clips/f908bc33-68fa-4916-a2c1-af18015ff9f6/9df731a0-f896-428e-839d-af180160de06/718bfbb1-767d-4747-90e3-af18017a4c8e/image.jpg?t=1663887445&size=Large",
-  "show_name": "Kids Short Stories",
-  "uri": "spotify:episode:0AYRBGOGItwTrWpKBQAyvm",
-  "rating": 5
-}]}, { "trip_id": 4313254,
-"starting_loc": "Bloomington, IL",
-"destination": "Bloomington, IN",
-"podcasts": 
-[{
-  "description": "Rupert and Amir are a captive audience. The Two Princes was created and written by Kevin Christopher Snipes and directed by Mimi O'Donnell. Shohreh Aghdashloo- Queen Atossa, Christine Baranski- Queen Lavinia, Alfredo Narciso- Barabbas, Noah Galvin- Prince Rupert, Ari'el Stachel- Prince Amir, Richard Kind- Cedric, and Mandi Masden- Crazy Tooth. Executive producer Mimi O'Donnell, senior producer Katie Pastore, producer Annamaria Sofillas, associate producer MR Daniel. Edited and mixed by Matthew Boll, sound design by Daniel Brunelle, score by Greg Laswell and Bobby Lord. The Two Princes is a production of Gimlet Media",
-  "duration": 21.460466666666665,
-  "episode_name": "S1 Ep4: Life Upon the Wicked Stage",
-  "image_url": "https://megaphone.imgix.net/podcasts/6343dace-1ae0-11ea-8c84-afebdfb406dd/image/Gimlet_TwoPrincesS1_ShowArt_3000x3000.jpg?ixlib=rails-2.1.2&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
-  "show_name": "The Two Princes",
-  "uri": "spotify:episode:01H2zsq0DPgqbLTgFmtbL4",
-  "rating": 0
-},
-{ "description": "Recapping my life since I moved to Texas and my weekend in Waco Texas at the elite barrelnanza   ---   This episode is sponsored by  · Anchor: The easiest way to make a podcast.  https://anchor.fm/app",
-  "duration": 33.62868333333333,
-  "episode_name": "Introductory episode. ",
-  "image_url": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2330768/2330768-1573872310601-7bfb73e99f23.jpg",
-  "show_name": "Betty Life: Behind the Scenes, stories and life lessons",
-  "uri": "spotify:episode:09TwoMq3ZpNnigN7EP8rmn",
-  "rating": 2
-}, { "description": "THis is a really aweesome podcast",
-"duration": 9.523666666666667,
-"episode_name": "How to start a business",
-"image_url": "https://www.omnycontent.com/d/clips/f908bc33-68fa-4916-a2c1-af18015ff9f6/9df731a0-f896-428e-839d-af180160de06/718bfbb1-767d-4747-90e3-af18017a4c8e/image.jpg?t=1663887445&size=Large",
-"show_name": "Business Pod",
-"uri": "spotify:episode:0AYRBGOGItwTrWpKBQAyvm",
-"rating": 3
-}]}, { "trip_id": 4313254,
-"starting_loc": "Boston, MA",
-"destination": "South Bend, IN",
-"podcasts": 
-[{
-  "description": "Rupert and Amir are a captive audience. The Two Princes was created and written by Kevin Christopher Snipes and directed by Mimi O'Donnell. Shohreh Aghdashloo- Queen Atossa, Christine Baranski- Queen Lavinia, Alfredo Narciso- Barabbas, Noah Galvin- Prince Rupert, Ari'el Stachel- Prince Amir, Richard Kind- Cedric, and Mandi Masden- Crazy Tooth. Executive producer Mimi O'Donnell, senior producer Katie Pastore, producer Annamaria Sofillas, associate producer MR Daniel. Edited and mixed by Matthew Boll, sound design by Daniel Brunelle, score by Greg Laswell and Bobby Lord. The Two Princes is a production of Gimlet Media",
-  "duration": 21.460466666666665,
-  "episode_name": "S1 Ep4: Life Upon the Wicked Stage",
-  "image_url": "https://megaphone.imgix.net/podcasts/6343dace-1ae0-11ea-8c84-afebdfb406dd/image/Gimlet_TwoPrincesS1_ShowArt_3000x3000.jpg?ixlib=rails-2.1.2&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
-  "show_name": "The Two Princes",
-  "uri": "spotify:episode:01H2zsq0DPgqbLTgFmtbL4",
-  "rating": 0
-},
-{ "description": "Recapping my life since I moved to Texas and my weekend in Waco Texas at the elite barrelnanza   ---   This episode is sponsored by  · Anchor: The easiest way to make a podcast.  https://anchor.fm/app",
-  "duration": 33.62868333333333,
-  "episode_name": "Introductory episode. ",
-  "image_url": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2330768/2330768-1573872310601-7bfb73e99f23.jpg",
-  "show_name": "Betty Life: Behind the Scenes, stories and life lessons",
-  "uri": "spotify:episode:09TwoMq3ZpNnigN7EP8rmn",
-  "rating": 2
-},{ "description": "this is a good podcast by awesome hosts",
-  "duration": 140,
-  "episode_name": "The Great Adventure",
-  "image_url": "https://www.omnycontent.com/d/clips/f908bc33-68fa-4916-a2c1-af18015ff9f6/9df731a0-f896-428e-839d-af180160de06/718bfbb1-767d-4747-90e3-af18017a4c8e/image.jpg?t=1663887445&size=Large",
-  "show_name": "Freakonomics",
-  "uri": "spotify:episode:0AYRBGOGItwTrWpKBQAyvm",
-  "rating": 1
-}]}]
 
 export default function PastTripsPage({ navigation, route }) {
 
@@ -94,6 +10,7 @@ export default function PastTripsPage({ navigation, route }) {
   const [ tripHistory, setTripHistory ] = useState()
   const [ canGoForward, setCanGoForward ] = useState(true)
   const [ canGoBackward, setCanGoBackward ] = useState(false)
+  const [ noMoreHistory, setNoMoreHistory ] = useState(false)
 
   useEffect(() => {
     getTripHist()
@@ -106,14 +23,15 @@ export default function PastTripsPage({ navigation, route }) {
   }, [tripHistory])
 
   useEffect(() => {
-    if(page && page > 0){
+    if(page >= 0){
+      setLoading(true)
       getTripHist()
     }
   }, [page])
 
   const getTripHist = () => {
     setLoading(true)
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/get_user_history?` + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:5009/get_user_history?` + new URLSearchParams({
       username: global.user.username,
       page: page
     })).then((response) => {
@@ -126,9 +44,13 @@ export default function PastTripsPage({ navigation, route }) {
       return response.json()
     })
     .then((data) => {
-
       // handle if no more previous trips
-      setTripHistory(data.trips)
+      if(data.length == 0){
+        setNoMoreHistory(true)
+      }else{
+        setNoMoreHistory(false)
+      }
+      setTripHistory(data)
     }).catch(function(error) {
       alert('An error occurred. Please try again.')
       navigation.navigate('Profile Home')
@@ -137,10 +59,12 @@ export default function PastTripsPage({ navigation, route }) {
 
   const updateRating = (tripIndex) => {
     let podRatings = [] 
-    for(let pod in tripHistory[tripIndex]){
-      podRatings.push((podcasts[pod].uri, podcasts[pod].rating))
+    for(let pod in tripHistory[tripIndex].podcasts){
+      podRatings.push({"uri": tripHistory[tripIndex].podcasts[pod].uri, "rating": tripHistory[tripIndex].podcasts[pod].rating} )
     }
-    const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveRating`,  {
+    console.log("ratings: ")
+    console.log(podRatings)
+    const res = fetch(`http://db8.cse.nd.edu:5009/saveRating`,  {
       method: 'POST',
       body: JSON.stringify({
         trip_id: tripHistory[tripIndex],
@@ -166,7 +90,7 @@ export default function PastTripsPage({ navigation, route }) {
   }
 
   return (
-    loading && !tripHistory ? <SafeAreaView style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
+    loading || !tripHistory ? <SafeAreaView style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
       <ActivityIndicator size="large" style={styles.loading}/> 
       </SafeAreaView>: 
     <View style={{backgroundColor: 'lightblue', width: '100%', height: '100%'}}>
@@ -181,7 +105,7 @@ export default function PastTripsPage({ navigation, route }) {
           <Ionicons style={styles.backButton} name={'arrow-back-circle'} size={25} color={'black'} />
         </TouchableOpacity>}
         <Text style={styles.header}>Past Trips</Text>
-        { canGoForward && <TouchableOpacity 
+        { canGoForward && !noMoreHistory && <TouchableOpacity 
           onPress={() => {
             setPage(page + 1)
         }}>
@@ -212,6 +136,7 @@ export default function PastTripsPage({ navigation, route }) {
                   />
                 )
             })}
+      { noMoreHistory && <Text style={{alignSelf: 'center', justifySelf: 'center', paddingBottom: 30}}>No further trip history.</Text>}
       </ScrollView>
     </SafeAreaView>
     </View>

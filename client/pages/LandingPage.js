@@ -16,7 +16,7 @@ export default function LandingPage({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const login = () => {
-    let loginUrl = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/login`
+    let loginUrl = `http://db8.cse.nd.edu:5009/login`
     return fetch(loginUrl, {
       method: 'POST',
       headers: {
@@ -44,7 +44,7 @@ export default function LandingPage({ navigation }) {
   }
 
   const createAccount = () => {
-    return fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/createAccount`, {
+    return fetch(`http://db8.cse.nd.edu:5009/createAccount`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

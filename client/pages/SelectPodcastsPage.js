@@ -16,10 +16,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
       alert("there was an error")
       navigation.navigate('Plan Trip')
     }
-    // console.log("IN SLECT PODCASTS PAGE WE HAVE: ")
-    // console.log(route.params.trips)
     setTripPossibilities(route.params.trips)
-    console.log(route.params.trips)
     setLoading(false)
   }, [])
 
@@ -29,7 +26,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
 
 
   const handleSaveTrip = async () => {
-    // console.log(selectedTrip)
     if(selectedTrip == null){
       alert('Please select a trip option to proceed.')
     }else{
@@ -37,7 +33,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
       // WHAT NEEDS TO HAPPEN ON SAVE TRIP? 
         // generate a trip id, save trip id, username, trip, start and stop location, and date created to trip_info
         // 
-        const res = fetch(`http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/saveTrip`, {
+        const res = fetch(`http://db8.cse.nd.edu:5009/saveTrip`, {
           method: 'POST',
           body: JSON.stringify({
             username: global.user.username,
@@ -63,7 +59,7 @@ export default function SelectPodcastsPage({ navigation, route }) {
 
   const onReplace = (podcastIndex, tripIndex) => {
 
-    let replaceURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/replacePlanningPodcast`
+    let replaceURL = `http://db8.cse.nd.edu:5009/replacePlanningPodcast`
     const res = fetch(replaceURL + new URLSearchParams({
       username: global.user.username,
       duration: tripPossibilities[tripIndex][podcastIndex].duration,
@@ -76,7 +72,6 @@ export default function SelectPodcastsPage({ navigation, route }) {
       let newPodInfo = data.podcast
       tripPossibilities[tripIndex][podcastIndex] = newPodInfo
       setTripPossibilities(tripPossibilities)
-      console.log(data)
     }).catch(function(error) {
       setLoading(false)
       alert('An error occurred. Please try again.')

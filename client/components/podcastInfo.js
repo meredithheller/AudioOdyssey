@@ -8,11 +8,6 @@ export default function PodcastInfo({ currentRating, tripId, ratingCompleted, on
     const [ rating, setRating ] = useState(0)
     const [ canOpenLink, setCanOpenLink ] = useState(false)
 
-    useEffect(() => {
-        console.log(podInfo)
-
-    })
-
     let image_url = "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded/2493250/2493250-1571260851467-0eaf5106f2d8a.jpg"
     let show_name = "How I Built This"
     let episode_name = "Happy Family Organics"

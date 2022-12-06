@@ -20,6 +20,7 @@ import axios from 'axios';
 import categs from '../constants/categories'
 import { REACT_APP_GOOGLE_PLACES_API_KEY, REACT_APP_PORT_NUM } from '@env'
 
+const tripOptionsURL = `http://db8.cse.nd.edu:5009/tripOptions?`
 
 export default function PlanTripPage({ navigation, route }) {
   const [searchStartKeyword, setSearchStartKeyword] = useState('')
@@ -38,7 +39,9 @@ export default function PlanTripPage({ navigation, route }) {
   const [ trips, setTrips ] = useState(null)
 
   useEffect(() => {
-    if(trips){
+    if(trips && trips.length == 0){
+      alert('No possibilities. Try selecting more categories.')
+    }else if(trips){
       navigation.navigate("Select Podcasts", { trips: trips, startLocation: searchStartKeyword, endLocation: searchEndKeyword, categories: [...categories]})
     }
   }, [trips])
@@ -111,8 +114,7 @@ export default function PlanTripPage({ navigation, route }) {
       formattedCategoryParam = [...categories].join(',').replace(/\s/g, '_')
     }
     // TODO: This should be a GET request
-    let fetchURL = `http://db8.cse.nd.edu:${REACT_APP_PORT_NUM}/tripOptions?`
-    const res = fetch(fetchURL + new URLSearchParams({
+    const res = fetch(tripOptionsURL + new URLSearchParams({
       duration: duration,
       categories: formattedCategoryParam,
     })).then((response) => {
