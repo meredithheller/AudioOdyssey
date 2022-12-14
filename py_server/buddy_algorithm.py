@@ -15,14 +15,6 @@ def find_buddy(username, users):
                 distance = new_distance
                 closet_user = user
     return closet_user
-    # most_similar_dist = None
-    # most_similar_username = ''
-    # for user in users:
-    #     dist = similarity(user_vector, users[user])
-    #     if most_similar_dist == None or dist < most_similar_dist:
-    #         most_similar_dist = dist
-    #         most_similar_username = user
-    return 'mheller5'
 
 
 # compute the similarity between another user and 
@@ -34,10 +26,6 @@ def get_vector(user_dict):
         else:
             vec.append(0)
     return vec
-    # create their vectors
-    other_user_vect = [ other_user_dict[cat] if other_user_dict[cat] else 0 for cat in category_array]
-    userDistance = spatial.distance.cosine(other_user_vect, vec)
-    pass
 
 
 category_array = [

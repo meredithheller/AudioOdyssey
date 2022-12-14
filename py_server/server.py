@@ -56,6 +56,8 @@ def parse_login():
     return json_data[0]
 
 
+
+# used when not enough data
 def getRandResults(duration):
     sql_query = '''SELECT p.episode_uri, p.episode_name, p.show_name, p.duration, c.category
             FROM categories c, podcasts p
@@ -67,7 +69,6 @@ def getRandResults(duration):
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
     rv = cur.fetchall()
-    # TODO: if rv == 0 just run a sql query to return the shortest podcast 50
     return rv
 
 
@@ -80,7 +81,6 @@ def trip_options():
     else:
         duration = random.uniform(20, 150)
 
-    # duration = float(args_dict['duration'])
     if args_dict['categories'] == 'none':
         categories = {}
         # randomly select 200 podcasts if no categories were provided
@@ -109,16 +109,8 @@ def trip_options():
     cur.execute(sql_query)
     rv = cur.fetchall()
     if len(rv) == 0:
-        # TODO: somehow alert that we were unable to get podcasts with these categories
         rv = getRandResults(duration)
-    # filter the results for podcasts that have already been listened to
-        # execute sql query to get all listened to podcasts
-    # TODO: change this to empty list, for now just converty tuple to list
     new_podcasts = list(rv)
-    # podcast_history = set()
-    # for pod_info_tuple in rv:
-    #     if pod_info_tuple[0] not in podcast_history:
-    #         new_podcasts.append(pod_info_tuple)
 
     possible_pods = {}
     for pod_info_tuple in new_podcasts:
@@ -144,7 +136,6 @@ def trip_options():
         cur.execute(cat_query)
         rv = cur.fetchall()
         for cat in rv:
-            # TODO: here add (category, score) as tuple to possible_pods; if not already been queried, need to execute query to get score
             score = random.uniform(0.0, 5.0)
             possible_pods[pod_key]['categories'].add((cat[0], score))
 
@@ -156,27 +147,16 @@ def trip_options():
         cur.execute(subcat_query)
         rv = cur.fetchall()
         for subcat in rv:
-            # TODO: here add (subcategory, score, is_power) as tuple to possible_pods; if not already been queried, need to execute query to get score
             score = random.uniform(0.0, 5.0)
             possible_pods[pod_key]['subcategories'].add(
                 (subcat[0], score, subcat[1]))
-    # for pod in possible_pods:
-    #     print(possible_pods[pod])
-    # print(possible_pods)
 
-    # tell jack I'm also sending the actual categories they chose so he can optimize extra on those bc im sending all categories from all returned podcasts
-    print('DURATION:', duration)
     trip_options = find_trip(duration, possible_pods, categories)
-    print(len(trip_options))
-    # something's not passing right
-    # once jack returns trip_options, execute SQL query to get image and description
-    # ask jack to return list length 3 or less of lists of the podcast dictionaries
-    # TODO: handle no possibilities
+    if(len(trip_options) == 0):
+        return {}
     for trip_op in trip_options:
         for pod in trip_op:
             pod['rating'] = 0
-            # these should be the dictionaries I created before
-            # TODO: attempt sql query for image
             image_url_query = '''SELECT image_url
                 FROM image_urls
                 WHERE episode_uri = \'{uri}\';'''.format(
@@ -187,9 +167,7 @@ def trip_options():
             if len(rv) > 1:
                 continue
             else:
-                # TODO: ensure I need to double [0] this
                 pod['image_url'] = rv[0][0]
-            # TODO: attempt sql query for description
             desc_query = '''SELECT episode_description
                 FROM descriptions
                 WHERE episode_uri = \'{uri}\';'''.format(
@@ -200,10 +178,8 @@ def trip_options():
             if len(rv) > 1:
                 continue
             else:
-                # TODO: ensure I need to double [0] this
                 pod['description'] = rv[0][0]
 
-    # TODO: properly format the response
     cur.close()
     res_json = jsonify_podcasts(trip_options)
     return res_json
@@ -228,11 +204,9 @@ def get_curr_trip():
     cur.execute("select * from trip_info where username = '{username}' order by date_created desc limit 1;".format(
         username=args_dict['username']
     ))
-    most_recent = cur.fetchone()  # 0,0 or just 0? for whole row?
-    if most_recent == None:
-        most_recent = "You haven't listened to any podcasts yet"
-
-    else:
+    most_recent = cur.fetchone() 
+    output = {}
+    if most_recent != None:
         cur.execute("select episode_uri, rating from trip_episode_ratings where trip_id = {tripid};".format(
             tripid=most_recent[0]
         ))
@@ -257,13 +231,12 @@ def get_curr_trip():
 
             current = {"uri": eps[x][0], "image_url": img_url[0][0], "rating": eps[x][1],
                        "episode_name": pod[0][0], "show_name": pod[0][1], "description": desc[0][0]}
-            # print(current)
             podcasts.append(current)
 
-    output = {"trip_id": most_recent[0], "start_loc": most_recent[2],
+        output = {"trip_id": most_recent[0], "start_loc": most_recent[2],
               "destination": most_recent[3], "podcasts": podcasts}
 
-    mysql.connection.commit()
+        mysql.connection.commit()
     #output: (json)
 
     return output
@@ -283,6 +256,8 @@ def get_user_history():
     ))
     num_podcasts = cur.fetchall()
     error = 0
+    if num_podcasts[0][0] == 0:
+        return {}
     if int(num_podcasts[0][0]) < page:
         error = 1
 
@@ -382,11 +357,14 @@ def save_trip():
     trip_id = cur.fetchall()[0][0]
     cur.execute("select now()")
     date = cur.fetchall()[0][0]
+    # remove dangerous characters from locations
+    starting_loc = data['start_loc'].replace("'", "").replace(";", "")
+    ending_loc = data['destination'].replace("'", "").replace(";", "")
     cur.execute("INSERT INTO trip_info (trip_id, username, start_location, stop_location, date_created) VALUES ('{tripid}', '{username}', '{start}','{stop}', '{date}');".format(
         tripid=trip_id,
         username=data['username'],
-        start=data['start_loc'],
-        stop=data['destination'],
+        start=starting_loc,
+        stop=ending_loc,
         date=date
     ))
     # trip_info endpoint 1?
@@ -421,18 +399,12 @@ def save_Rating():
         # if past_rating != -1, subtract past rating from categories, subcategories before adding new.
 
         if pod['rating'] != -1:
-            # categories
-            # acquires all categories associated with episode
-            # cur.execute("UPDATE trip_episode_ratings set "
 
             cur.execute("select rating from trip_episode_ratings where episode_uri = '{uri}' and username = '{user}';".format(
                 uri=pod['uri'],
                 user=data['username']
             ))
             past_rating = cur.fetchall()[0][0]
-            print("episode: ", pod['uri'])
-            print("past rating: ", past_rating)
-            print("new rating: ", pod['rating'])
             cur.execute("update trip_episode_ratings set rating = {rating} where username = '{user}' and episode_uri = '{uri}';".format(
                 rating=pod['rating'],
                 user=data['username'],
@@ -453,7 +425,6 @@ def save_Rating():
             # for each category in the list of categories
             for cat in cats:
                 # get the row in user_category_store associated with the username and category
-                # CAUSING AN ERROR FOR SOME REASON
                 cur.execute("select * from user_category_score where username = '{uname}' and category = '{cat}';".format(
                     uname=data['username'],
                     cat=cat[0]
@@ -539,13 +510,7 @@ def minutes():
         totalMinutes = result
     totalMinutes = round(totalMinutes, 2)
     minutes = str("{:,}".format(totalMinutes))
-    print(minutes)
     return minutes  # return as formatted string please (with commas)
-
-# TODO: implement
-# args: username
-# return: total number of miles user has traveled as a formatted string(could make this easier by adding a trip miles column to the trip_info table and calling the google maps api in that endpoint (/saveTrip) to get the miles between start location and destination, then just need to add all of the users miles from that table and return here)
-
 
 @app.route('/wrapped/miles', methods=['GET'])
 def miles():
@@ -554,11 +519,6 @@ def miles():
     totalMiles = round(random.uniform(20, 10000000))
     miles = str("{:,}".format(totalMiles))
     return miles  # return as formatted string please (with commas)
-
-# TODO: implement
-# args: username
-# return: json object of their highest rated category and the percentile (formatted as ordinal number, the function do so is already in here) of listeners that they are within that category
-
 
 @app.route('/wrapped/category', methods=['GET'])
 def topCategory():
@@ -579,10 +539,7 @@ def topCategory():
         result = cur.fetchall()
         topCategory = result[0][0]
         score = result[0][1]
-        print(topCategory)
-        print(score)
 
-        # convert (round to nearest whole percent) and return as a string here
         sql_query = '''SELECT (
                         SELECT count(score)
                         FROM user_category_score u 
@@ -596,14 +553,10 @@ def topCategory():
         cur = mysql.connection.cursor()
         cur.execute(sql_query)
         percentile = round(float(100-100*(cur.fetchall()[0][0])))
-        print(percentile)
     def ordinal(n): return "%d%s" % (
         n, "tsnrhtdd"[(n//10 % 10 != 1)*(n % 10 < 4)*n % 10::4])
     ordinal_percentile = ordinal(percentile)
-    print(ordinal_percentile)
     return {'topCategory': topCategory, 'percentile': ordinal_percentile}
-
-# TODO: implement
 
 
 @app.route('/wrapped/buddy', methods=['GET'])
@@ -622,7 +575,6 @@ def buddy():
             user_categories_dict[result[0]] = {result[1]: result[2]}
     buddy_username = find_buddy(username, user_categories_dict)
     if buddy_username == 'no username data':
-        print('no data')
         buddy_info_query = ''' SELECT firstname, lastname, phonenumber 
                         FROM users
                         ORDER BY RAND() 
@@ -643,7 +595,7 @@ def buddy():
         formatted_number = phonenumbers.format_number(phonenumbers.parse(
             formatted_number, 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
     except:
-        print('cannot format phone number')
+        formatted_number = '3095334163'
     return {'firstName': firstName, 'lastName': lastName, 'phone': formatted_number}
 
 
@@ -675,7 +627,6 @@ def replacePlanningPodcast():
                         '{category}'
                         '''.format(category=category)
     sql_query += '''ORDER BY RAND() LIMIT 1;'''
-    print(sql_query)
     cur.execute(sql_query)
     result = cur.fetchall()
     uri = result[0][0]
@@ -722,7 +673,6 @@ def replacePlanningPodcast():
                         FROM user_subcategory_score u
                         WHERE u.username = '{username}' AND u.subcategory = '{subcategory}'
                     '''.format(username=username, subcategory=i[0])
-        print(sql_query)
         cur.execute(sql_query)
         score = cur.fetchall()
 
@@ -733,9 +683,8 @@ def replacePlanningPodcast():
         subcatlist.append(i[1])
         subcategories.append(subcatlist)
     return_dict['subcategories'] = subcategories
-    print(return_dict)
     return return_dict
 
 
 if __name__ == "__main__":
-    app.run(host='db8.cse.nd.edu', debug=True, port=5009)
+    app.run(host='db8.cse.nd.edu', debug=True, port=5005)

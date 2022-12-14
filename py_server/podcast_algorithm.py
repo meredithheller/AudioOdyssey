@@ -99,12 +99,6 @@ def find_trip(unrounded_trip_duration, podcast_dict, categories):
             trips.append(trip)
 
         count += 1
-    # x = 0
-    # for pod in trips:
-    #     for i in pod:
-    #         x += i[0].duration
-
-    # parse data to send
     final_trips = []
     final_trip = []
     print(trips)
