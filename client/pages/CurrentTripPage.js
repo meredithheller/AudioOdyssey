@@ -34,10 +34,15 @@ export default function CurrentTrip({ navigation }) {
       return response.json()
     })
     .then((data) => {
-      setStartingLocation(data.start_loc);
-      setDestination(data.destination);
-      setPodcasts(data.podcasts);
-      setTripId(data.trip_id);
+      if(JSON.stringify(data) === '{}'){
+        alert('Couldn\'t plan a trip with these inputs. Please try again.')
+        navigation.navigate('Profile Home') 
+      }else{
+        setStartingLocation(data.start_loc);
+        setDestination(data.destination);
+        setPodcasts(data.podcasts);
+        setTripId(data.trip_id);
+      }
     }).catch(function(error) {
       alert('An error occurred. Please try again.');
       navigation.navigate('Profile Home');

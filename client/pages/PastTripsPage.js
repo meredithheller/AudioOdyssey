@@ -13,7 +13,6 @@ export default function PastTripsPage({ navigation, route }) {
   const [ noMoreHistory, setNoMoreHistory ] = useState(false)
 
   useEffect(() => {
-    getTripHist()
   }, [])
 
   useEffect(() => {
@@ -31,22 +30,17 @@ export default function PastTripsPage({ navigation, route }) {
 
   const getTripHist = () => {
     setLoading(true)
-    const res = fetch(`http://db8.cse.nd.edu:5009/get_user_history?` + new URLSearchParams({
+    const res = fetch(`http://db8.cse.nd.edu:${global.port}/get_user_history?` + new URLSearchParams({
       username: global.user.username,
       page: page
     })).then((response) => {
-      if(!response.ok){
-        // need to determine how to handle the errors
-        alert('No more trips in your history')
-        setLoading(false)
-        return
-      }
       return response.json()
     })
     .then((data) => {
       // handle if no more previous trips
-      if(data.length == 0){
-        setNoMoreHistory(true)
+      if(JSON.stringify(data) === '{}'){
+        alert('You don\'t have any trips in your history.')
+        navigation.navigate('Profile Home') 
       }else{
         setNoMoreHistory(false)
       }

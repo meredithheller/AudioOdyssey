@@ -6,6 +6,7 @@ import HomeContainer from './pages/HomeContainer';
 import './global.js';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Constants.platform.ios.model', 'Please report: Excessive number', 'Warning: Each']); 
+LogBox.ignoreAllLogs()
 
 const Stack = createNativeStackNavigator();
 

@@ -3,8 +3,6 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView 
 import PodcastInfo from './podcastInfo';
 
 export default function TripCard({ updateRatings, tripId, ratingCompleted, canRate, headerText, disabled, onReplace, isSavedTrip, canEdit, tripNum, tripInfo, onSelectTrip, selected, canReplace}) {
-    useEffect(() => {
-    })
 
     return (
         <TouchableOpacity disabled={disabled} style={selected ? styles.selectedTripContainer : styles.unselectedTripContainer} onPress={() => onSelectTrip(tripNum)}>
