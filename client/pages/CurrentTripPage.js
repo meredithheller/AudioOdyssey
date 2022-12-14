@@ -35,7 +35,7 @@ export default function CurrentTrip({ navigation }) {
     })
     .then((data) => {
       if(JSON.stringify(data) === '{}'){
-        alert('Couldn\'t plan a trip with these inputs. Please try again.')
+        alert('No trips planned.')
         navigation.navigate('Profile Home') 
       }else{
         setStartingLocation(data.start_loc);

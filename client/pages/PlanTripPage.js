@@ -122,8 +122,13 @@ export default function PlanTripPage({ navigation, route }) {
         return response.json();
       })
       .then((data) => {
-        setTrips(data);
-        setLoading(false);
+        if(JSON.stringify(data) === '{}'){
+          setLoading(false)
+          alert('Can\'t plan a trip with these intputs.')
+        }else{
+          setTrips(data);
+          setLoading(false);
+        }
       })
       .catch(function(error) {
         setLoading(false);
