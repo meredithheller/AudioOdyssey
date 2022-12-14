@@ -73,7 +73,7 @@ def find_trip(unrounded_trip_duration, podcast_dict, categories):
     trips = []
     count = 1
     total_dur = 0
-    laps = 3
+    laps = 1
     for subset in trip_durs:
         trip = []
         for duration in subset:
